@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SQL Lab</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <button class="brand" id="brandBtn" title="חזרה לבחירת רמה">
+      <span class="brand-logo">SQL</span><span class="brand-name">Lab</span>
+    </button>
+    <div class="topbar-actions">
+      <button class="btn ghost" id="changeLevelBtn" hidden>החלף רמה</button>
+      <button class="btn ghost icon" id="themeBtn" title="מצב כהה / בהיר">◐</button>
+    </div>
+  </header>
+
+  <!-- מסך בחירת רמה -->
+  <section id="levelScreen" class="level-screen">
+    <div class="level-hero">
+      <h1>מתרגלים SQL עד שזה יושב בידיים</h1>
+      <p>שאלות בסגנון מבחני בית בחברות. כותבים שאילתה, מריצים, ואם הפלט זהה לפלט הצפוי, השאלה מסומנת כבוצעה.</p>
+      <h2>באיזו רמה מתחילים?</h2>
+    </div>
+    <div class="level-grid" id="levelGrid"></div>
+    <div class="level-footer">
+      <button class="btn link danger" id="resetBtn">איפוס כל ההתקדמות</button>
+    </div>
+  </section>
+
+  <!-- מסך העבודה: תוכן מימין, רשימת השאלות משמאל -->
+  <section id="workspace" class="workspace" hidden>
+    <main class="main">
+      <article class="card q-card">
+        <div class="q-meta">
+          <span class="chip level-chip" id="qLevel"></span>
+          <span class="chip" id="qOrigin"></span>
+          <span class="chip done-chip" id="qDone" hidden>✓ בוצע</span>
+        </div>
+        <h2 class="q-title" id="qTitle"></h2>
+        <p class="q-prompt" id="qPrompt"></p>
+        <div class="q-tables">
+          <span class="muted">טבלאות (לחיצה מציגה את הנתונים):</span>
+          <div id="qTables" class="table-chips"></div>
+        </div>
+        <div class="q-help">
+          <button class="btn small" id="solutionBtn">👁 הצג פתרון</button>
+        </div>
+        <div class="solution-box" id="solutionBox" hidden>
+          <div class="muted small-text ltr-ref" id="solutionRef" hidden></div>
+          <pre class="ltr code" id="solutionCode"></pre>
+          <button class="btn small" id="useSolutionBtn">הכנס לעורך</button>
+        </div>
+      </article>
+
+      <div class="card editor-card">
+        <div class="editor-head">
+          <span class="muted">כתבו כאן את השאילתה</span>
+          <button class="btn link" id="clearBtn">נקה</button>
+        </div>
+        <div class="editor-wrap ltr"><textarea id="editor"></textarea></div>
+        <div class="run-bar">
+          <button class="btn primary" id="runBtn" disabled>▶ הרץ</button>
+          <span class="muted kbd-hint">או Ctrl+Enter</span>
+          <span class="run-status" id="runStatus">טוען את מנוע ה-SQL...</span>
+        </div>
+      </div>
+
+      <div class="feedback" id="feedback" hidden></div>
+
+      <div class="card results-card">
+        <div class="tabs" role="tablist">
+          <button class="tab active" data-tab="user">הפלט שלך</button>
+          <button class="tab" data-tab="expected">פלט צפוי</button>
+          <button class="tab" data-tab="preview" id="previewTab" hidden></button>
+        </div>
+        <div class="tab-body" id="tabBody">
+          <p class="muted empty">הריצו שאילתה כדי לראות כאן את הפלט.</p>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <div class="side-head">
+        <div class="side-title"><span id="sideLevelIcon"></span> <span id="sideLevelName"></span></div>
+        <div class="progress"><div class="progress-fill" id="sideProgressFill"></div></div>
+        <div class="muted small-text" id="sideProgressText"></div>
+        <div class="filters">
+          <select id="sourceFilter">
+            <option value="">כל המקורות</option>
+            <option value="מקורי">שאלות מקוריות</option>
+            <option value="DataLemur">DataLemur</option>
+            <option value="LeetCode">LeetCode</option>
+            <option value="StrataScratch">StrataScratch</option>
+          </select>
+          <label class="check"><input type="checkbox" id="unsolvedOnly"> רק שלא נפתרו</label>
+        </div>
+      </div>
+      <ol class="q-list" id="qList"></ol>
+    </aside>
+  </section>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/sql/sql.min.js"></script>
+  <script src="data.js"></script>
+  <script src="data_extra.js"></script>
+  <script src="data_daily.js"></script>
+  <script src="questions.js"></script>
+  <script src="questions_extra.js"></script>
+  <script src="questions_daily.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
