@@ -215,3 +215,4 @@ table.result .null { color: var(--muted); font-style: italic; }
 .new-chip { background: var(--success-soft); color: var(--success); font-weight: 700; }
 .q-section { list-style: none; font-size: 12px; font-weight: 700; color: var(--muted); padding: 4px 10px; }
 .q-date { font-size: 12px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
+.feedback.info { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }

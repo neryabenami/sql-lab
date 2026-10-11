@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-  <link rel="stylesheet" href="styles.css?v=20261011b">
+  <link rel="stylesheet" href="styles.css?v=20261011c">
 </head>
 <body>
   <header class="topbar">
@@ -67,8 +67,9 @@
         </div>
         <div class="editor-wrap ltr"><textarea id="editor"></textarea></div>
         <div class="run-bar">
-          <button class="btn primary" id="runBtn" disabled>▶ הרץ</button>
-          <span class="muted kbd-hint">או Ctrl+Enter</span>
+          <button class="btn" id="runBtn" disabled>▶ הרץ</button>
+          <button class="btn primary" id="checkBtn" disabled>✓ בדוק</button>
+          <span class="muted kbd-hint">הרץ: Ctrl+Enter · בדוק: Ctrl+Shift+Enter</span>
           <span class="run-status" id="runStatus">טוען את מנוע ה-SQL...</span>
         </div>
       </div>
@@ -110,12 +111,12 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/sql/sql.min.js"></script>
-  <script src="data.js?v=20261011b"></script>
-  <script src="data_extra.js?v=20261011b"></script>
-  <script src="data_daily.js?v=20261011b"></script>
-  <script src="questions.js?v=20261011b"></script>
-  <script src="questions_extra.js?v=20261011b"></script>
-  <script src="questions_daily.js?v=20261011b"></script>
-  <script src="app.js?v=20261011b"></script>
+  <script src="data.js?v=20261011c"></script>
+  <script src="data_extra.js?v=20261011c"></script>
+  <script src="data_daily.js?v=20261011c"></script>
+  <script src="questions.js?v=20261011c"></script>
+  <script src="questions_extra.js?v=20261011c"></script>
+  <script src="questions_daily.js?v=20261011c"></script>
+  <script src="app.js?v=20261011c"></script>
 </body>
 </html>

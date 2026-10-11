@@ -38,6 +38,7 @@ async function initEngine() {
     baseDbBytes = db.export();
     db.close();
     $('runBtn').disabled = false;
+    $('checkBtn').disabled = false;
     $('runStatus').textContent = 'מוכן';
   } catch (e) {
     $('runStatus').textContent = 'שגיאה בטעינת מנוע ה-SQL. בדקו חיבור לאינטרנט ורעננו.';
@@ -263,13 +264,14 @@ function nextQuestionId() {
   return next ? next.id : null;
 }
 
-// ---------- הרצה ----------
-function run() {
+// ---------- הרצה ובדיקה ----------
+// check = false: "הרץ" מציג רק את הפלט. check = true: "בדוק" משווה לפלט הצפוי ומסמן "בוצע"
+function run(check = false) {
   if (!SQL) return;
   const q = currentQuestion();
   const sql = editor.getValue().trim();
   if (!sql) {
-    showFeedback(false, 'העורך ריק. כתבו שאילתה ואז לחצו על "הרץ".');
+    showFeedback('bad', `העורך ריק. כתבו שאילתה ואז לחצו על "${check ? 'בדוק' : 'הרץ'}".`);
     return;
   }
   const t0 = performance.now();
@@ -278,13 +280,20 @@ function run() {
     res = runSql(sql);
   } catch (e) {
     lastUserResult = null;
-    showFeedback(false, 'שגיאת SQL:', e.message);
+    showFeedback('bad', 'שגיאת SQL:', e.message);
     setTab('user');
     $('runStatus').textContent = '';
     return;
   }
   $('runStatus').textContent = `רץ ב-${Math.round(performance.now() - t0)}ms`;
   lastUserResult = res;
+  setTab('user');
+  if (!check) {
+    showFeedback('info', res.hasResult
+      ? `השאילתה רצה: ${res.values.length} שורות. כדי לבדוק אם התשובה נכונה, לחצו על "בדוק".`
+      : 'השאילתה רצה, אבל לא החזירה טבלה.');
+    return;
+  }
   const cmp = compareResults(res, getExpected(q), q.ordered);
   if (cmp.ok) {
     const firstTime = !state.solved[q.id];
@@ -292,18 +301,18 @@ function run() {
     saveState();
     $('qDone').hidden = false;
     renderSidebar();
-    showFeedback(true, firstTime ? 'מעולה! הפלט זהה לפלט הצפוי. השאלה סומנה כבוצעה.' : 'נכון! הפלט זהה לפלט הצפוי.');
+    showFeedback('ok', firstTime ? 'מעולה! הפלט זהה לפלט הצפוי. השאלה סומנה כבוצעה.' : 'נכון! הפלט זהה לפלט הצפוי.');
   } else {
-    showFeedback(false, cmp.msg);
+    showFeedback('bad', cmp.msg);
   }
-  setTab('user');
 }
 
-function showFeedback(ok, msg, detail) {
+function showFeedback(kind, msg, detail) {
   const fb = $('feedback');
-  fb.className = 'feedback ' + (ok ? 'ok' : 'bad');
-  let html = `<span class="msg">${ok ? '✓ ' : '✗ '}${esc(msg)}</span>`;
-  if (ok) {
+  fb.className = 'feedback ' + kind;
+  const icon = { ok: '✓ ', bad: '✗ ', info: '' }[kind];
+  let html = `<span class="msg">${icon}${esc(msg)}</span>`;
+  if (kind === 'ok') {
     const next = nextQuestionId();
     if (next) html += '<button class="btn success small" id="nextBtn">לשאלה הבאה ←</button>';
   }
@@ -377,7 +386,10 @@ function init() {
     indentUnit: 2,
     tabSize: 2,
     direction: 'ltr',
-    extraKeys: { 'Ctrl-Enter': run, 'Cmd-Enter': run },
+    extraKeys: {
+      'Ctrl-Enter': () => run(false), 'Cmd-Enter': () => run(false),
+      'Shift-Ctrl-Enter': () => run(true), 'Shift-Cmd-Enter': () => run(true),
+    },
   });
   let saveTimer = null;
   editor.on('change', () => {
@@ -389,7 +401,8 @@ function init() {
     }, 400);
   });
 
-  $('runBtn').addEventListener('click', run);
+  $('runBtn').addEventListener('click', () => run(false));
+  $('checkBtn').addEventListener('click', () => run(true));
   $('clearBtn').addEventListener('click', () => { editor.setValue(''); editor.focus(); });
   $('solutionBtn').addEventListener('click', () => { $('solutionBox').hidden = !$('solutionBox').hidden; });
   $('useSolutionBtn').addEventListener('click', () => { editor.setValue(currentQuestion().solution); editor.focus(); });
