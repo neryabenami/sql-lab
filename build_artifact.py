@@ -9,7 +9,7 @@ shutil.copy(root / 'vendor' / 'sql-wasm.wasm', dist / 'vendor' / 'sql-wasm.wasm'
 html = (root / 'index.html').read_text(encoding='utf-8')
 body = re.search(r'<body>(.*)</body>', html, re.S).group(1)
 # מסירים את הסקריפטים המקומיים ומשאירים רק את ספריות ה-CDN
-body = re.sub(r'\s*<script src="(data|data_extra|data_daily|questions|questions_extra|questions_daily|app)\.js"></script>', '', body)
+body = re.sub(r'\s*<script src="(data|data_extra|data_daily|questions|questions_extra|questions_daily|app)\.js(\?v=[^"]*)?"></script>', '', body)
 
 css = (root / 'vendor' / 'codemirror.min.css').read_text(encoding='utf-8') + '\n' + (root / 'styles.css').read_text(encoding='utf-8')
 js = '\n'.join((root / f).read_text(encoding='utf-8') for f in ['data.js', 'data_extra.js', 'questions.js', 'questions_extra.js', 'data_daily.js', 'questions_daily.js', 'app.js'])

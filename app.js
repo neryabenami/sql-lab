@@ -223,7 +223,7 @@ function openQuestion(id) {
 
   $('qLevel').textContent = LEVELS[q.level].name;
   $('qDone').hidden = !state.solved[q.id];
-  $('qNew').hidden = !isNew(q);
+  if ($('qNew')) $('qNew').hidden = !isNew(q);
   $('qOrigin').textContent = originLabel(q);
   $('solutionRef').textContent = q.ref ? `שם השאלה במקור (${q.source}): ${q.ref}` : '';
   if (q.url && /^https:\/\//.test(q.url)) {
