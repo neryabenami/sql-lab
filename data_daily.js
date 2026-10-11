@@ -125,4 +125,97 @@ INSERT INTO d1010_people VALUES
 ('Yoni', 'Professor'), ('Ben', 'Professor'),
 ('Lior', 'Singer'), ('Maya', 'Singer'), ('Tal', 'Singer'), ('Eden', 'Singer'),
 ('Ori', 'Actor');
+-- 2026-10-11
+CREATE TABLE d1011_streams (stream_id INTEGER, artist TEXT, track TEXT, seconds_played INTEGER);
+INSERT INTO d1011_streams VALUES
+(1,'Nova','Aurora',210),(2,'Nova','Aurora',200),(3,'Nova','Drift',180),(4,'Nova','Drift',240),(5,'Nova','Glow',300),
+(6,'Echo','Wave',250),(7,'Echo','Wave',260),(8,'Echo','Pulse',190),(9,'Echo','Pulse',220),(10,'Echo','Pulse',230),
+(11,'Lumen','Sky',200),(12,'Lumen','Sky',210),(13,'Lumen','Rain',400),(14,'Lumen','Rain',180),
+(15,'Vera','One',300),(16,'Vera','One',280),(17,'Vera','Two',320),
+(18,'Orbit','Moon',150),(19,'Orbit','Moon',160),(20,'Orbit','Mars',170),
+(21,'Pike','Fish',200),(22,'Pike','Fish',210),(23,'Sol','Day',240),(24,'Sol','Night',260);
+CREATE TABLE d1011_listings (listing_id INTEGER, host_id INTEGER, n_reviews INTEGER, price INTEGER);
+INSERT INTO d1011_listings VALUES
+(1,10,0,80),(2,11,3,95),(3,12,5,120),(4,13,6,70),(5,14,15,150),(6,15,16,200),(7,16,22,110),
+(8,17,40,90),(9,18,41,300),(10,19,75,250),(11,20,2,60),(12,21,8,130),(13,22,100,180);
+CREATE TABLE d1011_tickets (ticket_id INTEGER, category TEXT, priority TEXT, reporter_email TEXT, opened_on TEXT, closed_on TEXT, hours_spent REAL);
+INSERT INTO d1011_tickets VALUES
+(1,'Billing','High','dana@gmail.com','2026-09-01','2026-09-02',3.5),
+(2,'Billing','Low','avi@corp.co.il','2026-09-03','2026-09-10',1.0),
+(3,'Billing','High','dana@gmail.com','2026-09-05',NULL,NULL),
+(4,'Login','High','noa@startup.io','2026-09-06','2026-09-06',0.5),
+(5,'Login','Medium','yoni@gmail.com','2026-09-07','2026-09-09',2.0),
+(6,'Login','Low','ben@corp.co.il','2026-09-08',NULL,NULL),
+(7,'Login','High','noa@startup.io','2026-09-09','2026-09-10',1.5),
+(8,'Export','Medium','lior@uni.ac.il','2026-09-10','2026-09-15',6.0),
+(9,'Export','Medium','maya@gmail.com','2026-09-11',NULL,NULL),
+(10,'Export','Low','lior@uni.ac.il','2026-09-12','2026-09-13',2.5),
+(11,'Mobile','High','tal@mail.net','2026-09-13',NULL,NULL),
+(12,'Mobile','Low','eden@gmail.com','2026-09-14','2026-09-20',4.0),
+(13,'Billing','Medium','ori@corp.co.il','2026-09-15','2026-09-16',2.0),
+(14,'Login','Medium','yoni@gmail.com','2026-09-16',NULL,NULL);
+CREATE TABLE d1011_reviews (review_id INTEGER, listing_id INTEGER, submit_date TEXT, stars INTEGER);
+INSERT INTO d1011_reviews VALUES
+(1,101,'2026-01-05',4),(2,101,'2026-01-20',5),(3,101,'2026-02-03',3),(4,102,'2026-01-11',2),
+(5,102,'2026-02-14',4),(6,102,'2026-02-28',5),(7,102,'2026-02-28',4),(8,103,'2026-03-01',5),
+(9,101,'2025-12-30',1),(10,103,'2026-03-15',4),(11,103,'2026-03-31',3),(12,101,'2026-03-09',5);
+CREATE TABLE d1011_hackers (hacker_id INTEGER, name TEXT);
+INSERT INTO d1011_hackers VALUES (1,'Rina'),(2,'Omer'),(3,'Shir'),(4,'Guy'),(5,'Hila'),(6,'Zohar');
+CREATE TABLE d1011_submissions (submission_id INTEGER, hacker_id INTEGER, challenge_id INTEGER, score INTEGER);
+INSERT INTO d1011_submissions VALUES
+(1,1,10,20),(2,1,10,50),(3,1,11,30),(4,2,10,50),(5,2,11,30),(6,2,11,10),(7,3,10,0),
+(8,3,11,0),(9,4,12,40),(10,4,12,40),(11,5,10,30),(12,5,12,10),(13,5,12,25);
+CREATE TABLE d1011_properties (property_id INTEGER, is_active INTEGER);
+INSERT INTO d1011_properties VALUES (1,1),(2,1),(3,0),(4,1),(5,1);
+CREATE TABLE d1011_bookings (booking_id INTEGER, property_id INTEGER, checkin TEXT, checkout TEXT);
+INSERT INTO d1011_bookings VALUES
+(1,1,'2025-03-01','2025-03-09'),(2,1,'2025-12-28','2026-01-05'),(3,2,'2024-12-30','2025-01-03'),
+(4,3,'2025-05-01','2025-06-01'),(5,4,'2025-07-01','2025-07-13'),(6,4,'2025-08-01','2025-08-04');
+CREATE TABLE d1011_host_reg (host_id INTEGER, registered_on TEXT);
+INSERT INTO d1011_host_reg VALUES
+(1,'2022-03-01'),(2,'2022-09-15'),
+(3,'2023-01-10'),(4,'2023-05-05'),(5,'2023-11-30'),
+(6,'2024-02-02'),(7,'2024-04-18'),(8,'2024-08-08'),(9,'2024-12-31'),
+(10,'2025-01-01'),(11,'2025-03-03'),(12,'2025-06-06'),(13,'2025-10-10'),
+(14,'2026-01-15'),(15,'2026-02-20'),(16,'2026-04-04'),(17,'2026-05-05'),(18,'2026-07-07'),(19,'2026-09-09');
+CREATE TABLE d1011_bank_ops (op_id INTEGER, user_id INTEGER, op_time TEXT, op_type TEXT, amount INTEGER);
+INSERT INTO d1011_bank_ops VALUES
+(1,1,'2026-09-01 10:00:00','withdrawal',100),(2,1,'2026-09-01 10:00:10','withdrawal',100),
+(3,2,'2026-09-01 10:00:00','withdrawal',50),(4,2,'2026-09-01 10:00:10','deposit',50),(5,2,'2026-09-01 10:00:20','withdrawal',50),
+(6,3,'2026-09-01 11:59:55','withdrawal',200),(7,3,'2026-09-01 12:00:05','withdrawal',200),
+(8,4,'2026-09-01 09:00:00','withdrawal',20),(9,4,'2026-09-01 09:00:09','withdrawal',20),(10,4,'2026-09-01 09:00:20','withdrawal',20),
+(11,5,'2026-09-01 08:00:00','withdrawal',70),(12,5,'2026-09-02 08:00:10','withdrawal',70),
+(13,6,'2026-09-03 13:00:00','withdrawal',30),(14,6,'2026-09-03 13:00:05','withdrawal',30),(15,6,'2026-09-03 13:00:15','withdrawal',30);
+CREATE TABLE d1011_logins (user_id INTEGER, login_date TEXT);
+INSERT INTO d1011_logins WITH RECURSIVE n(i) AS (SELECT 0 UNION ALL SELECT i+1 FROM n WHERE i<9), r(u,s,l) AS (VALUES (1,'2026-09-01',7),(1,'2026-09-09',3),(2,'2026-09-02',4),(2,'2026-09-07',5),(3,'2026-09-01',4),(3,'2026-09-06',4),(4,'2026-09-10',5),(4,'2026-09-20',7)) SELECT u, date(s, '+' || i || ' day') FROM r JOIN n ON i < l;
+INSERT INTO d1011_logins VALUES (2,'2026-09-07');
+CREATE TABLE d1011_activity (user_id INTEGER, event_time TEXT);
+INSERT INTO d1011_activity VALUES
+(1,'2026-09-01 08:00:00'),(1,'2026-09-01 17:30:00'),(1,'2026-09-02 09:00:00'),(1,'2026-09-04 10:00:00'),(1,'2026-09-05 11:00:00'),(1,'2026-09-05 12:00:00'),(1,'2026-09-06 07:00:00'),
+(2,'2026-09-01 10:00:00'),(2,'2026-09-03 10:00:00'),(2,'2026-09-05 10:00:00'),
+(3,'2026-09-30 23:50:00'),(3,'2026-10-01 00:10:00'),(3,'2026-10-05 12:00:00'),
+(4,'2026-09-10 06:00:00'),(4,'2026-09-11 06:00:00'),(4,'2026-09-12 06:00:00'),(4,'2026-09-14 06:00:00'),(4,'2026-09-15 06:00:00');
+CREATE TABLE d1011_contests (contest_id INTEGER, hacker_id INTEGER, name TEXT);
+INSERT INTO d1011_contests VALUES (101,501,'Ofer'),(102,502,'Tamar'),(103,503,'Yuval'),(104,504,'Keren'),(105,505,'Dvir');
+CREATE TABLE d1011_colleges (college_id INTEGER, contest_id INTEGER);
+INSERT INTO d1011_colleges VALUES (11,101),(12,101),(13,102),(14,103),(15,104),(16,105),(17,105);
+CREATE TABLE d1011_challenges (challenge_id INTEGER, college_id INTEGER);
+INSERT INTO d1011_challenges VALUES (21,11),(22,11),(23,12),(24,13),(25,13),(26,14),(27,15),(28,16),(29,16),(30,17);
+CREATE TABLE d1011_view_stats (challenge_id INTEGER, total_views INTEGER, total_unique_views INTEGER);
+INSERT INTO d1011_view_stats VALUES (21,100,50),(21,40,20),(22,30,10),(24,50,25),(25,0,0),(26,0,0),(28,20,5),(28,10,5);
+CREATE TABLE d1011_sub_stats (challenge_id INTEGER, total_submissions INTEGER, total_accepted_submissions INTEGER);
+INSERT INTO d1011_sub_stats VALUES (21,10,4),(22,5,2),(23,7,3),(24,12,6),(25,3,0),(26,0,0),(26,0,0),(28,4,1),(29,6,6),(29,1,0);
+CREATE TABLE d1011_purchases (purchase_id INTEGER, user_id INTEGER, created_at TEXT, amount REAL, status TEXT);
+INSERT INTO d1011_purchases VALUES
+(1,1,'2026-01-05',120.0,'completed'),(2,2,'2026-01-20',80.0,'completed'),(3,3,'2026-01-25',50.0,'cancelled'),
+(4,1,'2026-02-03',200.0,'completed'),(5,2,'2026-02-14',60.0,'refunded'),(6,4,'2026-02-18',40.5,'completed'),
+(7,3,'2026-03-02',150.0,'completed'),(8,1,'2026-03-22',90.0,'completed'),(9,2,'2026-03-28',30.0,'refunded'),
+(10,4,'2026-04-10',310.0,'completed'),(11,5,'2026-04-11',25.0,'cancelled'),
+(12,1,'2026-05-01',95.0,'completed'),(13,3,'2026-05-19',45.0,'completed'),(14,2,'2026-05-20',20.0,'refunded'),
+(15,5,'2026-06-07',260.0,'completed'),(16,4,'2026-06-30',140.0,'completed'),(17,1,'2026-06-30',70.0,'refunded');
+CREATE TABLE d1011_pageviews (user_id INTEGER, ts TEXT);
+INSERT INTO d1011_pageviews VALUES
+(1,'2026-10-01 10:00:00'),(1,'2026-10-01 10:10:00'),(1,'2026-10-01 10:25:00'),(1,'2026-10-01 11:10:00'),(1,'2026-10-01 11:30:00'),
+(2,'2026-10-01 09:00:00'),(2,'2026-10-01 09:30:00'),(2,'2026-10-01 10:01:00'),
+(3,'2026-10-01 23:50:00'),(3,'2026-10-02 00:10:00'),(3,'2026-10-02 12:00:00');
 `;

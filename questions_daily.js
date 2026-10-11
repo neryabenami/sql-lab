@@ -214,6 +214,238 @@ FROM s
 GROUP BY driver_id;`,
     ordered: false,
   },
+  {
+    id: 'd20261011_b1', level: 'basic', added: '2026-10-11', source: 'DataVidhya', company: 'Spotify',
+    ref: 'Top 5 Artists by Stream Count', url: 'https://datavidhya.com/coding-problems/questionDetails/question/ranking-top5-artists-by-streams/',
+    title: 'חמשת האמנים המושמעים ביותר', tables: ['d1011_streams'],
+    prompt: 'בטבלה d1011_streams כל שורה היא השמעה אחת של שיר. החזירו את חמשת האמנים עם מספר ההשמעות הגבוה ביותר, בעמודות artist, streams (מספר ההשמעות) ו-total_hours (סך זמן ההאזנה בשעות, מעוגל ל-2 ספרות אחרי הנקודה). במקרה של שוויון במספר ההשמעות, האמן עם יותר שעות האזנה קודם, ואחריו לפי שם האמן בסדר אלפביתי. מיינו לפי הסדר הזה.',
+    solution: `SELECT artist, COUNT(*) AS streams, ROUND(SUM(seconds_played) / 3600.0, 2) AS total_hours
+FROM d1011_streams
+GROUP BY artist
+ORDER BY streams DESC, SUM(seconds_played) DESC, artist
+LIMIT 5;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261011_b2', level: 'basic', added: '2026-10-11', source: 'StrataScratch', company: 'Airbnb',
+    ref: 'Host Popularity Rental Prices', url: 'https://www.stratascratch.com/blog/airbnb-python-interview-question-host-popularity-rental-prices',
+    title: 'מחירים לפי רמת פופולריות', tables: ['d1011_listings'],
+    prompt: "בטבלה d1011_listings לכל דירה יש מספר ביקורות (n_reviews) ומחיר ללילה (price). סווגו כל דירה לרמת פופולריות: 'New' ל-0 ביקורות, 'Rising' ל-1 עד 5, 'Trending' ל-6 עד 15, 'Popular' ל-16 עד 40, ו-'Hot' ל-41 ומעלה. לכל רמה שיש בה דירות החזירו את הרמה (tier), המחיר הנמוך ביותר (min_price), המחיר הממוצע מעוגל ל-2 ספרות (avg_price) והמחיר הגבוה ביותר (max_price). מיינו לפי min_price עולה.",
+    solution: `SELECT tier, MIN(price) AS min_price, ROUND(AVG(price), 2) AS avg_price, MAX(price) AS max_price
+FROM (
+  SELECT price,
+    CASE WHEN n_reviews = 0 THEN 'New'
+         WHEN n_reviews <= 5 THEN 'Rising'
+         WHEN n_reviews <= 15 THEN 'Trending'
+         WHEN n_reviews <= 40 THEN 'Popular'
+         ELSE 'Hot' END AS tier
+  FROM d1011_listings
+)
+GROUP BY tier
+ORDER BY min_price;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261011_b3', level: 'basic', added: '2026-10-11', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'זמן טיפול ממוצע בקטגוריות עמוסות', tables: ['d1011_tickets'],
+    prompt: 'בטבלה d1011_tickets כל שורה היא פנייה לתמיכה. עבור קטגוריות (category) שיש בהן לפחות 3 פניות בסך הכול, החזירו את הקטגוריה, מספר הפניות (ticket_count) וממוצע שעות הטיפול של הפניות שיש להן שעות טיפול רשומות (avg_hours, מעוגל ל-2 ספרות). מיינו לפי avg_hours יורד.',
+    solution: `SELECT category, COUNT(*) AS ticket_count, ROUND(AVG(hours_spent), 2) AS avg_hours
+FROM d1011_tickets
+GROUP BY category
+HAVING COUNT(*) >= 3
+ORDER BY avg_hours DESC;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261011_b4', level: 'basic', added: '2026-10-11', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'פניות פתוחות לפי עדיפות', tables: ['d1011_tickets'],
+    prompt: 'פנייה נחשבת פתוחה אם אין לה תאריך סגירה (closed_on). בטבלה d1011_tickets, לכל רמת עדיפות (priority) שיש בה לפחות פנייה פתוחה אחת החזירו את העדיפות ואת מספר הפניות הפתוחות (open_tickets).',
+    solution: `SELECT priority, COUNT(*) AS open_tickets
+FROM d1011_tickets
+WHERE closed_on IS NULL
+GROUP BY priority;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261011_b5', level: 'basic', added: '2026-10-11', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'מדווחים לפי סיומת דוא"ל', tables: ['d1011_tickets'],
+    prompt: 'בטבלה d1011_tickets, החזירו את כתובות הדוא"ל השונות (reporter_email, בלי כפילויות) של מדווחים שכתובתם בדומיין gmail.com או מסתיימת ב-.co.il. מיינו לפי הכתובת בסדר אלפביתי.',
+    solution: `SELECT DISTINCT reporter_email
+FROM d1011_tickets
+WHERE reporter_email LIKE '%@gmail.com' OR reporter_email LIKE '%.co.il'
+ORDER BY reporter_email;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261011_i1', level: 'intermediate', added: '2026-10-11', source: 'DataLemur', company: 'Airbnb',
+    ref: 'Average Review Ratings (listing average rating per month)', url: 'https://datalemur.com/blog/airbnb-sql-interview-questions',
+    title: 'דירוג ממוצע לדירה בכל חודש', tables: ['d1011_reviews'],
+    prompt: 'בטבלה d1011_reviews כל שורה היא ביקורת על דירה (listing_id) עם תאריך (submit_date) ודירוג בכוכבים (stars). עבור ביקורות שנכתבו בשנת 2026 בלבד, החזירו לכל דירה ולכל חודש את מספר החודש (month, 1 עד 12), את מזהה הדירה (listing_id) ואת הדירוג הממוצע מעוגל ל-2 ספרות (avg_stars). מיינו לפי listing_id ואז לפי month.',
+    solution: `SELECT CAST(strftime('%m', submit_date) AS INTEGER) AS month, listing_id, ROUND(AVG(stars), 2) AS avg_stars
+FROM d1011_reviews
+WHERE strftime('%Y', submit_date) = '2026'
+GROUP BY listing_id, month
+ORDER BY listing_id, month;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261011_i2', level: 'intermediate', added: '2026-10-11', source: 'HackerRank', company: '',
+    ref: 'Contest Leaderboard', url: 'https://www.hackerrank.com/challenges/contest-leaderboard/problem',
+    title: 'טבלת מובילים בתחרות', tables: ['d1011_hackers', 'd1011_submissions'],
+    prompt: 'בטבלה d1011_submissions יכולות להיות כמה הגשות של אותו משתתף לאותו אתגר. הציון של משתתף באתגר הוא הציון הגבוה ביותר שקיבל באתגר זה, והציון הכולל שלו הוא סכום הציונים שלו בכל האתגרים. החזירו את hacker_id, name (מהטבלה d1011_hackers) ו-total_score, רק למשתתפים שציונם הכולל גדול מ-0. מיינו לפי total_score יורד ואז לפי hacker_id עולה.',
+    solution: `SELECT h.hacker_id, h.name, SUM(m.best) AS total_score
+FROM d1011_hackers h
+JOIN (
+  SELECT hacker_id, challenge_id, MAX(score) AS best
+  FROM d1011_submissions
+  GROUP BY hacker_id, challenge_id
+) m ON m.hacker_id = h.hacker_id
+GROUP BY h.hacker_id, h.name
+HAVING SUM(m.best) > 0
+ORDER BY total_score DESC, h.hacker_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261011_i3', level: 'intermediate', added: '2026-10-11', source: 'DataLemur', company: 'Airbnb',
+    ref: 'Average Vacant Days', url: 'https://datalemur.com/blog/airbnb-sql-interview-questions',
+    title: 'ממוצע ימי ריקנות בשנת 2025', tables: ['d1011_properties', 'd1011_bookings'],
+    prompt: 'בטבלה d1011_properties נכס פעיל מסומן ב-is_active = 1. בטבלה d1011_bookings כל הזמנה היא טווח לילות מ-checkin (כולל) עד checkout (לא כולל), והזמנות של אותו נכס אינן חופפות. לשנת 2025 (365 ימים) נספרים רק הלילות שנמצאים בתוך השנה; הזמנה שחוצה את גבולות השנה נחתכת בהם. ימי ריקנות של נכס הם 365 פחות הלילות שהוזמנו בשנה זו, ונכס בלי הזמנות כלל נספר גם הוא. החזירו עמודה אחת, avg_vacant_days: ממוצע ימי הריקנות של הנכסים הפעילים בלבד, מעוגל למספר שלם.',
+    solution: `SELECT ROUND(AVG(365 - COALESCE(b.nights, 0))) AS avg_vacant_days
+FROM d1011_properties p
+LEFT JOIN (
+  SELECT property_id,
+         SUM(julianday(MIN(checkout, '2026-01-01')) - julianday(MAX(checkin, '2025-01-01'))) AS nights
+  FROM d1011_bookings
+  WHERE checkout > '2025-01-01' AND checkin < '2026-01-01'
+  GROUP BY property_id
+) b ON b.property_id = p.property_id
+WHERE p.is_active = 1;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261011_i4', level: 'intermediate', added: '2026-10-11', source: 'MyCompiler', company: 'Airbnb',
+    ref: 'Yearly host count growth', url: 'https://www.mycompiler.io/view/HsaYa96GqCA',
+    title: 'צמיחה שנתית במספר המארחים', tables: ['d1011_host_reg'],
+    prompt: 'בטבלה d1011_host_reg לכל מארח יש תאריך הצטרפות (registered_on). לכל שנה שקדמה לה שנה אחת לפחות עם הצטרפויות בנתונים (כלומר מהשנה השנייה ואילך), החזירו את השנה (year, כמספר), את מספר המארחים החדשים בשנה (new_hosts) ואת אחוז השינוי במספר המארחים החדשים לעומת השנה הקודמת (growth_pct, מעוגל ל-2 ספרות, למשל 33.33).',
+    solution: `SELECT CAST(c.y AS INTEGER) AS year, c.n AS new_hosts,
+       ROUND((c.n - p.n) * 100.0 / p.n, 2) AS growth_pct
+FROM (SELECT strftime('%Y', registered_on) AS y, COUNT(*) AS n FROM d1011_host_reg GROUP BY y) c
+JOIN (SELECT strftime('%Y', registered_on) AS y, COUNT(*) AS n FROM d1011_host_reg GROUP BY y) p
+  ON CAST(p.y AS INTEGER) = CAST(c.y AS INTEGER) - 1;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261011_i5', level: 'intermediate', added: '2026-10-11', source: 'Interview Query', company: 'Stripe',
+    ref: 'ATM withdrawals exactly 10 seconds apart', url: 'https://interviewquery.com/interview-guides/stripe-data-analyst',
+    title: 'משיכות במזומן במרחק 10 שניות', tables: ['d1011_bank_ops'],
+    prompt: "בטבלה d1011_bank_ops כל שורה היא פעולה בחשבון, ו-op_type הוא 'withdrawal' (משיכה) או 'deposit' (הפקדה). החזירו את מזהי המשתמשים (user_id, בלי כפילויות) שביצעו שתי משיכות כלשהן שהפרש הזמן ביניהן (op_time) הוא בדיוק 10 שניות. מיינו לפי user_id עולה.",
+    solution: `SELECT DISTINCT a.user_id
+FROM d1011_bank_ops a
+JOIN d1011_bank_ops b
+  ON a.user_id = b.user_id
+ AND a.op_type = 'withdrawal' AND b.op_type = 'withdrawal'
+ AND CAST(strftime('%s', b.op_time) AS INTEGER) - CAST(strftime('%s', a.op_time) AS INTEGER) = 10
+ORDER BY a.user_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261011_a1', level: 'advanced', added: '2026-10-11', source: 'Dataford', company: 'TikTok',
+    ref: '10 consecutive login days', url: 'https://dataford.io/questions/10-consecutive-login-days',
+    title: 'רצפי התחברות של 5 ימים לפחות', tables: ['d1011_logins'],
+    prompt: 'בטבלה d1011_logins כל שורה היא התחברות של משתמש בתאריך מסוים (ייתכנו כמה שורות באותו יום). רצף הוא קבוצת ימי לוח עוקבים שבכל אחד מהם המשתמש התחבר, ולא ניתן להאריך אותו. החזירו כל רצף באורך 5 ימים לפחות, בעמודות user_id, run_start (היום הראשון ברצף) ו-run_days (מספר הימים ברצף). מיינו לפי user_id ואז לפי run_start.',
+    solution: `WITH d AS (SELECT DISTINCT user_id, login_date FROM d1011_logins),
+g AS (
+  SELECT user_id, login_date,
+         julianday(login_date) - ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY login_date) AS grp
+  FROM d
+)
+SELECT user_id, MIN(login_date) AS run_start, COUNT(*) AS run_days
+FROM g
+GROUP BY user_id, grp
+HAVING COUNT(*) >= 5
+ORDER BY user_id, run_start;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261011_a2', level: 'advanced', added: '2026-10-11', source: 'Dataford', company: '',
+    ref: 'Consecutive activity days', url: 'https://dataford.io/questions/consecutive-activity-days',
+    title: 'מספר רצפי פעילות בני יומיים ומעלה', tables: ['d1011_activity'],
+    prompt: 'בטבלה d1011_activity כל שורה היא אינטראקציה של משתמש עם חותמת זמן (event_time), וייתכנו כמה אינטראקציות באותו יום. משתמש פעיל ביום אם ביצע בו לפחות אינטראקציה אחת. לכל משתמש שיש לו לפחות רצף אחד של שני ימי לוח פעילים עוקבים או יותר (גם מעל גבול חודש), החזירו את user_id ואת מספר הרצפים המקסימליים כאלה (streaks).',
+    solution: `WITH d AS (SELECT DISTINCT user_id, date(event_time) AS d FROM d1011_activity),
+g AS (
+  SELECT user_id, d, julianday(d) - ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY d) AS grp
+  FROM d
+),
+s AS (SELECT user_id, grp, COUNT(*) AS len FROM g GROUP BY user_id, grp)
+SELECT user_id, COUNT(*) AS streaks
+FROM s
+WHERE len >= 2
+GROUP BY user_id;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261011_a3', level: 'advanced', added: '2026-10-11', source: 'HackerRank', company: '',
+    ref: 'Interviews', url: 'https://www.hackerrank.com/challenges/interviews/problem',
+    title: 'סיכום סטטיסטיקות לכל תחרות', tables: ['d1011_contests', 'd1011_colleges', 'd1011_challenges', 'd1011_view_stats', 'd1011_sub_stats'],
+    prompt: 'לכל תחרות (d1011_contests) יש מכללות (d1011_colleges), לכל מכללה אתגרים (d1011_challenges), ולכל אתגר יכולות להיות כמה שורות סטטיסטיקת צפיות (d1011_view_stats) וכמה שורות סטטיסטיקת הגשות (d1011_sub_stats), או אף אחת. לכל תחרות החזירו contest_id, hacker_id, name, total_submissions, total_accepted_submissions, total_views, total_unique_views: סכום כל ערכי העמודות המתאימות על פני כל האתגרים של התחרות. אל תכללו תחרות שבה כל ארבעת הסכומים הם 0 (או חסרים). מיינו לפי contest_id.',
+    solution: `SELECT c.contest_id, c.hacker_id, c.name,
+       SUM(COALESCE(s.subs, 0)) AS total_submissions,
+       SUM(COALESCE(s.acc, 0)) AS total_accepted_submissions,
+       SUM(COALESCE(v.views, 0)) AS total_views,
+       SUM(COALESCE(v.uviews, 0)) AS total_unique_views
+FROM d1011_contests c
+JOIN d1011_colleges col ON col.contest_id = c.contest_id
+JOIN d1011_challenges ch ON ch.college_id = col.college_id
+LEFT JOIN (SELECT challenge_id, SUM(total_submissions) AS subs, SUM(total_accepted_submissions) AS acc
+           FROM d1011_sub_stats GROUP BY challenge_id) s ON s.challenge_id = ch.challenge_id
+LEFT JOIN (SELECT challenge_id, SUM(total_views) AS views, SUM(total_unique_views) AS uviews
+           FROM d1011_view_stats GROUP BY challenge_id) v ON v.challenge_id = ch.challenge_id
+GROUP BY c.contest_id, c.hacker_id, c.name
+HAVING SUM(COALESCE(s.subs, 0)) + SUM(COALESCE(s.acc, 0)) + SUM(COALESCE(v.views, 0)) + SUM(COALESCE(v.uviews, 0)) > 0
+ORDER BY c.contest_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261011_a4', level: 'advanced', added: '2026-10-11', source: 'StrataScratch', company: 'Amazon',
+    ref: 'Revenue Over Time', url: 'https://www.stratascratch.com/blog/amazon-sql-interview-questions',
+    title: 'הכנסה חודשית וממוצע נע של 3 חודשים', tables: ['d1011_purchases'],
+    prompt: "בטבלה d1011_purchases לכל רכישה יש סכום (amount) וסטטוס. הכנסה חודשית היא סכום הרכישות בסטטוס 'completed' פחות סכום הרכישות בסטטוס 'refunded' באותו חודש קלנדרי של created_at; רכישות בסטטוס 'cancelled' לא נספרות. לכל חודש בנתונים החזירו month (בפורמט YYYY-MM), revenue (ההכנסה החודשית, מעוגלת ל-2 ספרות) ו-rolling_avg_3m: ממוצע ההכנסה החודשית של החודש הנוכחי ושני החודשים שלפניו (בשני החודשים הראשונים, ממוצע החודשים הקיימים עד אותו חודש), מעוגל ל-2 ספרות. מיינו לפי month עולה.",
+    solution: `WITH m AS (
+  SELECT strftime('%Y-%m', created_at) AS month,
+         SUM(CASE status WHEN 'completed' THEN amount WHEN 'refunded' THEN -amount ELSE 0 END) AS revenue
+  FROM d1011_purchases
+  GROUP BY month
+)
+SELECT month, ROUND(revenue, 2) AS revenue,
+       ROUND(AVG(revenue) OVER (ORDER BY month ROWS BETWEEN 2 PRECEDING AND CURRENT ROW), 2) AS rolling_avg_3m
+FROM m
+ORDER BY month;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261011_a5', level: 'advanced', added: '2026-10-11', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'חלוקת צפיות לסשנים', tables: ['d1011_pageviews'],
+    prompt: 'בטבלה d1011_pageviews כל שורה היא צפייה בעמוד של משתמש בזמן ts. צפיות רצופות של אותו משתמש שייכות לאותו סשן כל עוד הפער בין צפייה לצפייה הקודמת שלה (של אותו משתמש) הוא 30 דקות או פחות; פער גדול מ-30 דקות פותח סשן חדש (גם מעבר לחצות). לכל סשן החזירו user_id, session_start (זמן הצפייה הראשונה), session_end (זמן הצפייה האחרונה) ו-views (מספר הצפיות). מיינו לפי user_id ואז לפי session_start.',
+    solution: `WITH x AS (
+  SELECT user_id, ts,
+         CASE WHEN CAST(strftime('%s', ts) AS INTEGER)
+                 - CAST(strftime('%s', LAG(ts) OVER (PARTITION BY user_id ORDER BY ts)) AS INTEGER) > 1800
+              THEN 1 ELSE 0 END AS new_session
+  FROM d1011_pageviews
+), s AS (
+  SELECT user_id, ts, SUM(new_session) OVER (PARTITION BY user_id ORDER BY ts) AS sid
+  FROM x
+)
+SELECT user_id, MIN(ts) AS session_start, MAX(ts) AS session_end, COUNT(*) AS views
+FROM s
+GROUP BY user_id, sid
+ORDER BY user_id, session_start;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
