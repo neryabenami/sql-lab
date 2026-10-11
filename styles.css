@@ -204,3 +204,14 @@ table.result .null { color: var(--muted); font-style: italic; }
   .level-hero h1 { font-size: 26px; }
 }
 .ltr-ref { margin-bottom: 6px; }
+
+/* שאלות חדשות: ריבוע נפרד בראש הרשימה, תווית "חדש" בפינה השמאלית העליונה */
+.new-box { list-style: none; border: 1.5px solid var(--success); border-radius: 12px; padding: 8px 6px; margin: 4px 2px 12px; }
+.new-box-head { color: var(--success); font-weight: 700; font-size: 13px; padding: 2px 8px 8px; }
+.new-box-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.q-item.in-new { position: relative; background: var(--surface-2); padding-top: 14px; }
+.q-item.in-new.active { background: var(--accent-soft); }
+.new-tag { position: absolute; top: 4px; left: 8px; background: var(--success-soft); color: var(--success); font-size: 11px; font-weight: 700; padding: 0 8px; border-radius: 99px; line-height: 18px; }
+.new-chip { background: var(--success-soft); color: var(--success); font-weight: 700; }
+.q-section { list-style: none; font-size: 12px; font-weight: 700; color: var(--muted); padding: 4px 10px; }
+.q-date { font-size: 12px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }

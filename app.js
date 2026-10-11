@@ -119,7 +119,17 @@ function tableHtml(res) {
     <table class="result"><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table>`;
 }
 
-const levelQuestions = (level) => QUESTIONS.filter((q) => q.level === level);
+// תאריך הוספה: לשאלות היומיות יש שדה added. כל השאלות הראשונות נוספו ב-6.10.2026
+const BASE_ADDED = '2026-10-06';
+const addedOf = (q) => q.added || BASE_ADDED;
+const fmtDate = (d) => d.split('-').reverse().join('.');
+// "חדשות" = המנה האחרונה שנוספה לרמה (השאלות היומיות עם התאריך המאוחר ביותר)
+const latestBatch = (level) => QUESTIONS.reduce((m, q) => (q.level === level && q.added && q.added > m ? q.added : m), '');
+const isNew = (q) => !!q.added && q.added === latestBatch(q.level);
+
+// השאלות החדשות ראשונות, ואחריהן השאר מהחדש לישן (המיון יציב, כך שבאותו תאריך נשמר הסדר המקורי)
+const levelQuestions = (level) => QUESTIONS.filter((q) => q.level === level)
+  .sort((a, b) => (isNew(b) - isNew(a)) || addedOf(b).localeCompare(addedOf(a)));
 const currentQuestion = () => QUESTIONS.find((q) => q.id === state.currentId);
 const solvedCount = (level) => levelQuestions(level).filter((q) => state.solved[q.id]).length;
 
@@ -178,19 +188,27 @@ function renderSidebar() {
 
   const unsolvedOnly = $('unsolvedOnly').checked;
   const src = $('sourceFilter').value;
-  $('qList').innerHTML = qs.map((q, i) => {
-    if (unsolvedOnly && state.solved[q.id] && q.id !== state.currentId) return '';
-    if (src && !sourceOf(q).includes(src)) return '';
+  const visible = (q) => !(unsolvedOnly && state.solved[q.id] && q.id !== state.currentId) && !(src && !sourceOf(q).includes(src));
+  const item = (q, i) => {
     const solved = !!state.solved[q.id];
-    return `<li class="q-item ${solved ? 'solved' : ''} ${q.id === state.currentId ? 'active' : ''}" data-id="${q.id}">
+    const fresh = isNew(q);
+    return `<li class="q-item ${solved ? 'solved' : ''} ${fresh ? 'in-new' : ''} ${q.id === state.currentId ? 'active' : ''}" data-id="${q.id}">
+      ${fresh ? '<span class="new-tag">חדש</span>' : ''}
       <span class="q-num">${solved ? '✓' : i + 1}</span>
       <div class="q-item-text">
         <div class="q-item-title">${esc(q.title)}</div>
-        <div class="q-item-topic">${esc(originLabel(q))}</div>
+        <div class="q-item-topic">${esc(originLabel(q))}${fresh && solved ? ' · בוצע' : ''}</div>
       </div>
-      ${solved ? '<span class="q-item-done">בוצע</span>' : ''}
+      ${fresh ? '' : `<span class="q-date">${fmtDate(addedOf(q))}</span>`}
     </li>`;
-  }).join('') || '<li class="muted small-text" style="padding:12px">אין שאלות שמתאימות לסינון.</li>';
+  };
+  const newItems = qs.map((q, i) => (isNew(q) && visible(q) ? item(q, i) : '')).join('');
+  const restItems = qs.map((q, i) => (!isNew(q) && visible(q) ? item(q, i) : '')).join('');
+  const batch = latestBatch(state.level);
+  $('qList').innerHTML =
+    (newItems ? `<li class="new-box"><div class="new-box-head">שאלות חדשות · ${fmtDate(batch)}</div><ol class="new-box-list">${newItems}</ol></li>` : '') +
+    (restItems ? (newItems ? '<li class="q-section">שאר השאלות</li>' : '') + restItems : '') ||
+    '<li class="muted small-text" style="padding:12px">אין שאלות שמתאימות לסינון.</li>';
   $('qList').querySelectorAll('.q-item').forEach((el) => {
     el.addEventListener('click', () => openQuestion(el.dataset.id));
   });
@@ -205,6 +223,7 @@ function openQuestion(id) {
 
   $('qLevel').textContent = LEVELS[q.level].name;
   $('qDone').hidden = !state.solved[q.id];
+  $('qNew').hidden = !isNew(q);
   $('qOrigin').textContent = originLabel(q);
   $('solutionRef').textContent = q.ref ? `שם השאלה במקור (${q.source}): ${q.ref}` : '';
   if (q.url && /^https:\/\//.test(q.url)) {
