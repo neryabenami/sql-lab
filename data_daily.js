@@ -218,4 +218,70 @@ INSERT INTO d1011_pageviews VALUES
 (1,'2026-10-01 10:00:00'),(1,'2026-10-01 10:10:00'),(1,'2026-10-01 10:25:00'),(1,'2026-10-01 11:10:00'),(1,'2026-10-01 11:30:00'),
 (2,'2026-10-01 09:00:00'),(2,'2026-10-01 09:30:00'),(2,'2026-10-01 10:01:00'),
 (3,'2026-10-01 23:50:00'),(3,'2026-10-02 00:10:00'),(3,'2026-10-02 12:00:00');
+-- 2026-10-12
+CREATE TABLE d1012_bst (n INTEGER, p INTEGER);
+INSERT INTO d1012_bst VALUES (1,2),(3,2),(6,8),(9,8),(2,5),(8,5),(5,NULL);
+CREATE TABLE d1012_staff (emp_id INTEGER, name TEXT, dept TEXT, salary INTEGER, bonus INTEGER, hire_date TEXT);
+INSERT INTO d1012_staff VALUES
+(1,'Dana','Sales',9000,500,'2022-03-01'),(2,'Omer','Sales',8000,NULL,'2023-01-15'),(3,'Lior','Sales',7000,1000,'2021-11-20'),
+(4,'Noa','Support',6000,NULL,'2024-02-01'),(5,'Itay','Support',6500,200,'2023-06-10'),
+(6,'Gal','Dev',15000,2000,'2020-05-05'),(7,'Shir','Dev',14000,NULL,'2021-09-09'),(8,'Eli','Dev',16000,1500,'2019-12-01'),(9,'Maya','Dev',12000,NULL,'2024-07-01'),
+(10,'Tal','HR',8000,300,'2022-08-18'),(11,'Rina','HR',7500,NULL,'2023-03-03'),
+(12,'Yoav','Ops',9500,NULL,'2021-04-12'),(13,'Hila','Ops',9000,400,'2022-10-10'),(14,'Ben','Ops',8800,NULL,'2023-12-25');
+CREATE TABLE d1012_tickets (ticket_id INTEGER, channel TEXT, priority TEXT, opened_at TEXT, closed_at TEXT);
+INSERT INTO d1012_tickets VALUES
+(1,'email','high','2026-09-01 09:00','2026-09-01 15:00'),(2,'email','low','2026-09-02 10:00',NULL),(3,'email','low','2026-09-03 11:00','2026-09-05 11:00'),
+(4,'chat','high','2026-09-04 08:00',NULL),(5,'chat','low','2026-09-04 09:00',NULL),(6,'chat','low','2026-09-05 12:00','2026-09-05 12:30'),(7,'chat','high','2026-09-06 13:00','2026-09-06 14:00'),
+(8,'phone','high','2026-09-07 09:00','2026-09-07 09:20'),(9,'phone','low','2026-09-08 09:00','2026-09-08 10:00'),(13,'phone','high','2026-09-09 09:00','2026-09-09 09:45'),
+(10,'web','low','2026-09-09 10:00',NULL),(11,'web','high','2026-09-10 10:00',NULL),(12,'web','low','2026-09-11 10:00',NULL);
+CREATE TABLE d1012_matches (match_id INTEGER, player TEXT, game TEXT, score INTEGER, played_on TEXT);
+INSERT INTO d1012_matches VALUES
+(1,'Avi','chess',420,'2026-07-05'),(2,'Avi','chess',510,'2026-08-11'),(3,'Avi','go',NULL,'2026-08-20'),
+(4,'Bar','go',300,'2026-06-30'),(5,'Bar','go',350,'2026-07-01'),(6,'Bar','chess',610,'2026-09-30'),
+(7,'Gil','chess',700,'2026-10-01'),(8,'Gil','go',200,'2026-09-15'),(12,'Gil','go',NULL,'2026-09-16'),
+(9,'Dana','chess',480,'2026-07-22'),(10,'Dana','go',480,'2026-08-02'),(11,'Dana','go',90,'2026-09-12');
+CREATE TABLE d1012_shipments (shipment_id INTEGER, carrier TEXT, shipped_on TEXT, delivered_on TEXT);
+INSERT INTO d1012_shipments VALUES
+(1,'FastGo','2026-09-01','2026-09-03'),(2,'FastGo','2026-09-02','2026-09-09'),(3,'FastGo','2026-09-05',NULL),
+(4,'Speedy','2026-09-01','2026-09-02'),(5,'Speedy','2026-09-03','2026-09-04'),(6,'Speedy','2026-09-10','2026-09-15'),
+(7,'Roadie','2026-09-01','2026-09-06'),(8,'Roadie','2026-09-07',NULL),(9,'Roadie','2026-09-08','2026-09-14'),(10,'Roadie','2026-09-09','2026-09-11');
+CREATE TABLE d1012_seats (id INTEGER, student TEXT);
+INSERT INTO d1012_seats VALUES (1,'Abbot'),(2,'Doris'),(3,'Emerson'),(4,'Green'),(5,'Jeames');
+CREATE TABLE d1012_friend_accepts (requester_id INTEGER, accepter_id INTEGER, accept_date TEXT);
+INSERT INTO d1012_friend_accepts VALUES (1,2,'2026-06-01'),(1,3,'2026-06-02'),(2,3,'2026-06-03'),(3,4,'2026-06-10'),(4,5,'2026-06-11'),(2,4,'2026-06-12');
+CREATE TABLE d1012_biz_events (business_id INTEGER, event_type TEXT, occurrences INTEGER);
+INSERT INTO d1012_biz_events VALUES
+(1,'reviews',7),(3,'reviews',3),(4,'reviews',9),(1,'ads',11),(2,'ads',7),(3,'ads',6),(4,'ads',8),(1,'page views',3),(2,'page views',12),(4,'page views',9);
+CREATE TABLE d1012_price_changes (product_id INTEGER, new_price INTEGER, change_date TEXT);
+INSERT INTO d1012_price_changes VALUES (1,20,'2026-08-14'),(1,30,'2026-08-20'),(2,50,'2026-08-18'),(3,15,'2026-08-10'),(3,25,'2026-08-16'),(4,5,'2026-07-01'),(4,8,'2026-09-01');
+CREATE TABLE d1012_deliveries (delivery_id INTEGER, customer_id INTEGER, order_date TEXT, preferred_date TEXT);
+INSERT INTO d1012_deliveries VALUES
+(1,1,'2026-09-01','2026-09-01'),(2,1,'2026-09-10','2026-09-12'),
+(3,2,'2026-09-02','2026-09-05'),(4,3,'2026-09-03','2026-09-03'),
+(5,4,'2026-09-04','2026-09-06'),(6,4,'2026-09-09','2026-09-09'),
+(7,5,'2026-09-05','2026-09-05'),(8,6,'2026-09-06','2026-09-08'),(9,7,'2026-09-07','2026-09-10'),(10,7,'2026-09-08','2026-09-08');
+CREATE TABLE d1012_ok_days (day TEXT);
+INSERT INTO d1012_ok_days VALUES ('2026-08-31'),('2026-09-01'),('2026-09-02'),('2026-09-03'),('2026-09-06'),('2026-09-07'),('2026-09-08'),('2026-09-09'),('2026-09-14');
+CREATE TABLE d1012_failed_days (day TEXT);
+INSERT INTO d1012_failed_days VALUES ('2026-09-04'),('2026-09-05'),('2026-09-10'),('2026-09-11'),('2026-09-12'),('2026-09-13'),('2026-09-15'),('2026-09-16');
+CREATE TABLE d1012_tasks (task_id INTEGER, start_date TEXT, end_date TEXT);
+INSERT INTO d1012_tasks VALUES
+(1,'2026-10-01','2026-10-02'),(2,'2026-10-02','2026-10-03'),(3,'2026-10-03','2026-10-04'),(4,'2026-10-04','2026-10-05'),
+(5,'2026-10-13','2026-10-14'),(6,'2026-10-14','2026-10-15'),
+(7,'2026-10-24','2026-10-25'),(8,'2026-10-20','2026-10-21');
+CREATE TABLE d1012_bus_queue (person_id INTEGER, person_name TEXT, weight INTEGER, turn INTEGER);
+INSERT INTO d1012_bus_queue VALUES (5,'Alice',250,1),(4,'Bob',300,2),(3,'Dina',200,3),(6,'Eitan',250,4),(1,'Fay',120,5),(2,'Gaya',10,6);
+CREATE TABLE d1012_user_products (user_id INTEGER, product TEXT);
+INSERT INTO d1012_user_products VALUES
+(1,'Bread'),(1,'Milk'),(1,'Eggs'),(1,'Milk'),
+(2,'Bread'),(2,'Milk'),(2,'Butter'),
+(3,'Bread'),(3,'Milk'),(3,'Jam'),(3,'Eggs'),
+(4,'Eggs'),(4,'Butter'),
+(5,'Bread'),(5,'Butter'),(5,'Jam'),
+(6,'Milk'),(6,'Eggs');
+CREATE TABLE d1012_city_orders (order_id INTEGER, city TEXT, amount INTEGER);
+INSERT INTO d1012_city_orders VALUES
+(1,'Haifa',40),(2,'Haifa',15),(3,'Haifa',90),(4,'Haifa',25),(5,'Haifa',60),
+(6,'TLV',10),(7,'TLV',20),(8,'TLV',30),(9,'TLV',40),(10,'TLV',50),(11,'TLV',100),
+(12,'Eilat',70),(13,'Eilat',70),(14,'Eilat',20),(15,'Eilat',30),(16,'Jerusalem',55);
 `;

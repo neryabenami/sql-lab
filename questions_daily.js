@@ -446,6 +446,225 @@ GROUP BY user_id, sid
 ORDER BY user_id, session_start;`,
     ordered: true,
   },
+  {
+    id: 'd20261012_b1', level: 'basic', added: '2026-10-12', source: 'HackerRank', company: '',
+    ref: 'Binary Tree Nodes', url: 'https://www.hackerrank.com/challenges/binary-search-tree-1/problem',
+    title: 'סיווג צמתים בעץ', tables: ['d1012_bst'],
+    prompt: 'בטבלה d1012_bst כל שורה היא צומת בעץ: n הוא מזהה הצומת ו-p הוא מזהה ההורה שלו (NULL עבור צומת ללא הורה). לכל צומת החזירו n ו-type: "Root" אם אין לו הורה, "Inner" אם יש לו הורה והוא עצמו הורה של צומת אחר, ו-"Leaf" בכל מקרה אחר. מיינו לפי n עולה.',
+    solution: `SELECT n,
+       CASE WHEN p IS NULL THEN 'Root'
+            WHEN n IN (SELECT p FROM d1012_bst WHERE p IS NOT NULL) THEN 'Inner'
+            ELSE 'Leaf' END AS type
+FROM d1012_bst
+ORDER BY n;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261012_b2', level: 'basic', added: '2026-10-12', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'שכר כולל ממוצע במחלקות', tables: ['d1012_staff'],
+    prompt: 'בטבלה d1012_staff יש עובדים עם משכורת (salary) ובונוס (bonus), כאשר bonus ריק (NULL) משמעותו שאין בונוס, כלומר 0. עלות העובד היא salary + bonus. החזירו לכל מחלקה (dept) שיש בה לפחות 3 עובדים: dept, headcount (מספר העובדים) ו-avg_cost (ממוצע עלות העובד, מעוגל ל-2 ספרות). מיינו לפי avg_cost יורד.',
+    solution: `SELECT dept, COUNT(*) AS headcount, ROUND(AVG(salary + COALESCE(bonus, 0)), 2) AS avg_cost
+FROM d1012_staff
+GROUP BY dept
+HAVING COUNT(*) >= 3
+ORDER BY avg_cost DESC;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261012_b3', level: 'basic', added: '2026-10-12', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'פניות פתוחות לפי ערוץ', tables: ['d1012_tickets'],
+    prompt: 'בטבלה d1012_tickets כל שורה היא פניית תמיכה; פנייה שעדיין לא נסגרה היא כזו ש-closed_at שלה ריק (NULL). לכל ערוץ (channel) שיש בו לפחות פנייה פתוחה אחת, החזירו channel, total_tickets (סה"כ הפניות בערוץ), open_tickets (מספר הפניות הפתוחות) ו-open_pct (אחוז הפניות הפתוחות מתוך כלל הפניות בערוץ, מעוגל ל-2 ספרות). מיינו לפי open_pct יורד.',
+    solution: `SELECT channel,
+       COUNT(*) AS total_tickets,
+       SUM(CASE WHEN closed_at IS NULL THEN 1 ELSE 0 END) AS open_tickets,
+       ROUND(100.0 * SUM(CASE WHEN closed_at IS NULL THEN 1 ELSE 0 END) / COUNT(*), 2) AS open_pct
+FROM d1012_tickets
+GROUP BY channel
+HAVING open_tickets > 0
+ORDER BY open_pct DESC;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261012_b4', level: 'basic', added: '2026-10-12', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'שחקנים פעילים ברבעון', tables: ['d1012_matches'],
+    prompt: 'בטבלה d1012_matches כל שורה היא משחק של שחקן (player) במשחק (game) עם תוצאה (score, ריקה אם המשחק לא הסתיים) בתאריך played_on. התייחסו רק למשחקים שהתקיימו מ-2026-07-01 עד 2026-09-30 (כולל) ושיש להם תוצאה. החזירו לכל שחקן שיש לו לפחות 2 משחקים כאלה: player, matches (מספר המשחקים), distinct_games (מספר סוגי המשחקים השונים ששיחק) ו-best_score (התוצאה הגבוהה ביותר). מיינו לפי best_score יורד ואז לפי player.',
+    solution: `SELECT player, COUNT(*) AS matches, COUNT(DISTINCT game) AS distinct_games, MAX(score) AS best_score
+FROM d1012_matches
+WHERE played_on BETWEEN '2026-07-01' AND '2026-09-30' AND score IS NOT NULL
+GROUP BY player
+HAVING COUNT(*) >= 2
+ORDER BY best_score DESC, player;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261012_b5', level: 'basic', added: '2026-10-12', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'זמני אספקה לפי חברת שילוח', tables: ['d1012_shipments'],
+    prompt: 'בטבלה d1012_shipments כל שורה היא משלוח; delivered_on ריק (NULL) אם המשלוח עדיין לא נמסר. התייחסו רק למשלוחים שנמסרו. משך האספקה הוא מספר הימים בין shipped_on ל-delivered_on. החזירו לכל חברת שילוח (carrier): carrier, delivered (מספר המשלוחים שנמסרו), avg_days (ממוצע ימי האספקה, מעוגל ל-2 ספרות) ו-late (מספר המשלוחים שנמסרו אחרי יותר מ-5 ימים). מיינו לפי avg_days עולה ואז לפי carrier.',
+    solution: `SELECT carrier,
+       COUNT(*) AS delivered,
+       ROUND(AVG(julianday(delivered_on) - julianday(shipped_on)), 2) AS avg_days,
+       SUM(CASE WHEN julianday(delivered_on) - julianday(shipped_on) > 5 THEN 1 ELSE 0 END) AS late
+FROM d1012_shipments
+WHERE delivered_on IS NOT NULL
+GROUP BY carrier
+ORDER BY avg_days, carrier;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261012_i1', level: 'intermediate', added: '2026-10-12', source: 'LeetCode', company: '',
+    ref: 'Exchange Seats', url: 'https://leetcode.com/problems/exchange-seats/',
+    title: 'החלפת מושבים', tables: ['d1012_seats'],
+    prompt: 'בטבלה d1012_seats יש תלמידים וכל אחד יושב במושב עם id רץ מ-1. מחליפים את התלמידים בכל זוג מושבים סמוכים (1 ו-2, 3 ו-4 וכן הלאה). אם מספר התלמידים אי-זוגי, התלמיד במושב האחרון נשאר במקומו. החזירו id ו-student לאחר ההחלפה (ה-id נשאר קבוע, התלמיד הוא מי שיושב עכשיו במושב), ממוינים לפי id.',
+    solution: `SELECT s.id,
+       CASE WHEN s.id % 2 = 1 AND s.id < (SELECT MAX(id) FROM d1012_seats) THEN (SELECT student FROM d1012_seats WHERE id = s.id + 1)
+            WHEN s.id % 2 = 0 THEN (SELECT student FROM d1012_seats WHERE id = s.id - 1)
+            ELSE s.student END AS student
+FROM d1012_seats s
+ORDER BY s.id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261012_i2', level: 'intermediate', added: '2026-10-12', source: 'LeetCode', company: '',
+    ref: 'Friend Requests II: Who Has the Most Friends', url: 'https://leetcode.com/problems/friend-requests-ii-who-has-the-most-friends/',
+    title: 'מי הכי פופולרי ברשת', tables: ['d1012_friend_accepts'],
+    prompt: 'בטבלה d1012_friend_accepts כל שורה היא בקשת חברות שאושרה בין requester_id ל-accepter_id, והחברות הדדית (אותו משתמש יכול להופיע בכל אחת משתי העמודות). החזירו את המשתמש או המשתמשים עם מספר החברים הגדול ביותר: id ו-num (מספר החברים). אם כמה משתמשים שווים במקום הראשון, החזירו את כולם. מיינו לפי id.',
+    solution: `WITH f AS (
+  SELECT requester_id AS id FROM d1012_friend_accepts
+  UNION ALL
+  SELECT accepter_id FROM d1012_friend_accepts
+), c AS (
+  SELECT id, COUNT(*) AS num FROM f GROUP BY id
+)
+SELECT id, num FROM c
+WHERE num = (SELECT MAX(num) FROM c)
+ORDER BY id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261012_i3', level: 'intermediate', added: '2026-10-12', source: 'LeetCode', company: '',
+    ref: 'Active Businesses', url: 'https://leetcode.doocs.org/en/lc/1126/',
+    title: 'עסקים פעילים', tables: ['d1012_biz_events'],
+    prompt: 'בטבלה d1012_biz_events כל שורה מציינת כמה פעמים (occurrences) אירוע מסוג event_type קרה לעסק business_id. הפעילות הממוצעת של סוג אירוע היא ממוצע ה-occurrences של אותו סוג על פני כל העסקים שיש להם אירועים מהסוג הזה. עסק נחשב פעיל אם ביותר מסוג אירוע אחד מספר ה-occurrences שלו גדול ממש מהפעילות הממוצעת של אותו סוג. החזירו את business_id של העסקים הפעילים, ממוינים עולה.',
+    solution: `SELECT e.business_id
+FROM d1012_biz_events e
+JOIN (SELECT event_type, AVG(occurrences) AS avg_occ FROM d1012_biz_events GROUP BY event_type) a
+  ON a.event_type = e.event_type
+WHERE e.occurrences > a.avg_occ
+GROUP BY e.business_id
+HAVING COUNT(*) > 1
+ORDER BY e.business_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261012_i4', level: 'intermediate', added: '2026-10-12', source: 'LeetCode', company: '',
+    ref: 'Product Price at a Given Date', url: 'https://leetcode.com/problems/product-price-at-a-given-date',
+    title: 'מחיר מוצר בתאריך נתון', tables: ['d1012_price_changes'],
+    prompt: 'בטבלה d1012_price_changes כל שורה היא שינוי מחיר של מוצר: new_price נכנס לתוקף בתאריך change_date. לפני השינוי הראשון של מוצר מחירו היה 10. החזירו לכל מוצר שמופיע בטבלה את המחיר שלו בתאריך 2026-08-16 (שינוי שנכנס לתוקף בדיוק בתאריך הזה כבר נחשב): product_id ו-price. מיינו לפי product_id.',
+    solution: `SELECT p.product_id,
+       COALESCE((SELECT c.new_price FROM d1012_price_changes c
+                 WHERE c.product_id = p.product_id AND c.change_date <= '2026-08-16'
+                 ORDER BY c.change_date DESC LIMIT 1), 10) AS price
+FROM (SELECT DISTINCT product_id FROM d1012_price_changes) p
+ORDER BY p.product_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261012_i5', level: 'intermediate', added: '2026-10-12', source: 'LeetCode', company: '',
+    ref: 'Immediate Food Delivery II', url: 'https://leetcode.com/problems/immediate-food-delivery-ii/',
+    title: 'אחוז הזמנות ראשונות מיידיות', tables: ['d1012_deliveries'],
+    prompt: 'בטבלה d1012_deliveries כל שורה היא הזמנה של לקוח עם order_date ו-preferred_date. הזמנה היא מיידית אם התאריכים שווים. ההזמנה הראשונה של לקוח היא זו עם order_date המוקדם ביותר שלו (לכל לקוח יש תאריך הזמנה ייחודי). החזירו עמודה אחת, immediate_pct: אחוז הלקוחות שהזמנתם הראשונה מיידית, מתוך כלל הלקוחות, מעוגל ל-2 ספרות.',
+    solution: `SELECT ROUND(100.0 * SUM(CASE WHEN order_date = preferred_date THEN 1 ELSE 0 END) / COUNT(*), 2) AS immediate_pct
+FROM d1012_deliveries
+WHERE (customer_id, order_date) IN (SELECT customer_id, MIN(order_date) FROM d1012_deliveries GROUP BY customer_id);`,
+    ordered: false,
+  },
+  {
+    id: 'd20261012_a1', level: 'advanced', added: '2026-10-12', source: 'LeetCode', company: '',
+    ref: 'Report Contiguous Dates', url: 'https://leetcode.doocs.org/en/lc/1225/',
+    title: 'רצפי ימים של הצלחה וכישלון', tables: ['d1012_ok_days', 'd1012_failed_days'],
+    prompt: 'הטבלה d1012_ok_days מכילה ימים שבהם משימה לילית הצליחה, והטבלה d1012_failed_days ימים שבהם נכשלה (כל יום מופיע בדיוק באחת משתיהן). התייחסו רק לתקופה מ-2026-09-01 עד 2026-09-15 (כולל). לכל רצף של ימים רצופים באותו מצב החזירו state ("succeeded" או "failed"), start_date ו-end_date של הרצף. מיינו לפי start_date.',
+    solution: `WITH d AS (
+  SELECT day, 'succeeded' AS state FROM d1012_ok_days WHERE day BETWEEN '2026-09-01' AND '2026-09-15'
+  UNION ALL
+  SELECT day, 'failed' FROM d1012_failed_days WHERE day BETWEEN '2026-09-01' AND '2026-09-15'
+), g AS (
+  SELECT state, day,
+         julianday(day) - ROW_NUMBER() OVER (PARTITION BY state ORDER BY day) AS grp
+  FROM d
+)
+SELECT state, MIN(day) AS start_date, MAX(day) AS end_date
+FROM g
+GROUP BY state, grp
+ORDER BY start_date;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261012_a2', level: 'advanced', added: '2026-10-12', source: 'HackerRank', company: '',
+    ref: 'SQL Project Planning', url: 'https://www.hackerrank.com/challenges/sql-projects/problem',
+    title: 'איחוד משימות רצופות לפרויקטים', tables: ['d1012_tasks'],
+    prompt: 'בטבלה d1012_tasks כל משימה נמשכת יום אחד (end_date הוא היום שאחרי start_date). משימות שבהן ה-start_date של אחת שווה ל-end_date של הקודמת לה שייכות לאותו פרויקט. החזירו לכל פרויקט את start_date (תחילת המשימה הראשונה) ו-end_date (סוף המשימה האחרונה). מיינו לפי משך הפרויקט בימים (מהקצר לארוך) ובשוויון לפי start_date.',
+    solution: `WITH g AS (
+  SELECT start_date, end_date,
+         julianday(start_date) - ROW_NUMBER() OVER (ORDER BY start_date) AS grp
+  FROM d1012_tasks
+)
+SELECT MIN(start_date) AS start_date, MAX(end_date) AS end_date
+FROM g
+GROUP BY grp
+ORDER BY julianday(MAX(end_date)) - julianday(MIN(start_date)), MIN(start_date);`,
+    ordered: true,
+  },
+  {
+    id: 'd20261012_a3', level: 'advanced', added: '2026-10-12', source: 'LeetCode', company: '',
+    ref: 'Last Person to Fit in the Bus', url: 'https://leetcode.com/problems/last-person-to-fit-in-the-bus',
+    title: 'האחרון שנכנס לאוטובוס', tables: ['d1012_bus_queue'],
+    prompt: 'בטבלה d1012_bus_queue אנשים עולים לאוטובוס לפי סדר turn עולה. משקל האנשים באוטובוס לא יכול לעבור 1000 ק"ג, והעלייה נעצרת באדם הראשון שהוספתו תגרום לחריגה (אף אחד אחריו לא עולה). החזירו עמודה אחת, person_name: שם האדם האחרון שהצליח לעלות.',
+    solution: `WITH r AS (
+  SELECT person_name, turn, SUM(weight) OVER (ORDER BY turn) AS total
+  FROM d1012_bus_queue
+)
+SELECT person_name FROM r
+WHERE total <= 1000
+ORDER BY turn DESC
+LIMIT 1;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261012_a4', level: 'advanced', added: '2026-10-12', source: 'Interview Query', company: '',
+    ref: 'Paired Products', url: 'https://interviewquery.com/questions/paired-products',
+    title: 'זוגות מוצרים נפוצים', tables: ['d1012_user_products'],
+    prompt: 'בטבלה d1012_user_products כל שורה מציינת שמשתמש קנה מוצר (ייתכנו שורות כפולות). זוג מוצרים נספר עבור משתמש אם קנה את שניהם. החזירו את כל זוגות המוצרים השונים שנקנו על ידי לפחות 2 משתמשים שונים: product_a (השם הראשון בסדר אלפביתי), product_b ו-users (מספר המשתמשים השונים שקנו את שניהם). כל זוג מופיע פעם אחת. מיינו לפי users יורד, אחר כך product_a ואז product_b.',
+    solution: `WITH u AS (SELECT DISTINCT user_id, product FROM d1012_user_products)
+SELECT a.product AS product_a, b.product AS product_b, COUNT(*) AS users
+FROM u a
+JOIN u b ON a.user_id = b.user_id AND a.product < b.product
+GROUP BY a.product, b.product
+HAVING COUNT(*) >= 2
+ORDER BY users DESC, product_a, product_b;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261012_a5', level: 'advanced', added: '2026-10-12', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'חציון הזמנה לפי עיר', tables: ['d1012_city_orders'],
+    prompt: 'בטבלה d1012_city_orders כל שורה היא הזמנה עם סכום (amount) ועיר (city). החזירו לכל עיר את חציון סכומי ההזמנות שלה: city ו-median_amount. בעיר עם מספר זוגי של הזמנות החציון הוא ממוצע שני הערכים האמצעיים. מיינו לפי city.',
+    solution: `WITH r AS (
+  SELECT city, amount,
+         ROW_NUMBER() OVER (PARTITION BY city ORDER BY amount) AS rn,
+         COUNT(*) OVER (PARTITION BY city) AS cnt
+  FROM d1012_city_orders
+)
+SELECT city, AVG(amount) AS median_amount
+FROM r
+WHERE rn IN ((cnt + 1) / 2, (cnt + 2) / 2)
+GROUP BY city
+ORDER BY city;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
