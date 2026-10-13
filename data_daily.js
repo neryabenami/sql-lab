@@ -284,4 +284,89 @@ INSERT INTO d1012_city_orders VALUES
 (1,'Haifa',40),(2,'Haifa',15),(3,'Haifa',90),(4,'Haifa',25),(5,'Haifa',60),
 (6,'TLV',10),(7,'TLV',20),(8,'TLV',30),(9,'TLV',40),(10,'TLV',50),(11,'TLV',100),
 (12,'Eilat',70),(13,'Eilat',70),(14,'Eilat',20),(15,'Eilat',30),(16,'Jerusalem',55);
+-- 2026-10-13
+CREATE TABLE d1013_station (id INTEGER, city TEXT, state TEXT);
+INSERT INTO d1013_station VALUES
+(1,'Haifa','North'),(2,'Netanya','Center'),(3,'Eilat','South'),(4,'Netanya','Center'),(5,'Ashdod','South'),
+(6,'Haifa','North'),(7,'Tiberias','North'),(8,'Be''er Sheva','South'),(9,'Rehovot','Center'),(10,'Netanya','Center'),
+(11,'Safed','North'),(12,'Eilat','South');
+CREATE TABLE d1013_game (player_id INTEGER, device_id INTEGER, event_date TEXT, games_played INTEGER);
+INSERT INTO d1013_game VALUES
+(1,2,'2026-03-05',5),(1,2,'2026-03-01',0),(1,3,'2026-06-25',1),
+(2,3,'2026-07-11',6),(2,3,'2026-07-02',2),
+(3,1,'2026-05-20',4),(3,4,'2026-05-20',9),(3,1,'2026-05-23',1),
+(4,5,'2026-01-09',3);
+CREATE TABLE d1013_salaries (emp_id INTEGER, salary INTEGER);
+INSERT INTO d1013_salaries VALUES (1,5000),(2,7000),(3,7000),(4,6000),(5,6000),(6,4000),(7,7000);
+CREATE TABLE d1013_stocks (stock_name TEXT, operation TEXT, operation_day INTEGER, price INTEGER);
+INSERT INTO d1013_stocks VALUES
+('Masks','Buy',1,1000),('Books','Buy',2,10),('Masks','Sell',5,1500),('Books','Sell',6,15),
+('Masks','Buy',8,1200),('Masks','Sell',12,1100),('Chairs','Buy',3,500),('Chairs','Sell',9,380),
+('Lamps','Buy',4,70),('Books','Buy',10,20),('Books','Sell',15,60),('Lamps','Sell',11,90);
+CREATE TABLE d1013_movies (movie_id INTEGER, title TEXT, genre TEXT, rating REAL, release_year INTEGER);
+INSERT INTO d1013_movies VALUES
+(1,'Dawn','Drama',8.1,2019),(2,'Dusk','Drama',7.4,2021),(3,'Chase','Action',6.2,2020),(4,'Blast','Action',NULL,2022),
+(5,'Giggle','Comedy',7.0,2018),(6,'Laugh','Comedy',7.6,2023),(7,'Orbit','SciFi',8.8,2024),(8,'Echo','Drama',NULL,2025),
+(9,'Raid','Action',5.8,2017),(10,'Nova','SciFi',NULL,2025),(11,'Joke','Comedy',6.4,2016);
+CREATE TABLE d1013_students (id INTEGER, name TEXT, marks INTEGER);
+INSERT INTO d1013_students VALUES
+(1,'Maya',92),(2,'Noam',85),(3,'Lior',67),(4,'Dana',100),(5,'Yossi',45),(6,'Avi',88),(7,'Tal',67),(8,'Rina',23),(9,'Omer',79),(10,'Shir',91),(11,'Ben',59),(12,'Gal',81);
+CREATE TABLE d1013_grades (grade INTEGER, min_mark INTEGER, max_mark INTEGER);
+INSERT INTO d1013_grades VALUES (1,0,9),(2,10,19),(3,20,29),(4,30,39),(5,40,49),(6,50,59),(7,60,69),(8,70,79),(9,80,89),(10,90,100);
+CREATE TABLE d1013_hackers (hacker_id INTEGER, name TEXT);
+INSERT INTO d1013_hackers VALUES (10,'Rachel'),(11,'Sam'),(12,'Tamar'),(13,'Uri'),(14,'Vered'),(15,'Wes');
+CREATE TABLE d1013_difficulty (difficulty_level INTEGER, max_score INTEGER);
+INSERT INTO d1013_difficulty VALUES (1,20),(2,30),(3,40);
+CREATE TABLE d1013_chal (challenge_id INTEGER, difficulty_level INTEGER);
+INSERT INTO d1013_chal VALUES (100,1),(101,1),(102,2),(103,2),(104,3);
+CREATE TABLE d1013_subs (submission_id INTEGER, hacker_id INTEGER, challenge_id INTEGER, score INTEGER);
+INSERT INTO d1013_subs VALUES
+(1,10,100,20),(2,10,101,20),(3,10,102,30),(4,10,100,20),
+(5,11,100,20),(6,11,102,25),(7,11,103,30),(8,11,103,30),
+(9,12,104,40),(10,12,100,10),(11,12,102,30),
+(12,13,101,20),(13,13,102,5),
+(14,14,100,20),(15,14,101,20),(16,14,104,39),
+(17,15,103,12);
+CREATE TABLE d1013_functions (x INTEGER, y INTEGER);
+INSERT INTO d1013_functions VALUES
+(20,20),(20,21),(21,20),(22,23),(23,22),(5,9),(7,7),(7,7),(30,31),(31,30),(31,30),(12,3),(3,12),(40,41),(41,42);
+CREATE TABLE d1013_users (user_id INTEGER, name TEXT, signup_date TEXT);
+INSERT INTO d1013_users VALUES (1,'Ariel','2026-01-10'),(2,'Boaz','2026-02-11'),(3,'Carmel','2026-03-05'),(4,'Dvir','2026-03-20'),(5,'Efrat','2026-04-01'),(6,'Fadi','2026-05-17');
+CREATE TABLE d1013_orders (order_id INTEGER, user_id INTEGER, order_date TEXT, amount INTEGER, status TEXT);
+INSERT INTO d1013_orders VALUES
+(1,1,'2026-02-01',120,'completed'),(2,2,'2026-02-15',80,'cancelled'),(3,2,'2026-03-01',60,'cancelled'),
+(4,3,'2026-04-02',200,'completed'),(5,5,'2026-04-10',30,'refunded'),(6,1,'2026-05-05',45,'completed'),(7,4,'2026-06-01',99,'cancelled');
+CREATE TABLE d1013_visits (visit_id INTEGER, patient_id INTEGER, clinic TEXT, visit_date TEXT, fee INTEGER, paid INTEGER);
+INSERT INTO d1013_visits VALUES
+(1,101,'North','2026-09-01',200,1),(2,102,'North','2026-09-02',150,0),(3,103,'North','2026-09-03',300,1),
+(4,104,'South','2026-09-01',180,0),(5,105,'South','2026-09-04',220,0),(6,106,'South','2026-09-05',100,1),(7,101,'South','2026-09-09',250,1),
+(8,107,'Center','2026-09-02',400,1),(9,108,'Center','2026-09-06',120,0),(10,102,'North','2026-09-12',90,1);
+CREATE TABLE d1013_dept (id INTEGER, name TEXT);
+INSERT INTO d1013_dept VALUES (1,'IT'),(2,'Sales'),(3,'Legal');
+CREATE TABLE d1013_employee (id INTEGER, name TEXT, salary INTEGER, dept_id INTEGER);
+INSERT INTO d1013_employee VALUES
+(1,'Joe',85000,1),(2,'Henry',80000,2),(3,'Sam',60000,2),(4,'Max',90000,1),(5,'Janet',69000,1),(6,'Randy',85000,1),(7,'Will',70000,1),
+(8,'Lea',75000,2),(9,'Nir',75000,2),(10,'Ofra',50000,3),(11,'Pini',50000,3);
+CREATE TABLE d1013_scores (id INTEGER, score REAL);
+INSERT INTO d1013_scores VALUES (1,3.50),(2,3.65),(3,4.00),(4,3.85),(5,4.00),(6,3.65),(7,2.90);
+CREATE TABLE d1013_artists (artist_id INTEGER, artist_name TEXT);
+INSERT INTO d1013_artists VALUES (1,'Luna'),(2,'Orion'),(3,'Pax'),(4,'Quill'),(5,'Rue'),(6,'Sol'),(7,'Tide');
+CREATE TABLE d1013_songs (song_id INTEGER, artist_id INTEGER, song_name TEXT);
+INSERT INTO d1013_songs VALUES (1,1,'L1'),(2,1,'L2'),(3,2,'O1'),(4,3,'P1'),(5,3,'P2'),(6,4,'Q1'),(7,5,'R1'),(8,6,'S1'),(9,7,'T1'),(10,2,'O2');
+CREATE TABLE d1013_chart (chart_day TEXT, pos INTEGER, song_id INTEGER);
+INSERT INTO d1013_chart VALUES
+('2026-09-01',1,1),('2026-09-01',2,3),('2026-09-01',3,4),('2026-09-01',4,2),('2026-09-01',5,6),('2026-09-01',11,9),
+('2026-09-02',1,1),('2026-09-02',2,4),('2026-09-02',3,5),('2026-09-02',4,10),('2026-09-02',5,7),('2026-09-02',12,8),
+('2026-09-03',1,1),('2026-09-03',2,3),('2026-09-03',3,6),('2026-09-03',4,7),('2026-09-03',5,2),('2026-09-03',15,9),
+('2026-09-04',1,2),('2026-09-04',2,4),('2026-09-04',3,3),('2026-09-04',4,8),('2026-09-04',14,6);
+CREATE TABLE d1013_plays (play_id INTEGER, song TEXT, country TEXT, play_date TEXT);
+INSERT INTO d1013_plays VALUES
+(1,'Wave','IL','2026-10-04'),(2,'Wave','IL','2026-10-05'),(3,'Wave','IL','2026-10-10'),(4,'Pulse','IL','2026-10-06'),(5,'Pulse','IL','2026-10-07'),
+(6,'Drift','IL','2026-10-08'),(7,'Drift','IL','2026-10-09'),(8,'Haze','IL','2026-10-09'),(9,'Haze','IL','2026-10-10'),(10,'Old','IL','2026-10-03'),
+(11,'Old','IL','2026-10-03'),(12,'Old','IL','2026-10-02'),(13,'Neon','IL','2026-10-10'),
+(14,'Wave','US','2026-10-05'),(15,'Neon','US','2026-10-05'),(16,'Neon','US','2026-10-06'),(17,'Haze','US','2026-10-07'),(18,'Pulse','US','2026-10-08'),
+(19,'Pulse','US','2026-10-08'),(20,'Pulse','US','2026-10-11'),(21,'Drift','US','2026-10-03'),
+(22,'Wave','FR','2026-10-06'),(23,'Wave','FR','2026-10-07'),(24,'Neon','FR','2026-10-08');
+CREATE TABLE d1013_cinema (seat_id INTEGER, free INTEGER);
+INSERT INTO d1013_cinema VALUES (1,1),(2,0),(3,1),(4,1),(5,1),(6,0),(7,1),(9,1),(10,0),(11,1),(12,1),(14,1);
 `;

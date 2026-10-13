@@ -665,6 +665,186 @@ GROUP BY city
 ORDER BY city;`,
     ordered: true,
   },
+  // ===== 2026-10-13 =====
+  {
+    id: 'd20261013_b1', level: 'basic', added: '2026-10-13', source: 'HackerRank', company: '',
+    ref: 'Weather Observation Station 3', url: 'https://dev.to/christianpaez/hackerrank-sql-preparation-weather-observation-station-3mysql-2l73',
+    title: 'ערים בתחנות עם מזהה זוגי', tables: ['d1013_station'],
+    prompt: 'בטבלה d1013_station יש תחנות מדידה, וייתכן שאותה עיר מופיעה בכמה תחנות. החזירו את שמות הערים (city) שיש להן לפחות תחנה אחת עם id זוגי, כל עיר פעם אחת. מיינו לפי city בסדר אלפביתי.',
+    solution: `SELECT DISTINCT city FROM d1013_station WHERE id % 2 = 0 ORDER BY city;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261013_b2', level: 'basic', added: '2026-10-13', source: 'LeetCode', company: '',
+    ref: 'Game Play Analysis I', url: 'https://leetcode.com/problems/game-play-analysis-i/',
+    title: 'התחברות ראשונה של כל שחקן', tables: ['d1013_game'],
+    prompt: 'בטבלה d1013_game כל שורה היא יום פעילות של שחקן במכשיר מסוים (event_date בפורמט YYYY-MM-DD). החזירו לכל שחקן את התאריך המוקדם ביותר שבו התחבר: player_id ו-first_login.',
+    solution: `SELECT player_id, MIN(event_date) AS first_login FROM d1013_game GROUP BY player_id;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261013_b3', level: 'basic', added: '2026-10-13', source: 'LeetCode', company: '',
+    ref: 'Second Highest Salary', url: 'https://leetcode.doocs.org/en/lc/176/',
+    title: 'השכר השני בגובהו', tables: ['d1013_salaries'],
+    prompt: 'בטבלה d1013_salaries יש שכר לכל עובד, וייתכנו עובדים עם אותו שכר. החזירו שורה אחת ועמודה אחת, second_salary: הערך השני בגובהו מבין השכרים השונים זה מזה (לא השכר של העובד השני ברשימה ממוינת).',
+    solution: `SELECT MAX(salary) AS second_salary FROM d1013_salaries WHERE salary < (SELECT MAX(salary) FROM d1013_salaries);`,
+    ordered: false,
+  },
+  {
+    id: 'd20261013_b4', level: 'basic', added: '2026-10-13', source: 'LeetCode', company: '',
+    ref: 'Capital Gain/Loss', url: 'https://leetcode.com/problems/capital-gainloss/',
+    title: 'רווח או הפסד הון לכל מניה', tables: ['d1013_stocks'],
+    prompt: 'בטבלה d1013_stocks כל שורה היא פעולת קנייה (operation = "Buy") או מכירה (operation = "Sell") של מניה במחיר מסוים. כל קנייה מתאימה למכירה מאוחרת יותר, ולכן סך המכירות פחות סך הקניות הוא הרווח או ההפסד של המניה. החזירו לכל מניה: stock_name ו-capital_gain_loss (סכום מחירי המכירה פחות סכום מחירי הקנייה).',
+    solution: `SELECT stock_name, SUM(CASE WHEN operation = 'Sell' THEN price ELSE -price END) AS capital_gain_loss FROM d1013_stocks GROUP BY stock_name;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261013_b5', level: 'basic', added: '2026-10-13', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'ז\'אנרים עם דירוג ממוצע גבוה', tables: ['d1013_movies'],
+    prompt: 'בטבלה d1013_movies יש סרטים, ולחלקם אין עדיין דירוג (rating ריק). התעלמו מסרטים בלי דירוג. החזירו ז\'אנרים שיש בהם לפחות 2 סרטים מדורגים, עם: genre, rated_movies (מספר הסרטים המדורגים) ו-avg_rating (דירוג ממוצע מעוגל לספרה אחת אחרי הנקודה). הציגו רק ז\'אנרים שהדירוג הממוצע שלהם לפחות 6.5.',
+    solution: `SELECT genre, COUNT(rating) AS rated_movies, ROUND(AVG(rating), 1) AS avg_rating
+FROM d1013_movies
+WHERE rating IS NOT NULL
+GROUP BY genre
+HAVING COUNT(*) >= 2 AND AVG(rating) >= 6.5;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261013_i1', level: 'intermediate', added: '2026-10-13', source: 'HackerRank', company: '',
+    ref: 'The Report', url: 'https://github.com/cuongtrans/hackerrank-sql-challenges',
+    title: 'דוח ציונים עם הסתרת שמות', tables: ['d1013_students', 'd1013_grades'],
+    prompt: 'בטבלה d1013_students יש תלמידים וציוניהם (marks), ובטבלה d1013_grades טבלת המרה: לכל grade יש טווח ציונים (min_mark עד max_mark, כולל). החזירו לכל תלמיד: name, grade, marks. עבור תלמידים בדרגה 7 ומטה, name יוצג כ-NULL. מיינו לפי grade יורד; בתוך דרגות 8 ומעלה לפי name עולה; בתוך דרגות 7 ומטה לפי marks עולה; ובתיקו נוסף לפי id עולה.',
+    solution: `SELECT CASE WHEN g.grade >= 8 THEN s.name END AS name, g.grade, s.marks
+FROM d1013_students s
+JOIN d1013_grades g ON s.marks BETWEEN g.min_mark AND g.max_mark
+ORDER BY g.grade DESC,
+         CASE WHEN g.grade >= 8 THEN s.name END ASC,
+         CASE WHEN g.grade < 8 THEN s.marks END ASC,
+         s.id ASC;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261013_i2', level: 'intermediate', added: '2026-10-13', source: 'HackerRank', company: '',
+    ref: 'Top Competitors', url: 'https://github.com/cuongtrans/hackerrank-sql-challenges',
+    title: 'מתחרים עם ציון מלא ביותר מאתגר אחד', tables: ['d1013_hackers', 'd1013_chal', 'd1013_difficulty', 'd1013_subs'],
+    prompt: 'לכל אתגר (d1013_chal) יש רמת קושי, ולכל רמת קושי ציון מקסימלי (d1013_difficulty). ההגשות נמצאות ב-d1013_subs. הגשה היא "ציון מלא" כשהציון שלה שווה לציון המקסימלי של רמת הקושי של האתגר. החזירו את המתחרים שקיבלו ציון מלא ביותר מאתגר אחד (שני ציונים מלאים באותו אתגר נספרים כאתגר אחד): hacker_id, name ו-full_challenges (מספר האתגרים השונים שבהם קיבלו ציון מלא). מיינו לפי full_challenges יורד ואז hacker_id עולה.',
+    solution: `SELECT h.hacker_id, h.name, COUNT(DISTINCT s.challenge_id) AS full_challenges
+FROM d1013_subs s
+JOIN d1013_chal c ON c.challenge_id = s.challenge_id
+JOIN d1013_difficulty d ON d.difficulty_level = c.difficulty_level
+JOIN d1013_hackers h ON h.hacker_id = s.hacker_id
+WHERE s.score = d.max_score
+GROUP BY h.hacker_id, h.name
+HAVING COUNT(DISTINCT s.challenge_id) > 1
+ORDER BY full_challenges DESC, h.hacker_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261013_i3', level: 'intermediate', added: '2026-10-13', source: 'HackerRank', company: '',
+    ref: 'Symmetric Pairs', url: 'https://dev.to/ranggakd/symmetric-pairs-hackerrank-mssql-31d2',
+    title: 'זוגות סימטריים', tables: ['d1013_functions'],
+    prompt: 'בטבלה d1013_functions כל שורה היא זוג (x, y), וייתכנו שורות כפולות. הזוג (a, b) נקרא סימטרי אם קיימות בטבלה גם שורה (a, b) וגם שורה (b, a). זוג שבו a = b נחשב סימטרי רק אם הוא מופיע בטבלה לפחות פעמיים. החזירו כל זוג סימטרי פעם אחת בלבד, בצורה x ≤ y: העמודות x ו-y. מיינו לפי x עולה ואז y עולה.',
+    solution: `SELECT DISTINCT f1.x, f1.y
+FROM d1013_functions f1
+JOIN d1013_functions f2 ON f1.x = f2.y AND f1.y = f2.x
+WHERE f1.x < f1.y
+UNION
+SELECT x, y FROM d1013_functions WHERE x = y GROUP BY x, y HAVING COUNT(*) > 1
+ORDER BY 1, 2;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261013_i4', level: 'intermediate', added: '2026-10-13', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'נרשמים שמעולם לא השלימו הזמנה', tables: ['d1013_users', 'd1013_orders'],
+    prompt: 'בטבלה d1013_users יש משתמשים רשומים, ובטבלה d1013_orders הזמנות עם סטטוס (completed, cancelled או refunded). החזירו את המשתמשים שאין להם אף הזמנה בסטטוס completed (כולל משתמשים שאין להם הזמנות בכלל): user_id ו-name. מיינו לפי user_id.',
+    solution: `SELECT u.user_id, u.name
+FROM d1013_users u
+WHERE NOT EXISTS (SELECT 1 FROM d1013_orders o WHERE o.user_id = u.user_id AND o.status = 'completed')
+ORDER BY u.user_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261013_i5', level: 'intermediate', added: '2026-10-13', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'גבייה לפי מרפאה', tables: ['d1013_visits'],
+    prompt: 'בטבלה d1013_visits כל שורה היא ביקור במרפאה, עם עלות (fee) ועם paid = 1 אם שולם ו-0 אם לא. החזירו לכל מרפאה: clinic, visits (מספר הביקורים), paid_visits (מספר הביקורים ששולמו), unpaid_amount (סך העלויות שטרם שולמו) ו-collection_pct (אחוז הביקורים ששולמו מתוך כל הביקורים, מעוגל לספרה אחת אחרי הנקודה).',
+    solution: `SELECT clinic,
+       COUNT(*) AS visits,
+       SUM(CASE WHEN paid = 1 THEN 1 ELSE 0 END) AS paid_visits,
+       SUM(CASE WHEN paid = 0 THEN fee ELSE 0 END) AS unpaid_amount,
+       ROUND(100.0 * SUM(CASE WHEN paid = 1 THEN 1 ELSE 0 END) / COUNT(*), 1) AS collection_pct
+FROM d1013_visits
+GROUP BY clinic;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261013_a1', level: 'advanced', added: '2026-10-13', source: 'LeetCode', company: '',
+    ref: 'Department Top Three Salaries', url: 'https://leetcode.com/problems/department-top-three-salaries/',
+    title: 'שלושת השכרים הגבוהים בכל מחלקה', tables: ['d1013_dept', 'd1013_employee'],
+    prompt: 'בטבלאות d1013_dept ו-d1013_employee יש מחלקות ועובדים. עובד נחשב "מרוויח בכיר" אם שכרו הוא אחד משלושת השכרים השונים הגבוהים ביותר במחלקה שלו (כל העובדים שחולקים אותו שכר נכללים). החזירו: department (שם המחלקה), employee (שם העובד) ו-salary. מיינו לפי department עולה, salary יורד ואז employee עולה.',
+    solution: `SELECT d.name AS department, e.name AS employee, e.salary
+FROM d1013_employee e
+JOIN d1013_dept d ON d.id = e.dept_id
+WHERE (SELECT COUNT(DISTINCT e2.salary) FROM d1013_employee e2 WHERE e2.dept_id = e.dept_id AND e2.salary > e.salary) < 3
+ORDER BY department, e.salary DESC, employee;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261013_a2', level: 'advanced', added: '2026-10-13', source: 'LeetCode', company: '',
+    ref: 'Rank Scores', url: 'https://leetcode.com/problems/rank-scores/',
+    title: 'דירוג ציונים בלי דילוגים', tables: ['d1013_scores'],
+    prompt: 'בטבלה d1013_scores יש ציונים. דרגו את הציונים מהגבוה לנמוך: ציונים שווים מקבלים אותו דירוג, והדירוג הבא הוא המספר הבא ברצף, בלי דילוגים (1, 2, 2, 3 ...). החזירו score ו-ranking, ממוינים לפי score יורד.',
+    solution: `SELECT score, DENSE_RANK() OVER (ORDER BY score DESC) AS ranking FROM d1013_scores ORDER BY score DESC;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261013_a3', level: 'advanced', added: '2026-10-13', source: 'DataLemur', company: 'Spotify',
+    ref: 'Top 5 Artists', url: 'https://datalemur.com/blog/spotify-sql-interview-questions',
+    title: 'האמנים המובילים במצעד', tables: ['d1013_artists', 'd1013_songs', 'd1013_chart'],
+    prompt: 'בטבלה d1013_chart יש שורה לכל שיר שהופיע במצעד ביום מסוים, עם המיקום שלו (pos). התחשבו רק בהופעות שבהן המיקום הוא 10 או טוב יותר (pos ≤ 10). לכל אמן ספרו את מספר ההופעות של שיריו (d1013_songs מקשרת שיר לאמן, d1013_artists מכילה שמות אמנים). דרגו את האמנים לפי מספר ההופעות מהגבוה לנמוך: אמנים עם אותו מספר הופעות מקבלים אותו דירוג והדירוג הבא רציף (1, 2, 2, 3 ...). החזירו את האמנים שדירוגם 3 או טוב יותר: artist_name ו-artist_rank. מיינו לפי artist_rank ואז artist_name.',
+    solution: `WITH cnt AS (
+  SELECT a.artist_name, COUNT(*) AS appearances
+  FROM d1013_chart c
+  JOIN d1013_songs s ON s.song_id = c.song_id
+  JOIN d1013_artists a ON a.artist_id = s.artist_id
+  WHERE c.pos <= 10
+  GROUP BY a.artist_id, a.artist_name
+), r AS (
+  SELECT artist_name, DENSE_RANK() OVER (ORDER BY appearances DESC) AS artist_rank FROM cnt
+)
+SELECT artist_name, artist_rank FROM r WHERE artist_rank <= 3 ORDER BY artist_rank, artist_name;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261013_a4', level: 'advanced', added: '2026-10-13', source: 'Interview Query', company: 'Spotify',
+    ref: 'Top three most streamed songs per country in the past 7 days', url: 'https://www.interviewquery.com/interview-guides/spotify-data-engineer',
+    title: 'שלושת השירים המושמעים ביותר בכל מדינה', tables: ['d1013_plays'],
+    prompt: 'בטבלה d1013_plays כל שורה היא השמעה של שיר במדינה בתאריך מסוים. התחשבו רק בהשמעות מ-7 הימים שנגמרים ב-2026-10-10 (כולל, כלומר מ-2026-10-04 עד 2026-10-10). בכל מדינה דרגו את השירים לפי מספר ההשמעות מהגבוה לנמוך: שירים עם אותו מספר השמעות מקבלים אותו מקום, והמקום שאחריהם מדלג (1, 2, 2, 4 ...). החזירו את השירים שמקומם 3 או טוב יותר: country, song ו-plays. מיינו לפי country, plays יורד ואז song.',
+    solution: `WITH c AS (
+  SELECT country, song, COUNT(*) AS plays
+  FROM d1013_plays
+  WHERE play_date BETWEEN '2026-10-04' AND '2026-10-10'
+  GROUP BY country, song
+), r AS (
+  SELECT country, song, plays, RANK() OVER (PARTITION BY country ORDER BY plays DESC) AS rk FROM c
+)
+SELECT country, song, plays FROM r WHERE rk <= 3 ORDER BY country, plays DESC, song;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261013_a5', level: 'advanced', added: '2026-10-13', source: 'LeetCode', company: '',
+    ref: 'Consecutive Available Seats', url: 'https://leetcode.doocs.org/en/lc/603/',
+    title: 'מושבים פנויים סמוכים', tables: ['d1013_cinema'],
+    prompt: 'בטבלה d1013_cinema כל שורה היא מושב באולם, עם free = 1 אם הוא פנוי ו-0 אם תפוס. שימו לב: ייתכן שמספרי מושבים מסוימים חסרים לגמרי באולם. מושב פנוי נחשב "סמוך" אם גם המושב שמספרו גדול ממנו ב-1 או גם המושב שמספרו קטן ממנו ב-1 קיים ופנוי. החזירו את seat_id של כל המושבים הפנויים הסמוכים, ממוינים לפי seat_id.',
+    solution: `SELECT c.seat_id
+FROM d1013_cinema c
+WHERE c.free = 1
+  AND EXISTS (SELECT 1 FROM d1013_cinema n WHERE n.free = 1 AND n.seat_id IN (c.seat_id - 1, c.seat_id + 1))
+ORDER BY c.seat_id;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
