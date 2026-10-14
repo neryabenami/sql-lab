@@ -845,6 +845,207 @@ WHERE c.free = 1
 ORDER BY c.seat_id;`,
     ordered: true,
   },
+  // ===== 2026-10-14 =====
+  {
+    id: 'd20261014_b1', level: 'basic', added: '2026-10-14', source: 'LeetCode', company: '',
+    ref: 'Find Customer Referee', url: 'https://github.com/rahulnamilakonda/sql-50-leetcode',
+    title: 'לקוחות שלא הופנו על ידי לקוח 2', tables: ['d1014_customer'],
+    prompt: 'בטבלה d1014_customer כל לקוח יכול להיות מופנה על ידי לקוח אחר (referee_id), או שאין לו מפנה (NULL). החזירו את name של כל הלקוחות שלא הופנו על ידי הלקוח שמספרו 2. לקוחות ללא מפנה נכללים.',
+    solution: `SELECT name FROM d1014_customer WHERE referee_id IS NULL OR referee_id <> 2;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261014_b2', level: 'basic', added: '2026-10-14', source: 'LeetCode', company: '',
+    ref: 'Biggest Single Number', url: 'https://github.com/rahulnamilakonda/sql-50-leetcode',
+    title: 'המספר הגדול ביותר שמופיע פעם אחת', tables: ['d1014_nums'],
+    prompt: 'בטבלה d1014_nums עמודה אחת, num, וייתכנו בה ערכים כפולים. החזירו שורה אחת ובה המספר הגדול ביותר מבין המספרים שמופיעים בטבלה בדיוק פעם אחת. אם אין מספר כזה, יוחזר NULL.',
+    solution: `SELECT MAX(num) AS num FROM (SELECT num FROM d1014_nums GROUP BY num HAVING COUNT(*) = 1);`,
+    ordered: false,
+  },
+  {
+    id: 'd20261014_b3', level: 'basic', added: '2026-10-14', source: 'LeetCode', company: '',
+    ref: 'Customer Placing the Largest Number of Orders', url: 'https://github.com/rahulnamilakonda/sql-50-leetcode',
+    title: 'הלקוח עם הכי הרבה הזמנות', tables: ['d1014_cust_orders'],
+    prompt: 'בטבלה d1014_cust_orders כל שורה היא הזמנה של לקוח. החזירו שורה אחת עם הלקוח שביצע הכי הרבה הזמנות: customer_number ו-orders_count (מספר ההזמנות שלו). מובטח שיש לקוח יחיד כזה.',
+    solution: `SELECT customer_number, COUNT(*) AS orders_count
+FROM d1014_cust_orders
+GROUP BY customer_number
+ORDER BY orders_count DESC
+LIMIT 1;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261014_b4', level: 'basic', added: '2026-10-14', source: 'LeetCode', company: '',
+    ref: 'Queries Quality and Percentage', url: 'https://github.com/rahulnamilakonda/sql-50-leetcode',
+    title: 'איכות חיפושים ואחוז חיפושים גרועים', tables: ['d1014_queries'],
+    prompt: 'בטבלה d1014_queries כל שורה היא תוצאה שהוחזרה לחיפוש (query_name), עם המיקום שלה ברשימה (position) והדירוג שנתן המשתמש (rating, בין 1 ל-5). לכל query_name החזירו: query_name, quality (ממוצע של rating חלקי position, בחילוק עשרוני, מעוגל ל-2 ספרות) ו-poor_query_percentage (אחוז התוצאות עם rating קטן מ-3, מעוגל ל-2 ספרות).',
+    solution: `SELECT query_name,
+       ROUND(AVG(rating * 1.0 / position), 2) AS quality,
+       ROUND(100.0 * SUM(CASE WHEN rating < 3 THEN 1 ELSE 0 END) / COUNT(*), 2) AS poor_query_percentage
+FROM d1014_queries
+GROUP BY query_name;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261014_b5', level: 'basic', added: '2026-10-14', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'סיכום עסקאות ועמלות לפי מטבע', tables: ['d1014_fees'],
+    prompt: 'בטבלה d1014_fees כל שורה היא עסקה עם סכום (amount) ועמלה (fee). עסקה ללא עמלה מסומנת ב-NULL, ופירושה עמלה 0. לכל currency החזירו: currency, txns (מספר העסקות), net_amount (סכום amount פחות העמלה, מסוכם על כל העסקאות) ו-pct_no_fee (אחוז העסקאות שבהן fee הוא NULL, מעוגל ל-2 ספרות).',
+    solution: `SELECT currency,
+       COUNT(*) AS txns,
+       SUM(amount - COALESCE(fee, 0)) AS net_amount,
+       ROUND(100.0 * SUM(CASE WHEN fee IS NULL THEN 1 ELSE 0 END) / COUNT(*), 2) AS pct_no_fee
+FROM d1014_fees
+GROUP BY currency;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261014_i1', level: 'intermediate', added: '2026-10-14', source: 'LeetCode', company: '',
+    ref: 'Customers Who Bought All Products', url: 'https://zenn.dev/benn/scraps/0ca0b8e0a011db',
+    title: 'לקוחות שקנו את כל המוצרים', tables: ['d1014_purchases', 'd1014_catalog'],
+    prompt: 'בטבלה d1014_catalog כל מוצרי החנות, ובטבלה d1014_purchases רכישות של לקוחות (ייתכן שלקוח קנה את אותו מוצר כמה פעמים). החזירו את customer_id של הלקוחות שקנו כל מוצר בקטלוג לפחות פעם אחת.',
+    solution: `SELECT customer_id
+FROM d1014_purchases
+GROUP BY customer_id
+HAVING COUNT(DISTINCT product_key) = (SELECT COUNT(*) FROM d1014_catalog);`,
+    ordered: false,
+  },
+  {
+    id: 'd20261014_i2', level: 'intermediate', added: '2026-10-14', source: 'Interview Query', company: 'Meta',
+    ref: 'Neighborhoods with 0 users', url: 'https://www.interviewquery.com/guides/meta-data-analyst?exp_page=1',
+    title: 'שכונות בלי משתמשים', tables: ['d1014_neighborhoods', 'd1014_nb_users'],
+    prompt: 'בטבלה d1014_neighborhoods רשימת שכונות, ובטבלה d1014_nb_users המשתמשים והשכונה שלהם (ייתכן שלמשתמש אין שכונה מוגדרת). החזירו את name של כל השכונות שאין בהן אף משתמש.',
+    solution: `SELECT n.name
+FROM d1014_neighborhoods n
+LEFT JOIN d1014_nb_users u ON u.neighborhood_id = n.neighborhood_id
+WHERE u.user_id IS NULL;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261014_i3', level: 'intermediate', added: '2026-10-14', source: 'LeetCode', company: '',
+    ref: 'Employees Whose Manager Left the Company', url: 'https://github.com/rahulnamilakonda/sql-50-leetcode',
+    title: 'עובדים שהמנהל שלהם עזב', tables: ['d1014_emp'],
+    prompt: 'בטבלה d1014_emp כל עובד עם manager_id של המנהל שלו (NULL אם אין מנהל). עובד שהמנהל שלו עזב הוא עובד שיש לו manager_id, אך אין בטבלה עובד עם מספר כזה. החזירו את employee_id של עובדים כאלה ששכרם קטן מ-30000 (שכר של בדיוק 30000 לא נכלל), ממוינים לפי employee_id.',
+    solution: `SELECT e.employee_id
+FROM d1014_emp e
+WHERE e.salary < 30000
+  AND e.manager_id IS NOT NULL
+  AND e.manager_id NOT IN (SELECT employee_id FROM d1014_emp)
+ORDER BY e.employee_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261014_i4', level: 'intermediate', added: '2026-10-14', source: 'Interview Query', company: 'Walmart',
+    ref: 'Do users order more to their primary address than to other addresses?', url: 'https://www.interviewquery.com/interview-guides/walmart-data-analyst',
+    title: 'הזמנות לכתובת הראשית מול כתובות אחרות', tables: ['d1014_wm_users', 'd1014_wm_txns'],
+    prompt: 'בטבלה d1014_wm_users לכל משתמש כתובת ראשית (primary_address), ובטבלה d1014_wm_txns הזמנות עם כתובת המשלוח (ship_address). לכל משתמש שביצע לפחות הזמנה אחת, חשבו כמה הזמנות נשלחו לכתובת הראשית שלו וכמה לכתובות אחרות. החזירו רק משתמשים שמספר ההזמנות לכתובת הראשית גדול ממספר ההזמנות לכתובות אחרות: user_id, primary_orders, other_orders. מיינו לפי user_id.',
+    solution: `SELECT u.user_id,
+       SUM(CASE WHEN t.ship_address = u.primary_address THEN 1 ELSE 0 END) AS primary_orders,
+       SUM(CASE WHEN t.ship_address <> u.primary_address THEN 1 ELSE 0 END) AS other_orders
+FROM d1014_wm_users u
+JOIN d1014_wm_txns t ON t.user_id = u.user_id
+GROUP BY u.user_id
+HAVING primary_orders > other_orders
+ORDER BY u.user_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261014_i5', level: 'intermediate', added: '2026-10-14', source: 'HackerRank', company: '',
+    ref: "Ollivander's Inventory", url: 'https://github.com/satyarthiabhay/Hackerrank-SQL-Challenges',
+    title: 'המכשיר הזול ביותר לכל מהירות ושנה', tables: ['d1014_gadgets', 'd1014_models'],
+    prompt: 'בטבלה d1014_gadgets מכשירים עם מחיר (price), מהירות (speed) וקוד דגם, ובטבלה d1014_models לכל דגם שנת יציאה (release_year) והאם הופסק (discontinued = 1). התעלמו ממכשירים של דגמים שהופסקו. לכל צירוף של speed ו-release_year החזירו את המכשיר הזול ביותר: gadget_id, release_year, price, speed. מיינו לפי speed יורד ואז release_year יורד.',
+    solution: `SELECT g.gadget_id, m.release_year, g.price, g.speed
+FROM d1014_gadgets g
+JOIN d1014_models m ON m.model_code = g.model_code
+WHERE m.discontinued = 0
+  AND g.price = (
+    SELECT MIN(g2.price)
+    FROM d1014_gadgets g2
+    JOIN d1014_models m2 ON m2.model_code = g2.model_code
+    WHERE m2.discontinued = 0 AND g2.speed = g.speed AND m2.release_year = m.release_year
+  )
+ORDER BY g.speed DESC, m.release_year DESC;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261014_a1', level: 'advanced', added: '2026-10-14', source: 'LeetCode', company: '',
+    ref: 'Game Play Analysis IV', url: 'https://medium.com/@Dhruv_work/leetcode-sql-solutions-e979b18b1239',
+    title: 'שיעור שחקנים שחזרו למחרת ההתחברות הראשונה', tables: ['d1014_plays'],
+    prompt: 'בטבלה d1014_plays כל שורה היא יום פעילות של שחקן (ייתכנו כמה שורות לאותו שחקן באותו יום ממכשירים שונים). החזירו שורה אחת עם העמודה fraction: חלק השחקנים שהתחברו שוב ביום שמיד אחרי יום ההתחברות הראשון שלהם, מחולק בסך כל השחקנים, מעוגל ל-2 ספרות.',
+    solution: `WITH f AS (
+  SELECT player_id, MIN(event_date) AS first_day FROM d1014_plays GROUP BY player_id
+)
+SELECT ROUND(1.0 * COUNT(DISTINCT p.player_id) / (SELECT COUNT(*) FROM f), 2) AS fraction
+FROM f
+JOIN d1014_plays p ON p.player_id = f.player_id AND p.event_date = date(f.first_day, '+1 day');`,
+    ordered: false,
+  },
+  {
+    id: 'd20261014_a2', level: 'advanced', added: '2026-10-14', source: 'Interview Query', company: 'Twitter',
+    ref: 'New Notification (SQL case study: unsubscribes and login rate)', url: 'https://interviewquery.com/questions/new-notification',
+    title: 'השפעת ביטולי הרשמה על שיעור ההתחברות', tables: ['d1014_notif_events', 'd1014_notif_variants'],
+    prompt: 'בטבלה d1014_notif_events אירועי משתמשים בניסוי התראות: action הוא login, nologin (נכנס לאפליקציה ולא התחבר) או unsubscribe. בטבלה d1014_notif_variants הקבוצה של כל משתמש (control או test). לכל קבוצה ולכל חודש (בפורמט YYYY-MM של created_at) החזירו: variant, month, unsubscribes (מספר אירועי unsubscribe) ו-login_rate_pct (אחוז אירועי login מתוך אירועי login ו-nologin יחד, מעוגל ל-2 ספרות; אירועי unsubscribe לא נספרים במכנה). מיינו לפי variant ואז month.',
+    solution: `SELECT v.variant,
+       substr(e.created_at, 1, 7) AS month,
+       SUM(CASE WHEN e.action = 'unsubscribe' THEN 1 ELSE 0 END) AS unsubscribes,
+       ROUND(100.0 * SUM(CASE WHEN e.action = 'login' THEN 1 ELSE 0 END)
+             / SUM(CASE WHEN e.action IN ('login', 'nologin') THEN 1 ELSE 0 END), 2) AS login_rate_pct
+FROM d1014_notif_events e
+JOIN d1014_notif_variants v ON v.user_id = e.user_id
+GROUP BY v.variant, substr(e.created_at, 1, 7)
+ORDER BY v.variant, month;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261014_a3', level: 'advanced', added: '2026-10-14', source: 'HackerRank', company: '',
+    ref: 'Placements', url: 'https://github.com/satyarthiabhay/Hackerrank-SQL-Challenges',
+    title: 'עובדים שחבר הרוויח יותר מהם', tables: ['d1014_ppl', 'd1014_ppl_buddy', 'd1014_ppl_pay'],
+    prompt: 'בטבלה d1014_ppl עובדים, בטבלה d1014_ppl_buddy לכל עובד החבר הקרוב שלו (buddy_id), ובטבלה d1014_ppl_pay השכר של כל עובד. החזירו את name של העובדים שהשכר של החבר הקרוב שלהם גבוה משלהם (שכר שווה לא נחשב), ממוינים לפי השכר של החבר, מהנמוך לגבוה.',
+    solution: `SELECT p.name
+FROM d1014_ppl p
+JOIN d1014_ppl_buddy b ON b.id = p.id
+JOIN d1014_ppl_pay mine ON mine.id = p.id
+JOIN d1014_ppl_pay theirs ON theirs.id = b.buddy_id
+WHERE theirs.salary > mine.salary
+ORDER BY theirs.salary;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261014_a4', level: 'advanced', added: '2026-10-14', source: 'LeetCode', company: '',
+    ref: 'Investments in 2016', url: 'https://github.com/ieshreya/sql-50-leetcode',
+    title: 'סכום השקעות לפי תנאי ערך ומיקום', tables: ['d1014_policies'],
+    prompt: 'בטבלה d1014_policies כל שורה היא פוליסה עם ערך מבוטח ב-2015 (tiv_2015), ערך מבוטח ב-2016 (tiv_2016) ומיקום (lat, lon). החזירו שורה אחת עם tiv_2016, והיא סכום tiv_2016 של פוליסות שמתקיימים בהן שני התנאים: יש לפחות פוליסה אחרת עם אותו tiv_2015, ואין אף פוליסה אחרת עם אותו מיקום (אותם lat ו-lon). הסכום מעוגל ל-2 ספרות.',
+    solution: `SELECT ROUND(SUM(tiv_2016), 2) AS tiv_2016
+FROM (
+  SELECT tiv_2016,
+         COUNT(*) OVER (PARTITION BY tiv_2015) AS same_2015,
+         COUNT(*) OVER (PARTITION BY lat, lon) AS same_loc
+  FROM d1014_policies
+)
+WHERE same_2015 > 1 AND same_loc = 1;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261014_a5', level: 'advanced', added: '2026-10-14', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'סשנים לפי פער של 30 דקות', tables: ['d1014_clicks'],
+    prompt: 'בטבלה d1014_clicks כל שורה היא קליק של משתמש (ts בפורמט YYYY-MM-DD HH:MM:SS). קליקים של אותו משתמש שייכים לאותו סשן כל עוד הפער בין קליק לקליק שלפניו אינו עולה על 30 דקות (פער של בדיוק 30 דקות נשאר באותו סשן); פער גדול יותר פותח סשן חדש. לכל משתמש החזירו: user_id, sessions (מספר הסשנים) ו-longest_session_minutes (משך הסשן הארוך ביותר בדקות, מהקליק הראשון עד האחרון בסשן, כמספר שלם). מיינו לפי user_id.',
+    solution: `WITH o AS (
+  SELECT user_id, ts,
+         CASE WHEN LAG(ts) OVER (PARTITION BY user_id ORDER BY ts) IS NULL
+                OR strftime('%s', ts) - strftime('%s', LAG(ts) OVER (PARTITION BY user_id ORDER BY ts)) > 1800
+              THEN 1 ELSE 0 END AS new_session
+  FROM d1014_clicks
+), s AS (
+  SELECT user_id, ts, SUM(new_session) OVER (PARTITION BY user_id ORDER BY ts) AS sid FROM o
+), d AS (
+  SELECT user_id, sid, (strftime('%s', MAX(ts)) - strftime('%s', MIN(ts))) / 60 AS mins
+  FROM s GROUP BY user_id, sid
+)
+SELECT user_id, COUNT(*) AS sessions, MAX(mins) AS longest_session_minutes
+FROM d GROUP BY user_id ORDER BY user_id;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);

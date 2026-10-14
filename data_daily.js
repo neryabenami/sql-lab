@@ -369,4 +369,60 @@ INSERT INTO d1013_plays VALUES
 (22,'Wave','FR','2026-10-06'),(23,'Wave','FR','2026-10-07'),(24,'Neon','FR','2026-10-08');
 CREATE TABLE d1013_cinema (seat_id INTEGER, free INTEGER);
 INSERT INTO d1013_cinema VALUES (1,1),(2,0),(3,1),(4,1),(5,1),(6,0),(7,1),(9,1),(10,0),(11,1),(12,1),(14,1);
+
+-- 2026-10-14
+CREATE TABLE d1014_customer (id INTEGER, name TEXT, referee_id INTEGER);
+INSERT INTO d1014_customer VALUES (1,'Will',NULL),(2,'Jane',NULL),(3,'Alex',2),(4,'Bill',NULL),(5,'Zack',1),(6,'Mark',2),(7,'Dana',3),(8,'Omer',2),(9,'Lior',NULL);
+CREATE TABLE d1014_nums (num INTEGER);
+INSERT INTO d1014_nums VALUES (8),(8),(3),(3),(1),(5),(6),(6),(4);
+CREATE TABLE d1014_cust_orders (order_id INTEGER, customer_number INTEGER);
+INSERT INTO d1014_cust_orders VALUES (1,3),(2,1),(3,3),(4,2),(5,3),(6,2),(7,3),(8,4);
+CREATE TABLE d1014_queries (query_name TEXT, result TEXT, position INTEGER, rating INTEGER);
+INSERT INTO d1014_queries VALUES ('Dog','Golden Retriever',1,5),('Dog','German Shepherd',2,5),('Dog','Mule',200,1),('Cat','Shirazi',5,2),('Cat','Siamese',3,3),('Cat','Sphynx',7,4),('Bird','Owl',1,4),('Bird','Eagle',4,2);
+CREATE TABLE d1014_fees (txn_id INTEGER, currency TEXT, amount REAL, fee REAL);
+INSERT INTO d1014_fees VALUES (1,'USD',100,2.5),(2,'USD',250,NULL),(3,'USD',40,1),(4,'EUR',80,NULL),(5,'EUR',300,4.5),(6,'EUR',20,NULL),(7,'ILS',500,7),(8,'ILS',120,NULL),(9,'USD',60,0);
+CREATE TABLE d1014_catalog (product_key INTEGER);
+INSERT INTO d1014_catalog VALUES (1),(2),(3);
+CREATE TABLE d1014_purchases (customer_id INTEGER, product_key INTEGER);
+INSERT INTO d1014_purchases VALUES (1,1),(1,2),(1,3),(2,1),(2,2),(3,1),(3,2),(3,3),(3,1),(4,3);
+CREATE TABLE d1014_neighborhoods (neighborhood_id INTEGER, name TEXT);
+INSERT INTO d1014_neighborhoods VALUES (1,'Old Town'),(2,'Harbor'),(3,'Hills'),(4,'Market'),(5,'Park');
+CREATE TABLE d1014_nb_users (user_id INTEGER, neighborhood_id INTEGER);
+INSERT INTO d1014_nb_users VALUES (101,1),(102,1),(103,2),(104,2),(105,2),(106,4),(107,NULL);
+CREATE TABLE d1014_emp (employee_id INTEGER, name TEXT, manager_id INTEGER, salary INTEGER);
+INSERT INTO d1014_emp VALUES (1,'Kalinda',NULL,40000),(2,'Joziah',11,25000),(3,'Henry',9,12000),(4,'Ayelet',1,20000),(5,'Roi',12,28000),(6,'Neta',1,35000),(7,'Gil',NULL,29000),(8,'Tal',10,31000),(9,'Yoav',6,27000),(13,'Eden',14,30000);
+CREATE TABLE d1014_wm_users (user_id INTEGER, primary_address TEXT);
+INSERT INTO d1014_wm_users VALUES (1,'A1'),(2,'B1'),(3,'C1'),(4,'D1'),(5,'E1');
+CREATE TABLE d1014_wm_txns (txn_id INTEGER, user_id INTEGER, ship_address TEXT);
+INSERT INTO d1014_wm_txns VALUES (1,1,'A1'),(2,1,'A1'),(3,1,'A1'),(4,1,'X9'),(5,2,'B1'),(6,2,'Y8'),(7,2,'Y8'),(8,3,'C1'),(9,3,'Z7'),(10,5,'E1'),(11,5,'E1');
+CREATE TABLE d1014_models (model_code TEXT, release_year INTEGER, discontinued INTEGER);
+INSERT INTO d1014_models VALUES ('M1',2020,0),('M2',2021,0),('M3',2021,1),('M4',2022,0),('M5',2020,0);
+CREATE TABLE d1014_gadgets (gadget_id INTEGER, model_code TEXT, price INTEGER, speed INTEGER);
+INSERT INTO d1014_gadgets VALUES (1,'M1',50,5),(2,'M2',40,5),(3,'M3',10,5),(4,'M5',45,5),(5,'M4',90,7),(6,'M4',80,7),(7,'M1',70,7),(8,'M2',95,3);
+CREATE TABLE d1014_plays (player_id INTEGER, device_id INTEGER, event_date TEXT, games_played INTEGER);
+INSERT INTO d1014_plays VALUES (1,1,'2026-03-01',5),(1,1,'2026-03-02',6),(2,2,'2026-06-25',1),(2,2,'2026-07-03',3),(3,3,'2026-03-02',1),(3,4,'2026-03-02',4),(4,5,'2026-02-28',2),(4,5,'2026-03-01',3),(5,6,'2026-01-10',1),(5,6,'2026-01-11',2),(5,6,'2026-01-12',9),(6,7,'2026-05-01',1),(6,7,'2026-05-02',1),(6,7,'2026-05-09',1),(7,8,'2026-04-05',2),(7,8,'2026-04-07',2);
+CREATE TABLE d1014_notif_variants (user_id INTEGER, variant TEXT);
+INSERT INTO d1014_notif_variants VALUES (1,'control'),(2,'control'),(3,'control'),(4,'test'),(5,'test'),(6,'test'),(7,'test');
+CREATE TABLE d1014_notif_events (user_id INTEGER, created_at TEXT, action TEXT);
+INSERT INTO d1014_notif_events VALUES
+(1,'2026-08-03','login'),(1,'2026-08-10','login'),(1,'2026-09-02','login'),(1,'2026-09-12','nologin'),
+(2,'2026-08-05','login'),(2,'2026-08-20','nologin'),(2,'2026-09-03','login'),(2,'2026-09-15','login'),
+(3,'2026-08-07','nologin'),(3,'2026-09-09','login'),
+(4,'2026-08-04','login'),(4,'2026-08-18','login'),(4,'2026-09-05','nologin'),(4,'2026-09-06','unsubscribe'),
+(5,'2026-08-06','login'),(5,'2026-08-21','nologin'),(5,'2026-09-07','nologin'),(5,'2026-09-20','nologin'),
+(6,'2026-08-09','nologin'),(6,'2026-09-10','login'),(6,'2026-09-11','unsubscribe'),
+(7,'2026-08-12','login'),(7,'2026-09-13','nologin'),(7,'2026-09-14','nologin'),(7,'2026-09-22','unsubscribe');
+CREATE TABLE d1014_ppl (id INTEGER, name TEXT);
+INSERT INTO d1014_ppl VALUES (1,'Ben'),(2,'Sara'),(3,'Moshe'),(4,'Dana'),(5,'Yael'),(6,'Omri'),(7,'Noa'),(8,'Eli');
+CREATE TABLE d1014_ppl_buddy (id INTEGER, buddy_id INTEGER);
+INSERT INTO d1014_ppl_buddy VALUES (1,2),(2,3),(3,4),(4,5),(5,1),(6,7),(7,8),(8,6);
+CREATE TABLE d1014_ppl_pay (id INTEGER, salary INTEGER);
+INSERT INTO d1014_ppl_pay VALUES (1,60),(2,75),(3,70),(4,90),(5,85),(6,50),(7,55),(8,55);
+CREATE TABLE d1014_policies (pid INTEGER, tiv_2015 REAL, tiv_2016 REAL, lat REAL, lon REAL);
+INSERT INTO d1014_policies VALUES (1,10,5.5,10,10),(2,20,20,20,20),(3,10,30,20,20),(4,10,40,40,40),(5,50,25,30,30),(6,20,15.25,50,50);
+CREATE TABLE d1014_clicks (user_id INTEGER, ts TEXT);
+INSERT INTO d1014_clicks VALUES
+(1,'2026-10-05 09:00:00'),(1,'2026-10-05 09:10:00'),(1,'2026-10-05 09:40:00'),(1,'2026-10-05 10:30:00'),(1,'2026-10-05 10:35:00'),
+(2,'2026-10-01 08:00:00'),(2,'2026-10-01 08:31:00'),(2,'2026-10-01 20:00:00'),
+(3,'2026-10-02 12:00:00'),(3,'2026-10-02 12:20:00'),(3,'2026-10-02 12:45:00'),(3,'2026-10-02 13:10:00'),(3,'2026-10-02 13:30:00');
 `;
