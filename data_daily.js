@@ -425,4 +425,69 @@ INSERT INTO d1014_clicks VALUES
 (1,'2026-10-05 09:00:00'),(1,'2026-10-05 09:10:00'),(1,'2026-10-05 09:40:00'),(1,'2026-10-05 10:30:00'),(1,'2026-10-05 10:35:00'),
 (2,'2026-10-01 08:00:00'),(2,'2026-10-01 08:31:00'),(2,'2026-10-01 20:00:00'),
 (3,'2026-10-02 12:00:00'),(3,'2026-10-02 12:20:00'),(3,'2026-10-02 12:45:00'),(3,'2026-10-02 13:10:00'),(3,'2026-10-02 13:30:00');
+-- 2026-10-15
+CREATE TABLE d1015_ms_events (event_id INTEGER, customer_id INTEGER, client_id TEXT, user_id INTEGER, event_date TEXT);
+INSERT INTO d1015_ms_events VALUES (1,1,'mobile',101,'2026-08-03'),(2,1,'mobile',101,'2026-08-20'),(3,1,'mobile',102,'2026-09-01'),(4,1,'mobile',103,'2026-09-15'),(5,1,'desktop',101,'2026-08-05'),(6,2,'mobile',201,'2026-08-11'),(7,2,'desktop',201,'2026-08-12'),(8,2,'desktop',202,'2026-09-02'),(9,2,'web',202,'2026-09-03'),(10,3,'mobile',301,'2026-09-09'),(11,3,'desktop',302,'2026-08-30'),(12,3,'desktop',302,'2026-09-30'),(13,4,'mobile',401,'2026-08-14'),(14,4,'mobile',402,'2026-09-14'),(15,4,'web',401,'2026-09-20'),(16,5,'mobile',501,'2026-08-01'),(17,5,'mobile',502,'2026-08-01'),(18,5,'mobile',501,'2026-09-05'),(19,6,'desktop',601,'2026-09-06'),(20,6,'web',602,'2026-09-07'),(21,1,'web',104,'2026-08-31');
+CREATE TABLE d1015_station (id INTEGER, city TEXT);
+INSERT INTO d1015_station VALUES (1,'Rome'),(2,'Oslo'),(3,'Lima'),(4,'Jerusalem'),(5,'Amsterdam'),(6,'Johannesburg'),(7,'Kuala Lumpur'),(8,'Tel Aviv'),(9,'Haifa');
+CREATE TABLE d1015_shop_orders (order_id INTEGER, customer TEXT, category TEXT, amount INTEGER, status TEXT, order_date TEXT);
+INSERT INTO d1015_shop_orders VALUES (1,'Dan','books',45,'completed','2026-09-01'),(2,'Dan','toys',80,'cancelled','2026-09-02'),(3,'Eve','books',60,'completed','2026-09-03'),(4,'Eve','toys',120,'completed','2026-09-04'),(5,'Gal','garden',30,'completed','2026-09-05'),(6,'Gal','garden',25,'returned','2026-09-06'),(7,'Hen','toys',55,'completed','2026-09-07'),(8,'Hen','books',20,'completed','2026-09-08'),(9,'Ivy','garden',70,'completed','2026-09-09'),(10,'Ivy','kitchen',90,'completed','2026-09-10'),(11,'Jon','kitchen',15,'cancelled','2026-09-11'),(12,'Jon','books',10,'completed','2026-09-12'),(13,'Mor','toys',35,'cancelled','2026-09-13');
+CREATE TABLE d1015_cust (name TEXT, city TEXT);
+INSERT INTO d1015_cust VALUES ('Dan','Haifa'),('Eve','Eilat'),('Gal','Haifa'),('Hen','Tel Aviv'),('Ivy','Eilat'),('Jon','Haifa'),('Kai','Tel Aviv'),('Lia','Eilat'),('Mor','Haifa');
+CREATE TABLE d1015_emps (emp_id INTEGER, name TEXT, dept TEXT, salary INTEGER, bonus INTEGER);
+INSERT INTO d1015_emps VALUES (1,'Avi','Sales',4000,1500),(2,'Bat','Sales',3500,NULL),(3,'Cal','Support',4800,300),(4,'Dor','Support',4200,NULL),(5,'Eli','Dev',9000,500),(6,'Fay','Sales',3000,2000),(7,'Gil','Support',5000,NULL),(8,'Hod','Sales',4500,500);
+CREATE TABLE d1015_products (pid INTEGER, name TEXT, price REAL);
+INSERT INTO d1015_products VALUES (1,'Cable',12.5),(2,'Mouse',39.99),(3,'Keyboard',40),(4,'Monitor',199),(5,'Dock',100),(6,'Hub',99.99),(7,'Pad',5),(8,'Webcam',65),(9,'Lamp',25);
+CREATE TABLE d1015_company (company_code TEXT, founder TEXT);
+INSERT INTO d1015_company VALUES ('C1','Lorence'),('C2','Mira'),('C3','Noam');
+CREATE TABLE d1015_lead (lead_code TEXT, company_code TEXT);
+INSERT INTO d1015_lead VALUES ('L1','C1'),('L2','C1'),('L3','C2');
+CREATE TABLE d1015_senior (senior_code TEXT, lead_code TEXT, company_code TEXT);
+INSERT INTO d1015_senior VALUES ('S1','L1','C1'),('S2','L1','C1'),('S3','L2','C1'),('S4','L3','C2'),('S4','L3','C2');
+CREATE TABLE d1015_mgr (manager_code TEXT, senior_code TEXT, lead_code TEXT, company_code TEXT);
+INSERT INTO d1015_mgr VALUES ('M1','S1','L1','C1'),('M2','S1','L1','C1'),('M3','S2','L1','C1'),('M4','S3','L2','C1'),('M5','S4','L3','C2');
+CREATE TABLE d1015_emp (employee_code TEXT, manager_code TEXT, senior_code TEXT, lead_code TEXT, company_code TEXT);
+INSERT INTO d1015_emp VALUES ('E1','M1','S1','L1','C1'),('E2','M1','S1','L1','C1'),('E3','M2','S1','L1','C1'),('E4','M3','S2','L1','C1'),('E5','M4','S3','L2','C1'),('E6','M4','S3','L2','C1'),('E7','M5','S4','L3','C2');
+CREATE TABLE d1015_reports (emp_name TEXT, mgr_name TEXT);
+INSERT INTO d1015_reports VALUES ('Tali','Boaz'),('Tali','Cohen'),('Udi','Boaz'),('Udi','Boaz'),('Vera','Cohen'),('Vera','Dina'),('Vera','Boaz'),('Waz',NULL),('Waz','Dina'),('Xen',NULL);
+CREATE TABLE d1015_players (player_id INTEGER, group_id INTEGER);
+INSERT INTO d1015_players VALUES (1,1),(2,1),(3,1),(4,2),(5,2),(6,2),(7,3),(8,3);
+CREATE TABLE d1015_matches (match_id INTEGER, first_player INTEGER, second_player INTEGER, first_score INTEGER, second_score INTEGER);
+INSERT INTO d1015_matches VALUES (1,1,2,15,20),(2,1,3,30,5),(3,2,3,10,40),(4,4,5,8,8),(5,6,4,12,2),(6,5,6,5,7),(7,7,8,0,0);
+CREATE TABLE d1015_pmatches (player_id INTEGER, match_no INTEGER, result TEXT);
+INSERT INTO d1015_pmatches VALUES (1,1,'W'),(1,2,'W'),(1,3,'L'),(1,4,'W'),(1,5,'W'),(1,6,'W'),(1,7,'L'),(2,1,'W'),(2,2,'W'),(2,3,'W'),(2,4,'W'),(2,5,'L'),(2,6,'W'),(3,1,'L'),(3,2,'L'),(3,3,'W'),(4,1,'W'),(4,2,'L'),(4,3,'W'),(4,4,'W'),(5,1,'L');
+CREATE TABLE d1015_txn (txn_id INTEGER, user_id INTEGER, txn_date TEXT, status TEXT);
+INSERT INTO d1015_txn VALUES (1,1,'2026-10-01','success'),(2,1,'2026-10-01','success'),(3,1,'2026-10-02','success'),(4,1,'2026-10-03','success'),(5,1,'2026-10-04','failed'),(6,1,'2026-10-05','success'),(7,1,'2026-10-06','success'),(8,2,'2026-09-28','success'),(9,2,'2026-09-29','success'),(10,2,'2026-09-30','success'),(11,2,'2026-10-01','success'),(12,2,'2026-10-02','failed'),(13,3,'2026-10-01','success'),(14,3,'2026-10-03','success'),(15,3,'2026-10-05','success'),(16,4,'2026-10-01','failed'),(17,4,'2026-10-02','failed');
+CREATE TABLE d1015_views (view_id INTEGER, user_id INTEGER, country TEXT, genre TEXT, watched_at TEXT);
+INSERT INTO d1015_views VALUES
+(1,101,'IL','drama','2026-09-05'),
+(2,102,'IL','drama','2026-09-08'),
+(3,103,'IL','drama','2026-09-11'),
+(4,104,'IL','drama','2026-09-14'),
+(5,105,'IL','comedy','2026-09-17'),
+(6,106,'IL','comedy','2026-09-20'),
+(7,107,'IL','comedy','2026-09-23'),
+(8,108,'IL','thriller','2026-09-26'),
+(9,100,'IL','thriller','2026-09-02'),
+(10,101,'IL','documentary','2026-09-05'),
+(11,102,'IL','documentary','2026-09-08'),
+(12,103,'IL','anime','2026-09-11'),
+(13,104,'US','action','2026-09-14'),
+(14,105,'US','action','2026-09-17'),
+(15,106,'US','action','2026-09-20'),
+(16,107,'US','comedy','2026-09-23'),
+(17,108,'US','comedy','2026-09-26'),
+(18,100,'US','drama','2026-09-02'),
+(19,101,'US','drama','2026-09-05'),
+(20,102,'US','horror','2026-09-08'),
+(21,103,'FR','drama','2026-09-11'),
+(22,104,'FR','drama','2026-09-14'),
+(23,105,'FR','romance','2026-09-17'),
+(24,150,'FR','comedy','2026-08-31'),
+(25,151,'FR','comedy','2026-08-31'),
+(26,152,'FR','comedy','2026-10-01'),
+(27,153,'IL','anime','2026-10-01'),
+(28,154,'IL','anime','2026-08-30');
+CREATE TABLE d1015_sub_events (user_id INTEGER, event_type TEXT, event_date TEXT);
+INSERT INTO d1015_sub_events VALUES (1,'start','2026-06-03'),(1,'pause','2026-06-20'),(1,'resume','2026-07-05'),(2,'start','2026-06-10'),(2,'cancel','2026-07-10'),(3,'start','2026-06-15'),(4,'start','2026-06-28'),(4,'pause','2026-07-30'),(5,'start','2026-07-02'),(5,'cancel','2026-08-02'),(5,'start','2026-09-15'),(6,'start','2026-07-12'),(6,'cancel','2026-07-30'),(7,'start','2026-07-20'),(8,'start','2026-08-05'),(8,'cancel','2026-09-05'),(9,'start','2026-08-18'),(9,'pause','2026-09-01'),(9,'cancel','2026-09-20'),(10,'start','2026-08-25');
 `;

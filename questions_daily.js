@@ -1046,6 +1046,210 @@ SELECT user_id, COUNT(*) AS sessions, MAX(mins) AS longest_session_minutes
 FROM d GROUP BY user_id ORDER BY user_id;`,
     ordered: true,
   },
+  // ===== 2026-10-15 =====
+  {
+    id: 'd20261015_b1', level: 'basic', added: '2026-10-15', source: 'StrataScratch', company: 'Microsoft',
+    ref: 'Unique users per client per month', url: 'https://www.stratascratch.com/blog/microsoft-data-analyst-interview-questions',
+    title: 'משתמשים ייחודיים לפי לקוח וחודש', tables: ['d1015_ms_events'],
+    prompt: 'בטבלה d1015_ms_events כל שורה היא אירוע שביצע משתמש (user_id) דרך סוג לקוח (client_id), בתאריך event_date בפורמט YYYY-MM-DD. לכל צירוף של חודש (בפורמט YYYY-MM) וסוג לקוח החזירו: month, client_id ו-unique_users (מספר המשתמשים השונים). מיינו לפי month ואז לפי client_id, שניהם בסדר עולה.',
+    solution: `SELECT strftime('%Y-%m', event_date) AS month, client_id, COUNT(DISTINCT user_id) AS unique_users
+FROM d1015_ms_events
+GROUP BY month, client_id
+ORDER BY month, client_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261015_b2', level: 'basic', added: '2026-10-15', source: 'HackerRank', company: '',
+    ref: 'Weather Observation Station 5', url: 'https://github.com/satyarthiabhay/Hackerrank-SQL-Challenges',
+    title: 'העיר הקצרה והארוכה ביותר', tables: ['d1015_station'],
+    prompt: 'בטבלה d1015_station יש שמות ערים. החזירו שתי שורות עם העמודות city ו-name_length (מספר התווים בשם): בשורה הראשונה העיר בעלת השם הקצר ביותר, ובשנייה העיר בעלת השם הארוך ביותר. אם יש כמה ערים עם אותו אורך, בחרו את זו שהראשונה לפי סדר אלפביתי. הרווח בשם נספר כתו.',
+    solution: `SELECT city, name_length FROM (SELECT city, LENGTH(city) AS name_length FROM d1015_station ORDER BY LENGTH(city) ASC, city ASC LIMIT 1)
+UNION ALL
+SELECT city, name_length FROM (SELECT city, LENGTH(city) AS name_length FROM d1015_station ORDER BY LENGTH(city) DESC, city ASC LIMIT 1);`,
+    ordered: true,
+  },
+  {
+    id: 'd20261015_b3', level: 'basic', added: '2026-10-15', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'קטגוריות עם מכירות גבוהות', tables: ['d1015_shop_orders'],
+    prompt: 'בטבלה d1015_shop_orders יש הזמנות בחנות מקוונת. התייחסו רק להזמנות שהושלמו (status = \'completed\'). לכל קטגוריה שסך הסכומים (amount) שלה בהזמנות אלה גדול מ-100 בהחלט, החזירו: category, orders (מספר ההזמנות) ו-total (סך הסכומים). מיינו לפי total מהגבוה לנמוך.',
+    solution: `SELECT category, COUNT(*) AS orders, SUM(amount) AS total
+FROM d1015_shop_orders
+WHERE status = 'completed'
+GROUP BY category
+HAVING SUM(amount) > 100
+ORDER BY total DESC;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261015_b4', level: 'basic', added: '2026-10-15', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'שכר כולל עם בונוס חסר', tables: ['d1015_emps'],
+    prompt: 'בטבלה d1015_emps יש עובדים עם שכר בסיס (salary) ובונוס (bonus), כשלעובדים מסוימים אין בונוס (ערך ריק, שנחשב כ-0). עבור עובדי מחלקות Sales ו-Support בלבד, החזירו את name ואת השכר הכולל total_pay (שכר בסיס ועוד בונוס) רק למי שהשכר הכולל שלו לפחות 5000. מיינו לפי total_pay מהגבוה לנמוך, ובשוויון לפי name אלפביתי.',
+    solution: `SELECT name, salary + COALESCE(bonus, 0) AS total_pay
+FROM d1015_emps
+WHERE dept IN ('Sales', 'Support') AND salary + COALESCE(bonus, 0) >= 5000
+ORDER BY total_pay DESC, name;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261015_b5', level: 'basic', added: '2026-10-15', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'פילוח מוצרים לפי טווח מחיר', tables: ['d1015_products'],
+    prompt: 'בטבלה d1015_products יש מוצרים ומחיריהם. סווגו כל מוצר לטווח מחיר: \'cheap\' אם המחיר נמוך מ-40, \'mid\' אם המחיר לפחות 40 ונמוך מ-100, ו-\'premium\' אם המחיר לפחות 100. החזירו שורה לכל טווח עם העמודות tier ו-products (מספר המוצרים בטווח).',
+    solution: `SELECT CASE WHEN price < 40 THEN 'cheap' WHEN price < 100 THEN 'mid' ELSE 'premium' END AS tier, COUNT(*) AS products
+FROM d1015_products
+GROUP BY tier;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261015_i1', level: 'intermediate', added: '2026-10-15', source: 'StrataScratch', company: 'Microsoft',
+    ref: 'Bottom 2 companies by mobile usage', url: 'https://www.stratascratch.com/blog/microsoft-sql-interview-questions-for-data-science-position/',
+    title: 'שתי החברות עם השימוש הנמוך ביותר במובייל', tables: ['d1015_ms_events'],
+    prompt: 'בטבלה d1015_ms_events כל שורה היא אירוע, ו-customer_id מזהה את החברה (הלקוח העסקי). אירוע מובייל הוא אירוע עם client_id = \'mobile\'. דרגו את החברות שיש להן לפחות אירוע מובייל אחד לפי מספר אירועי המובייל שלהן, מהנמוך לגבוה, כך שחברות עם אותו מספר אירועים מקבלות אותו דירוג והדירוג הבא רצוף (1, 1, 2, ...). החזירו את customer_id ואת mobile_events של כל החברות שדירוגן 1 או 2.',
+    solution: `WITH c AS (
+  SELECT customer_id, COUNT(*) AS mobile_events
+  FROM d1015_ms_events WHERE client_id = 'mobile' GROUP BY customer_id
+), r AS (
+  SELECT customer_id, mobile_events, DENSE_RANK() OVER (ORDER BY mobile_events) AS rnk FROM c
+)
+SELECT customer_id, mobile_events FROM r WHERE rnk <= 2;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261015_i2', level: 'intermediate', added: '2026-10-15', source: 'HackerRank', company: '',
+    ref: 'New Companies', url: 'https://github.com/cuongtrans/hackerrank-sql-challenges',
+    title: 'מבנה ניהולי לכל חברה', tables: ['d1015_company', 'd1015_lead', 'd1015_senior', 'd1015_mgr', 'd1015_emp'],
+    prompt: 'לכל חברה בטבלה d1015_company יש מנהלי לידים (d1015_lead), מנהלים בכירים (d1015_senior), מנהלים (d1015_mgr) ועובדים (d1015_emp), וכל קוד יכול להופיע בטבלה יותר מפעם אחת. לכל חברה, כולל חברות שאין להן אף אחד מהם, החזירו: company_code, founder ובנוסף את מספר הקודים השונים של מנהלי הלידים (leads), הבכירים (seniors), המנהלים (managers) והעובדים (employees). מיינו לפי company_code.',
+    solution: `SELECT c.company_code, c.founder,
+  (SELECT COUNT(DISTINCT lead_code) FROM d1015_lead l WHERE l.company_code = c.company_code) AS leads,
+  (SELECT COUNT(DISTINCT senior_code) FROM d1015_senior s WHERE s.company_code = c.company_code) AS seniors,
+  (SELECT COUNT(DISTINCT manager_code) FROM d1015_mgr m WHERE m.company_code = c.company_code) AS managers,
+  (SELECT COUNT(DISTINCT employee_code) FROM d1015_emp e WHERE e.company_code = c.company_code) AS employees
+FROM d1015_company c
+ORDER BY c.company_code;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261015_i3', level: 'intermediate', added: '2026-10-15', source: 'GeeksforGeeks', company: 'Google',
+    ref: 'Find employees who report to more than one manager', url: 'https://geeksforgeeks.org/google-sql-interview-questions',
+    title: 'עובדים עם יותר ממנהל אחד', tables: ['d1015_reports'],
+    prompt: 'בטבלה d1015_reports כל שורה אומרת שעובד (emp_name) מדווח למנהל (mgr_name); שורות יכולות לחזור על עצמן, ולפעמים המנהל לא ידוע (ערך ריק). החזירו את העובדים שמדווחים ליותר ממנהל אחד שונה ידוע: emp_name ו-managers (מספר המנהלים השונים).',
+    solution: `SELECT emp_name, COUNT(DISTINCT mgr_name) AS managers
+FROM d1015_reports
+GROUP BY emp_name
+HAVING COUNT(DISTINCT mgr_name) > 1;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261015_i4', level: 'intermediate', added: '2026-10-15', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'לקוחות בלי הזמנה שהושלמה', tables: ['d1015_cust', 'd1015_shop_orders'],
+    prompt: 'בטבלה d1015_cust יש לקוחות של חנות, ובטבלה d1015_shop_orders יש הזמנות (העמודה customer מכילה את שם הלקוח). החזירו את name ו-city של כל לקוח שאין לו אף הזמנה שהושלמה (status = \'completed\'), כולל לקוחות שלא ביצעו הזמנות כלל.',
+    solution: `SELECT c.name, c.city
+FROM d1015_cust c
+WHERE NOT EXISTS (SELECT 1 FROM d1015_shop_orders o WHERE o.customer = c.name AND o.status = 'completed');`,
+    ordered: false,
+  },
+  {
+    id: 'd20261015_i5', level: 'intermediate', added: '2026-10-15', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'אחוז הזמנות שהושלמו לפי קטגוריה', tables: ['d1015_shop_orders'],
+    prompt: 'בטבלה d1015_shop_orders יש הזמנות בסטטוסים שונים. עבור קטגוריות שיש בהן לפחות 3 הזמנות (בכל סטטוס), החזירו: category, total_orders ו-completed_pct, שהוא אחוז ההזמנות שהושלמו (status = \'completed\') מתוך כל ההזמנות בקטגוריה, מעוגן לשתי ספרות אחרי הנקודה.',
+    solution: `SELECT category, COUNT(*) AS total_orders,
+  ROUND(100.0 * SUM(CASE WHEN status = 'completed' THEN 1 ELSE 0 END) / COUNT(*), 2) AS completed_pct
+FROM d1015_shop_orders
+GROUP BY category
+HAVING COUNT(*) >= 3;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261015_a1', level: 'advanced', added: '2026-10-15', source: 'LeetCode', company: '',
+    ref: 'Tournament Winners', url: 'https://walkccc.me/LeetCode/problems/1194/',
+    title: 'המנצח בכל קבוצה בטורניר', tables: ['d1015_players', 'd1015_matches'],
+    prompt: 'בטבלה d1015_players כל שחקן משויך לקבוצה (group_id). בטבלה d1015_matches כל משחק הוא בין שני שחקנים מאותה קבוצה, עם הנקודות שכל אחד השיג (first_score, second_score). סך הנקודות של שחקן הוא סכום הנקודות שלו מכל המשחקים שלו, בין אם שיחק כראשון ובין אם כשני. לכל קבוצה החזירו את group_id ואת player_id של השחקן עם סך הנקודות הגבוה ביותר; בשוויון נבחר השחקן עם ה-player_id הנמוך יותר. מיינו לפי group_id.',
+    solution: `WITH pts AS (
+  SELECT first_player AS player_id, first_score AS score FROM d1015_matches
+  UNION ALL
+  SELECT second_player, second_score FROM d1015_matches
+), tot AS (
+  SELECT p.group_id, p.player_id, COALESCE(SUM(x.score), 0) AS total
+  FROM d1015_players p LEFT JOIN pts x ON x.player_id = p.player_id
+  GROUP BY p.group_id, p.player_id
+), r AS (
+  SELECT group_id, player_id, ROW_NUMBER() OVER (PARTITION BY group_id ORDER BY total DESC, player_id) AS rn FROM tot
+)
+SELECT group_id, player_id FROM r WHERE rn = 1 ORDER BY group_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261015_a2', level: 'advanced', added: '2026-10-15', source: 'StrataScratch', company: 'Amazon',
+    ref: 'Player with Longest Streak', url: 'https://www.stratascratch.com/blog/amazon-data-analyst-interview-questions',
+    title: 'השחקן עם רצף הניצחונות הארוך ביותר', tables: ['d1015_pmatches'],
+    prompt: 'בטבלה d1015_pmatches כל שורה היא משחק של שחקן, כשמספר המשחק (match_no) מציין את סדר המשחקים של אותו שחקן, ותוצאתו (result) היא \'W\' לניצחון או \'L\' להפסד. רצף ניצחונות הוא משחקים רצופים של אותו שחקן שכולם ניצחון. החזירו שורה אחת: player_id של השחקן עם רצף הניצחונות הארוך ביותר ו-longest_streak (אורך הרצף). בנתונים אין תיקו על המקום הראשון.',
+    solution: `WITH g AS (
+  SELECT player_id, result,
+    ROW_NUMBER() OVER (PARTITION BY player_id ORDER BY match_no)
+    - ROW_NUMBER() OVER (PARTITION BY player_id, result ORDER BY match_no) AS grp
+  FROM d1015_pmatches
+), s AS (
+  SELECT player_id, COUNT(*) AS streak FROM g WHERE result = 'W' GROUP BY player_id, grp
+)
+SELECT player_id, MAX(streak) AS longest_streak FROM s GROUP BY player_id ORDER BY longest_streak DESC LIMIT 1;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261015_a3', level: 'advanced', added: '2026-10-15', source: 'PracHub', company: 'Capital One',
+    ref: 'Calculate longest transaction streak for each user', url: 'https://prachub.com/interview-questions/calculate-longest-transaction-streak-for-each-user',
+    title: 'רצף ימים ארוך ביותר של עסקאות מוצלחות', tables: ['d1015_txn'],
+    prompt: 'בטבלה d1015_txn יש עסקאות של משתמשים עם תאריך txn_date (YYYY-MM-DD) וסטטוס. התייחסו רק לעסקאות עם status = \'success\'; כמה עסקאות מוצלחות באותו יום נחשבות כיום אחד. לכל משתמש שיש לו לפחות עסקה מוצלחת אחת, החזירו: user_id ו-longest_streak, מספר הימים הרצופים (ימי לוח) הארוך ביותר שבהם היתה לו עסקה מוצלחת. מיינו לפי user_id.',
+    solution: `WITH d AS (
+  SELECT DISTINCT user_id, txn_date FROM d1015_txn WHERE status = 'success'
+), g AS (
+  SELECT user_id, txn_date,
+    date(txn_date, '-' || ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY txn_date) || ' days') AS grp
+  FROM d
+), s AS (
+  SELECT user_id, COUNT(*) AS streak FROM g GROUP BY user_id, grp
+)
+SELECT user_id, MAX(streak) AS longest_streak FROM s GROUP BY user_id ORDER BY user_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261015_a4', level: 'advanced', added: '2026-10-15', source: 'Dataford', company: 'Netflix',
+    ref: 'Top three genres per country in the last month', url: 'https://dataford.io/interview-guides/netflix/data-analyst',
+    title: 'שלושת הז\'אנרים המובילים בכל מדינה', tables: ['d1015_views'],
+    prompt: 'בטבלה d1015_views כל שורה היא צפייה בתוכן (מדינה, ז\'אנר ותאריך watched_at בפורמט YYYY-MM-DD). התייחסו לצפיות בספטמבר 2026 בלבד. לכל מדינה החזירו את שלושת הז\'אנרים עם מספר הצפיות הגבוה ביותר (או פחות משלושה אם במדינה יש פחות ז\'אנרים), כשבשוויון במספר הצפיות עדיף הז\'אנר הראשון לפי סדר אלפביתי. עמודות: country, genre, views. מיינו לפי country ואז לפי views מהגבוה לנמוך ואז לפי genre.',
+    solution: `WITH g AS (
+  SELECT country, genre, COUNT(*) AS views
+  FROM d1015_views WHERE watched_at >= '2026-09-01' AND watched_at < '2026-10-01'
+  GROUP BY country, genre
+), r AS (
+  SELECT country, genre, views, ROW_NUMBER() OVER (PARTITION BY country ORDER BY views DESC, genre) AS rn FROM g
+)
+SELECT country, genre, views FROM r WHERE rn <= 3 ORDER BY country, views DESC, genre;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261015_a5', level: 'advanced', added: '2026-10-15', source: 'Dataford', company: 'Netflix',
+    ref: 'Cohort retention from subscription start, cancel and pause events', url: 'https://dataford.io/interview-guides/netflix/data-analyst',
+    title: 'שימור מנויים לפי חודש הצטרפות', tables: ['d1015_sub_events'],
+    prompt: 'בטבלה d1015_sub_events יש אירועי מנוי (event_type: \'start\', \'pause\', \'resume\' או \'cancel\') עם תאריכים. חודש ההצטרפות של משתמש הוא החודש (YYYY-MM) של אירוע ה-start הראשון שלו. משתמש נחשב פעיל כרגע אם האירוע האחרון שלו (לפי תאריך) אינו \'cancel\'. לכל חודש הצטרפות החזירו: cohort_month, subscribers (מספר המשתמשים), active_users (כמה מהם פעילים כרגע) ו-active_pct (אחוז הפעילים, מעוגן לשתי ספרות אחרי הנקודה). מיינו לפי cohort_month.',
+    solution: `WITH last_ev AS (
+  SELECT user_id, event_type,
+    ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY event_date DESC) AS rn
+  FROM d1015_sub_events
+), first_start AS (
+  SELECT user_id, strftime('%Y-%m', MIN(event_date)) AS cohort_month
+  FROM d1015_sub_events WHERE event_type = 'start' GROUP BY user_id
+)
+SELECT f.cohort_month, COUNT(*) AS subscribers,
+  SUM(CASE WHEN l.event_type <> 'cancel' THEN 1 ELSE 0 END) AS active_users,
+  ROUND(100.0 * SUM(CASE WHEN l.event_type <> 'cancel' THEN 1 ELSE 0 END) / COUNT(*), 2) AS active_pct
+FROM first_start f JOIN last_ev l ON l.user_id = f.user_id AND l.rn = 1
+GROUP BY f.cohort_month ORDER BY f.cohort_month;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
