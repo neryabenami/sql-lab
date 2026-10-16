@@ -1250,6 +1250,192 @@ FROM first_start f JOIN last_ev l ON l.user_id = f.user_id AND l.rn = 1
 GROUP BY f.cohort_month ORDER BY f.cohort_month;`,
     ordered: true,
   },
+  {
+    id: 'd20261016_b1', level: 'basic', added: '2026-10-16', source: 'HackerRank', company: '',
+    ref: 'Top Earners', url: 'https://github.com/KursadKalender/HackerRank-SQL-Challenges-Solutions-',
+    title: 'ההכנסה הכוללת הגבוהה ביותר', tables: ['d1016_staff'],
+    prompt: `בטבלה d1016_staff יש לכל עובד מספר חודשי עבודה (months) ושכר חודשי (salary). ההכנסה הכוללת של עובד היא months * salary. החזירו שורה אחת עם שתי עמודות לפי הסדר: max_earnings (ההכנסה הכוללת הגבוהה ביותר) ו-employees (כמה עובדים השיגו בדיוק את ההכנסה הזו).`,
+    solution: `SELECT MAX(months * salary) AS max_earnings, COUNT(*) AS employees
+FROM d1016_staff
+WHERE months * salary = (SELECT MAX(months * salary) FROM d1016_staff);`,
+    ordered: false,
+  },
+  {
+    id: 'd20261016_b2', level: 'basic', added: '2026-10-16', source: 'HackerRank', company: '',
+    ref: 'The Blunder', url: 'https://github.com/KursadKalender/HackerRank-SQL-Challenges-Solutions-',
+    title: 'טעות בהקלדה: ספרות אפס חסרות', tables: ['d1016_units'],
+    prompt: `בטבלה d1016_units יש כמויות מלאי (units). מקלדת פגומה לא מקלידה את הספרה 0, ולכן במערכת הדיווח כל כמות הופיעה בלי הספרות 0 שלה (למשל 1050 הפכה ל-15). החזירו עמודה אחת בשם diff: ההפרש בין ממוצע הכמויות האמיתיות לממוצע הכמויות כפי שדווחו בלי האפסים, מעוגן לשתי ספרות אחרי הנקודה.`,
+    solution: `SELECT ROUND(AVG(units) - AVG(CAST(REPLACE(units, '0', '') AS INTEGER)), 2) AS diff
+FROM d1016_units;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261016_b3', level: 'basic', added: '2026-10-16', source: 'HackerRank', company: '',
+    ref: 'Population Density Difference', url: 'https://github.com/KursadKalender/HackerRank-SQL-Challenges-Solutions-',
+    title: 'פער צפיפות אוכלוסין', tables: ['d1016_regions'],
+    prompt: `בטבלה d1016_regions יש לכל אזור אוכלוסייה (population) ושטח בקמ"ר (area_sqkm). צפיפות אזור היא population חלקי area_sqkm. החזירו עמודה אחת בשם density_gap: ההפרש בין הצפיפות הגבוהה ביותר לנמוכה ביותר, מעוגן לשתי ספרות אחרי הנקודה.`,
+    solution: `SELECT ROUND(MAX(population * 1.0 / area_sqkm) - MIN(population * 1.0 / area_sqkm), 2) AS density_gap
+FROM d1016_regions;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261016_b4', level: 'basic', added: '2026-10-16', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'זמני טיפול בפניות לפי ערוץ', tables: ['d1016_support'],
+    prompt: `בטבלה d1016_support יש פניות תמיכה. אם resolved_hours ריק (NULL), הפנייה עדיין לא טופלה. לכל ערוץ (channel) שיש בו לפחות 3 פניות, החזירו: channel, tickets (מספר הפניות), resolved (מספר הפניות שטופלו) ו-avg_hours (ממוצע שעות הטיפול של הפניות שטופלו, מעוגן לספרה אחת אחרי הנקודה). מיינו לפי tickets מהגבוה לנמוך ואחר כך לפי channel בסדר אלפביתי.`,
+    solution: `SELECT channel, COUNT(*) AS tickets, COUNT(resolved_hours) AS resolved, ROUND(AVG(resolved_hours), 1) AS avg_hours
+FROM d1016_support
+GROUP BY channel
+HAVING COUNT(*) >= 3
+ORDER BY tickets DESC, channel;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261016_b5', level: 'basic', added: '2026-10-16', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'סטטוס סוללה של מכשירים', tables: ['d1016_devices'],
+    prompt: `בטבלה d1016_devices יש לכל מכשיר אחוז סוללה (battery_pct), ולעיתים הערך חסר (NULL). סווגו כל מכשיר: 'critical' אם הסוללה מתחת ל-20, 'low' אם היא בין 20 ל-49 (כולל), 'ok' אם היא 50 ומעלה, ו-'unknown' אם הערך חסר. החזירו status ו-devices (מספר המכשירים בכל סטטוס), ממוינים לפי status בסדר אלפביתי.`,
+    solution: `SELECT CASE WHEN battery_pct IS NULL THEN 'unknown'
+            WHEN battery_pct < 20 THEN 'critical'
+            WHEN battery_pct < 50 THEN 'low'
+            ELSE 'ok' END AS status,
+       COUNT(*) AS devices
+FROM d1016_devices
+GROUP BY status
+ORDER BY status;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261016_i1', level: 'intermediate', added: '2026-10-16', source: 'LeetCode', company: '',
+    ref: 'Department Highest Salary', url: 'https://www.scribd.com/document/846267546/300-Leetcode-SQL-Problems-and-Solutions',
+    title: 'המשתכרים הגבוהים בכל מחלקה', tables: ['d1016_workers', 'd1016_depts'],
+    prompt: `בטבלאות d1016_workers (עובדים) ו-d1016_depts (מחלקות) מחברת dept_id ל-id של המחלקה. לכל מחלקה שיש בה עובדים, החזירו את העובדים בעלי השכר הגבוה ביותר במחלקה שלהם (אם כמה עובדים חולקים את השכר הגבוה, החזירו את כולם). העמודות: department (שם המחלקה), employee (שם העובד), salary.`,
+    solution: `SELECT d.name AS department, w.name AS employee, w.salary
+FROM d1016_workers w
+JOIN d1016_depts d ON d.id = w.dept_id
+WHERE w.salary = (SELECT MAX(salary) FROM d1016_workers w2 WHERE w2.dept_id = w.dept_id);`,
+    ordered: false,
+  },
+  {
+    id: 'd20261016_i2', level: 'intermediate', added: '2026-10-16', source: 'LeetCode', company: '',
+    ref: 'Nth Highest Salary', url: 'https://www.scribd.com/document/846267546/300-Leetcode-SQL-Problems-and-Solutions',
+    title: 'השכר השלישי בגובהו', tables: ['d1016_pay'],
+    prompt: `בטבלה d1016_pay יש שכר (salary) של כל עובד, וכמה עובדים יכולים להרוויח את אותו שכר. החזירו עמודה אחת בשם third_highest: הערך השלישי בגובהו מבין השכרים השונים זה מזה (שכר שחוזר כמה פעמים נספר פעם אחת). אם אין שלושה שכרים שונים, החזירו NULL.`,
+    solution: `SELECT (SELECT DISTINCT salary FROM d1016_pay ORDER BY salary DESC LIMIT 1 OFFSET 2) AS third_highest;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261016_i3', level: 'intermediate', added: '2026-10-16', source: 'LeetCode', company: '',
+    ref: 'Employees Earning More Than Their Managers', url: 'https://www.scribd.com/document/846267546/300-Leetcode-SQL-Problems-and-Solutions',
+    title: 'עובדים שמרוויחים יותר מהמנהל', tables: ['d1016_workers'],
+    prompt: `בטבלה d1016_workers העמודה manager_id מצביעה על id של המנהל הישיר של העובד (NULL למי שאין לו מנהל). החזירו את שמות העובדים (name) ששכרם גבוה ממש משכר המנהל הישיר שלהם.`,
+    solution: `SELECT e.name
+FROM d1016_workers e
+JOIN d1016_workers m ON m.id = e.manager_id
+WHERE e.salary > m.salary;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261016_i4', level: 'intermediate', added: '2026-10-16', source: 'LeetCode', company: '',
+    ref: 'Customers Who Never Order', url: 'https://www.scribd.com/document/846267546/300-Leetcode-SQL-Problems-and-Solutions',
+    title: 'לקוחות שמעולם לא הזמינו', tables: ['d1016_cust', 'd1016_ord'],
+    prompt: `בטבלה d1016_cust יש לקוחות, ובטבלה d1016_ord הזמנות (cust_id הוא ה-id של הלקוח; הזמנה של אורח לא מזוהה נשמרת עם cust_id ריק). החזירו את שמות הלקוחות (name) שאין להם אף הזמנה.`,
+    solution: `SELECT c.name
+FROM d1016_cust c
+LEFT JOIN d1016_ord o ON o.cust_id = c.id
+WHERE o.id IS NULL;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261016_i5', level: 'intermediate', added: '2026-10-16', source: 'HackerRank', company: '',
+    ref: 'The PADS', url: 'https://github.com/satyarthiabhay/Hackerrank-SQL-Challenges',
+    title: 'רשימת אנשים וסיכום מקצועות', tables: ['d1016_ppl'],
+    prompt: `בטבלה d1016_ppl יש שם (name) ומקצוע (occupation) של כל אדם. החזירו עמודה אחת בשם line עם שני חלקים ברצף. חלק ראשון: שורה לכל אדם בצורה name(X) כאשר X היא האות הראשונה של המקצוע, ממוינות לפי name בסדר אלפביתי. חלק שני: שורה לכל מקצוע בצורה There are a total of N occupations. כאשר N הוא מספר האנשים במקצוע והמקצוע באותיות קטנות עם s בסוף (למשל There are a total of 3 doctors.), ממוינות לפי N מהקטן לגדול ואחר כך לפי שם המקצוע בסדר אלפביתי.`,
+    solution: `SELECT line FROM (
+  SELECT name || '(' || SUBSTR(occupation, 1, 1) || ')' AS line, 0 AS g, 0 AS n, name AS k FROM d1016_ppl
+  UNION ALL
+  SELECT 'There are a total of ' || COUNT(*) || ' ' || LOWER(occupation) || 's.', 1, COUNT(*), LOWER(occupation)
+  FROM d1016_ppl GROUP BY occupation
+) ORDER BY g, n, k;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261016_a1', level: 'advanced', added: '2026-10-16', source: 'LeetCode', company: '',
+    ref: 'Game Play Analysis III', url: 'https://leetcode.doocs.org/en/lc/534/',
+    title: 'משחקים מצטברים לכל שחקן', tables: ['d1016_gameplay'],
+    prompt: `בטבלה d1016_gameplay יש לכל שחקן, בכל תאריך פעילות (event_date), את מספר המשחקים ששיחק באותו יום (games_played). לכל שחקן ולכל תאריך החזירו את סך המשחקים ששיחק מתחילת הפעילות שלו ועד התאריך הזה, כולל. העמודות: player_id, event_date, games_so_far. מיינו לפי player_id ואחר כך לפי event_date.`,
+    solution: `SELECT player_id, event_date,
+  SUM(games_played) OVER (PARTITION BY player_id ORDER BY event_date) AS games_so_far
+FROM d1016_gameplay
+ORDER BY player_id, event_date;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261016_a2', level: 'advanced', added: '2026-10-16', source: 'HackerRank', company: '',
+    ref: 'Weather Observation Station 20', url: 'https://dev.to/elitenomad/hacker-rank-sql-median-calculation-1fcm',
+    title: 'חציון זמן משלוח לכל עיר', tables: ['d1016_deliv_times'],
+    prompt: `בטבלה d1016_deliv_times יש זמני משלוח בדקות (minutes) לפי עיר. לכל עיר החזירו את החציון של זמני המשלוח: הערך האמצעי כשהם ממוינים, ואם מספר המשלוחים בעיר זוגי, ממוצע שני הערכים האמצעיים. העמודות: city ו-median_minutes (מעוגן לשתי ספרות אחרי הנקודה). מיינו לפי city בסדר אלפביתי.`,
+    solution: `WITH r AS (
+  SELECT city, minutes,
+    ROW_NUMBER() OVER (PARTITION BY city ORDER BY minutes) AS rn,
+    COUNT(*) OVER (PARTITION BY city) AS cnt
+  FROM d1016_deliv_times
+)
+SELECT city, ROUND(AVG(minutes), 2) AS median_minutes
+FROM r
+WHERE rn IN ((cnt + 1) / 2, (cnt + 2) / 2)
+GROUP BY city
+ORDER BY city;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261016_a3', level: 'advanced', added: '2026-10-16', source: 'StrataScratch', company: 'DoorDash',
+    ref: 'Restaurants in the top 10% by generated revenue', url: 'https://www.stratascratch.com/blog/most-common-doordash-data-scientist-interview-questions',
+    title: 'המסעדות ב-10% העליונים בהכנסות', tables: ['d1016_rest_rev'],
+    prompt: `בטבלה d1016_rest_rev יש לכל מסעדה את ההכנסות שלה (revenue). דרגו את המסעדות לפי revenue מהגבוה לנמוך, כשדירוג 1 הוא ההכנסה הגבוהה ביותר, ובמקרה של שוויון המסעדה עם restaurant_id הקטן יותר מדורגת ראשונה (אין דירוגים משותפים). החזירו את המסעדות שהדירוג שלהן קטן או שווה ל-10% ממספר המסעדות הכולל. העמודות: restaurant_id, name, revenue. מיינו לפי הדירוג.`,
+    solution: `SELECT restaurant_id, name, revenue FROM (
+  SELECT *, ROW_NUMBER() OVER (ORDER BY revenue DESC, restaurant_id) AS rk,
+    COUNT(*) OVER () AS total
+  FROM d1016_rest_rev
+) WHERE rk <= 0.1 * total
+ORDER BY rk;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261016_a4', level: 'advanced', added: '2026-10-16', source: 'HackerRank', company: '',
+    ref: 'Draw The Triangle 1', url: 'https://github.com/cuongtrans/hackerrank-sql-challenges',
+    title: 'משולש כוכביות', tables: ['d1016_params'],
+    prompt: `בטבלה d1016_params יש ערך אחד, rows_n. החזירו עמודה אחת בשם line, בה rows_n שורות המרכיבות משולש של כוכביות (*): השורה הראשונה מכילה rows_n כוכביות רצופות בלי רווחים, כל שורה אחריה מכילה כוכבית אחת פחות, והאחרונה מכילה כוכבית אחת. השורות ממוינות מהארוכה לקצרה.`,
+    solution: `WITH RECURSIVE t(n) AS (
+  SELECT rows_n FROM d1016_params
+  UNION ALL
+  SELECT n - 1 FROM t WHERE n > 1
+)
+SELECT REPLACE(HEX(ZEROBLOB(n)), '00', '*') AS line
+FROM t
+ORDER BY n DESC;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261016_a5', level: 'advanced', added: '2026-10-16', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'סשנים של קליקים', tables: ['d1016_clicks'],
+    prompt: `בטבלה d1016_clicks יש קליקים של משתמשים עם חותמת זמן (ts). קליק שמתרחש יותר מ-30 דקות (ממש, כלומר 30 דקות בדיוק עדיין לא) אחרי הקליק הקודם של אותו משתמש מתחיל סשן חדש; הקליק הראשון של משתמש תמיד מתחיל סשן. לכל משתמש החזירו: user_id, sessions (מספר הסשנים) ו-longest_session_clicks (מספר הקליקים בסשן הארוך ביותר שלו). מיינו לפי user_id.`,
+    solution: `WITH g AS (
+  SELECT user_id, ts,
+    strftime('%s', ts) - LAG(strftime('%s', ts)) OVER (PARTITION BY user_id ORDER BY ts) AS gap
+  FROM d1016_clicks
+), s AS (
+  SELECT user_id, ts,
+    SUM(CASE WHEN gap IS NULL OR gap > 1800 THEN 1 ELSE 0 END) OVER (PARTITION BY user_id ORDER BY ts) AS sid
+  FROM g
+), c AS (
+  SELECT user_id, sid, COUNT(*) AS clicks FROM s GROUP BY user_id, sid
+)
+SELECT user_id, COUNT(*) AS sessions, MAX(clicks) AS longest_session_clicks
+FROM c GROUP BY user_id ORDER BY user_id;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
