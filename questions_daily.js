@@ -1436,6 +1436,178 @@ SELECT user_id, COUNT(*) AS sessions, MAX(clicks) AS longest_session_clicks
 FROM c GROUP BY user_id ORDER BY user_id;`,
     ordered: true,
   },
+  {
+    id: 'd20261017_b1', level: 'basic', added: '2026-10-17',
+    source: 'LearnSQL', company: '',
+    ref: 'Metric patterns: KPIs', url: 'https://learnsql.com/blog/sql-metrics-real-interviews',
+    title: 'מדדי KPI של הזמנות', tables: ['d1017_orders'],
+    prompt: `בטבלה d1017_orders יש הזמנות. התייחסו רק להזמנות בסטטוס 'delivered'. החזירו שורה אחת עם העמודות: orders_cnt (מספר ההזמנות), customers (מספר הלקוחות השונים שהזמינו), revenue (סך הסכומים) ו-avg_order_value (סכום ממוצע להזמנה, מעוגל ל-2 ספרות).`,
+    solution: `SELECT COUNT(*) AS orders_cnt, COUNT(DISTINCT customer_id) AS customers, SUM(amount) AS revenue, ROUND(AVG(amount), 2) AS avg_order_value
+FROM d1017_orders WHERE status = 'delivered';`,
+    ordered: false,
+  },
+  {
+    id: 'd20261017_b2', level: 'basic', added: '2026-10-17',
+    source: 'LearnSQL', company: '',
+    ref: 'Metric patterns: breakdowns', url: 'https://learnsql.com/blog/sql-metrics-real-interviews',
+    title: 'פילוח הכנסות לפי ערוץ', tables: ['d1017_orders'],
+    prompt: `בטבלה d1017_orders התייחסו רק להזמנות בסטטוס 'delivered'. לכל ערוץ מכירה (channel) שיש בו לפחות 3 הזמנות כאלה, החזירו: channel, orders_cnt (מספר ההזמנות) ו-revenue (סך הסכומים). מיינו לפי revenue יורד.`,
+    solution: `SELECT channel, COUNT(*) AS orders_cnt, SUM(amount) AS revenue
+FROM d1017_orders WHERE status = 'delivered'
+GROUP BY channel HAVING COUNT(*) >= 3
+ORDER BY revenue DESC;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261017_b3', level: 'basic', added: '2026-10-17',
+    source: 'Blind', company: 'Reddit',
+    ref: 'sql interview at reddit', url: 'https://www.teamblind.com/post/sql-interview-at-reddit-mhkznvzz',
+    title: 'עלות שכר ממוצעת למחלקה', tables: ['d1017_emp'],
+    prompt: `בטבלה d1017_emp לכל עובד יש משכורת (salary) ובונוס (bonus), שיכול להיות ריק (עובד בלי בונוס). עלות כוללת של עובד היא משכורת ועוד בונוס, ועובד בלי בונוס נחשב כבונוס 0. לכל מחלקה שיש בה לפחות 2 עובדים החזירו: dept, headcount (מספר העובדים) ו-avg_total_comp (ממוצע העלות הכוללת, מעוגל ל-2 ספרות). מיינו לפי avg_total_comp יורד.`,
+    solution: `SELECT dept, COUNT(*) AS headcount, ROUND(AVG(salary + COALESCE(bonus, 0)), 2) AS avg_total_comp
+FROM d1017_emp GROUP BY dept HAVING COUNT(*) >= 2
+ORDER BY avg_total_comp DESC;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261017_b4', level: 'basic', added: '2026-10-17',
+    source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'קריאות שירות פתוחות וזמן טיפול', tables: ['d1017_tickets'],
+    prompt: `בטבלה d1017_tickets כל קריאה נפתחת בתאריך opened_at ונסגרת בתאריך closed_at (ריק אם עדיין פתוחה). לכל רמת עדיפות (priority) החזירו: priority, open_cnt (מספר הקריאות שעדיין פתוחות) ו-avg_days_to_close (ממוצע מספר הימים בין הפתיחה לסגירה, רק על קריאות שנסגרו, מעוגל ל-1 ספרה). מיינו לפי priority בסדר אלפביתי.`,
+    solution: `SELECT priority,
+  SUM(closed_at IS NULL) AS open_cnt,
+  ROUND(AVG(julianday(closed_at) - julianday(opened_at)), 1) AS avg_days_to_close
+FROM d1017_tickets GROUP BY priority ORDER BY priority;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261017_b5', level: 'basic', added: '2026-10-17',
+    source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'דומיינים נפוצים באימייל', tables: ['d1017_customers'],
+    prompt: `בטבלה d1017_customers לכל לקוח יש כתובת אימייל. החזירו את הדומיינים (החלק שאחרי התו @) שמופיעים אצל לפחות 2 לקוחות, בעמודות domain ו-users (מספר הלקוחות). מיינו לפי users יורד ואחר כך לפי domain אלפביתי.`,
+    solution: `SELECT SUBSTR(email, INSTR(email, '@') + 1) AS domain, COUNT(*) AS users
+FROM d1017_customers GROUP BY domain HAVING COUNT(*) >= 2
+ORDER BY users DESC, domain;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261017_i1', level: 'intermediate', added: '2026-10-17',
+    source: 'LeetCode', company: '',
+    ref: 'Friend Requests I: Overall Acceptance Rate', url: 'https://leetcode.com/problems/friend-requests-i-overall-acceptance-rate/',
+    title: 'שיעור קבלת בקשות חברות', tables: ['d1017_fr_sent', 'd1017_fr_acc'],
+    prompt: `בטבלה d1017_fr_sent נשלחות בקשות חברות, ובטבלה d1017_fr_acc נרשמות בקשות שאושרו. אותה בקשה (אותו שולח ואותו נמען) עשויה להופיע יותר מפעם אחת בכל טבלה, וצריך לספור כל זוג פעם אחת בלבד. החזירו שורה אחת עם העמודה acceptance_rate: מספר הזוגות השונים שאושרו חלקי מספר הזוגות השונים שנשלחו, מעוגל ל-2 ספרות (0 אם לא נשלחו בקשות).`,
+    solution: `SELECT ROUND(COALESCE(
+  1.0 * (SELECT COUNT(*) FROM (SELECT DISTINCT requester_id, accepter_id FROM d1017_fr_acc))
+  / NULLIF((SELECT COUNT(*) FROM (SELECT DISTINCT sender_id, send_to_id FROM d1017_fr_sent)), 0), 0), 2) AS acceptance_rate;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261017_i2', level: 'intermediate', added: '2026-10-17',
+    source: 'LearnSQL', company: '',
+    ref: 'Metric patterns: ratios', url: 'https://learnsql.com/blog/sql-metrics-real-interviews',
+    title: 'נתח כל קטגוריה מההכנסות', tables: ['d1017_sales'],
+    prompt: `בטבלה d1017_sales לכל שורה יש כמות (qty) ומחיר ליחידה (price). הכנסה של שורה היא qty כפול price. לכל קטגוריה החזירו: category ו-pct_of_total, כלומר אחוז ההכנסה של הקטגוריה מסך ההכנסות של כל הקטגוריות, מעוגל ל-1 ספרה. מיינו לפי pct_of_total יורד.`,
+    solution: `SELECT category, ROUND(100.0 * SUM(qty * price) / (SELECT SUM(qty * price) FROM d1017_sales), 1) AS pct_of_total
+FROM d1017_sales GROUP BY category ORDER BY pct_of_total DESC;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261017_i3', level: 'intermediate', added: '2026-10-17',
+    source: 'Blind', company: 'Reddit',
+    ref: 'sql interview at reddit', url: 'https://www.teamblind.com/post/sql-interview-at-reddit-mhkznvzz',
+    title: 'לקוחות מעל ממוצע ההוצאה', tables: ['d1017_orders'],
+    prompt: `בטבלה d1017_orders התייחסו רק להזמנות בסטטוס 'delivered'. סכמו את הסכומים לכל לקוח, ואז מצאו את הלקוחות שהסכום הכולל שלהם גבוה ממש מהממוצע של הסכומים הכוללים של כל הלקוחות שהזמינו. החזירו customer_id ו-total_spent, ממוינים לפי customer_id.`,
+    solution: `WITH t AS (SELECT customer_id, SUM(amount) AS total_spent FROM d1017_orders WHERE status = 'delivered' GROUP BY customer_id)
+SELECT customer_id, total_spent FROM t WHERE total_spent > (SELECT AVG(total_spent) FROM t) ORDER BY customer_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261017_i4', level: 'intermediate', added: '2026-10-17',
+    source: 'Blind', company: 'Reddit',
+    ref: 'sql interview at reddit', url: 'https://www.teamblind.com/post/sql-interview-at-reddit-mhkznvzz',
+    title: 'לקוחות שמעולם לא קיבלו הזמנה', tables: ['d1017_customers', 'd1017_orders'],
+    prompt: `החזירו את הלקוחות מהטבלה d1017_customers שאין להם אף הזמנה בסטטוס 'delivered' בטבלה d1017_orders (כולל לקוחות שאין להם הזמנות בכלל). החזירו customer_id ו-name, ממוינים לפי customer_id.`,
+    solution: `SELECT c.customer_id, c.name FROM d1017_customers c
+LEFT JOIN d1017_orders o ON o.customer_id = c.customer_id AND o.status = 'delivered'
+WHERE o.order_id IS NULL ORDER BY c.customer_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261017_i5', level: 'intermediate', added: '2026-10-17',
+    source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'שיעור ביטולים חודשי', tables: ['d1017_orders'],
+    prompt: `בטבלה d1017_orders לכל חודש קלנדרי של order_date החזירו: month (בפורמט YYYY-MM), delivered_cnt (מספר ההזמנות בסטטוס 'delivered'), cancelled_cnt (מספר ההזמנות בסטטוס 'cancelled') ו-cancel_rate_pct (אחוז ההזמנות שבוטלו מתוך כל ההזמנות באותו חודש, בכל סטטוס, מעוגל ל-1 ספרה). מיינו לפי month.`,
+    solution: `SELECT strftime('%Y-%m', order_date) AS month,
+  SUM(status = 'delivered') AS delivered_cnt,
+  SUM(status = 'cancelled') AS cancelled_cnt,
+  ROUND(100.0 * SUM(status = 'cancelled') / COUNT(*), 1) AS cancel_rate_pct
+FROM d1017_orders GROUP BY month ORDER BY month;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261017_a1', level: 'advanced', added: '2026-10-17',
+    source: 'LeetCode', company: '',
+    ref: 'Active Users', url: 'https://leetcode.doocs.org/en/lc/1454/',
+    title: 'חשבונות עם רצף כניסות', tables: ['d1017_accounts', 'd1017_acct_logins'],
+    prompt: `בטבלה d1017_acct_logins רשומות כניסות של חשבונות לפי תאריך (login_date), וייתכנו כמה כניסות באותו יום. מצאו חשבונות שנכנסו ב-4 ימים קלנדריים רצופים לפחות. החזירו id ו-name מהטבלה d1017_accounts, ממוינים לפי id.`,
+    solution: `WITH d AS (SELECT DISTINCT id, login_date FROM d1017_acct_logins),
+g AS (SELECT id, login_date, julianday(login_date) - ROW_NUMBER() OVER (PARTITION BY id ORDER BY login_date) AS grp FROM d)
+SELECT a.id, a.name FROM d1017_accounts a
+WHERE a.id IN (SELECT id FROM g GROUP BY id, grp HAVING COUNT(*) >= 4) ORDER BY a.id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261017_a2', level: 'advanced', added: '2026-10-17',
+    source: 'LeetCode', company: '',
+    ref: 'Game Play Analysis V', url: 'https://leetcode.doocs.org/en/lc/1097/',
+    title: 'שימור יום ראשון לפי תאריך התקנה', tables: ['d1017_plays'],
+    prompt: `בטבלה d1017_plays כל שורה היא יום משחק של שחקן. תאריך ההתקנה של שחקן הוא התאריך הראשון שבו הופיע בטבלה. לכל תאריך התקנה החזירו: install_dt, installs (מספר השחקנים שהותקנו בו) ו-day1_retention (חלק השחקנים מביניהם ששיחקו גם ביום הקלנדרי שאחרי ההתקנה, מעוגל ל-2 ספרות). מיינו לפי install_dt.`,
+    solution: `WITH f AS (SELECT player_id, MIN(event_date) AS install_dt FROM d1017_plays GROUP BY player_id)
+SELECT f.install_dt, COUNT(*) AS installs,
+  ROUND(1.0 * COUNT(p.player_id) / COUNT(*), 2) AS day1_retention
+FROM f LEFT JOIN d1017_plays p ON p.player_id = f.player_id AND p.event_date = date(f.install_dt, '+1 day')
+GROUP BY f.install_dt ORDER BY f.install_dt;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261017_a3', level: 'advanced', added: '2026-10-17',
+    source: 'LearnSQL', company: '',
+    ref: 'Metric patterns: cumulative totals and percentage change', url: 'https://learnsql.com/blog/sql-metrics-real-interviews',
+    title: 'הכנסה חודשית, מצטברת ושינוי באחוזים', tables: ['d1017_orders'],
+    prompt: `בטבלה d1017_orders התייחסו רק להזמנות בסטטוס 'delivered'. לכל חודש קלנדרי של order_date החזירו: month (בפורמט YYYY-MM), revenue (סך ההכנסה בחודש), cumulative_revenue (סך ההכנסה מתחילת הנתונים ועד סוף אותו חודש כולל) ו-pct_change (שינוי באחוזים של ההכנסה לעומת החודש הקודם בנתונים, מעוגל ל-2 ספרות). בחודש הראשון pct_change הוא 0. מיינו לפי month.`,
+    solution: `WITH m AS (SELECT strftime('%Y-%m', order_date) AS month, SUM(amount) AS revenue FROM d1017_orders WHERE status = 'delivered' GROUP BY month)
+SELECT month, revenue, SUM(revenue) OVER (ORDER BY month) AS cumulative_revenue,
+  COALESCE(ROUND(100.0 * (revenue - LAG(revenue) OVER (ORDER BY month)) / LAG(revenue) OVER (ORDER BY month), 2), 0) AS pct_change
+FROM m ORDER BY month;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261017_a4', level: 'advanced', added: '2026-10-17',
+    source: 'LearnSQL', company: '',
+    ref: 'Metric patterns: ranks', url: 'https://learnsql.com/blog/sql-metrics-real-interviews',
+    title: 'שני המוצרים המובילים בכל קטגוריה', tables: ['d1017_sales'],
+    prompt: `בטבלה d1017_sales הכנסה של מוצר היא qty כפול price. בכל קטגוריה דרגו את המוצרים לפי ההכנסה מהגבוהה לנמוכה, כך שמוצרים עם הכנסה זהה מקבלים אותו דירוג ואין דילוג בדירוגים. החזירו את המוצרים שדירוגם 1 או 2 בקטגוריה שלהם, בעמודות category, product ו-revenue.`,
+    solution: `SELECT category, product, revenue FROM (
+  SELECT category, product, qty * price AS revenue,
+    DENSE_RANK() OVER (PARTITION BY category ORDER BY qty * price DESC) AS rk
+  FROM d1017_sales) WHERE rk <= 2;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261017_a5', level: 'advanced', added: '2026-10-17',
+    source: 'Blind', company: 'Reddit',
+    ref: 'sql interview at reddit', url: 'https://www.teamblind.com/post/sql-interview-at-reddit-mhkznvzz',
+    title: 'הזמנה שנייה של כל לקוח', tables: ['d1017_orders'],
+    prompt: `בטבלה d1017_orders התייחסו רק להזמנות בסטטוס 'delivered'. לכל לקוח שיש לו לפחות שתי הזמנות כאלה, מיינו את הזמנותיו לפי order_date והחזירו: customer_id, first_order_date (תאריך ההזמנה הראשונה), second_order_date (תאריך ההזמנה השנייה) ו-days_between (מספר הימים ביניהן). מיינו לפי customer_id.`,
+    solution: `WITH r AS (SELECT customer_id, order_date, ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY order_date) AS rn FROM d1017_orders WHERE status = 'delivered')
+SELECT a.customer_id, a.order_date AS first_order_date, b.order_date AS second_order_date,
+  CAST(julianday(b.order_date) - julianday(a.order_date) AS INTEGER) AS days_between
+FROM r a JOIN r b ON a.customer_id = b.customer_id AND a.rn = 1 AND b.rn = 2 ORDER BY a.customer_id;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
