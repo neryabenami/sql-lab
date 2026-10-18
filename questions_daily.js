@@ -1608,6 +1608,152 @@ SELECT a.customer_id, a.order_date AS first_order_date, b.order_date AS second_o
 FROM r a JOIN r b ON a.customer_id = b.customer_id AND a.rn = 1 AND b.rn = 2 ORDER BY a.customer_id;`,
     ordered: true,
   },
+  // ===== 2026-10-18 =====
+  {
+    id: 'd20261018_b1', level: 'basic', added: '2026-10-18', source: 'מקורי', company: '', ref: '', url: '',
+    title: 'קורסים יקרים עם דירוג', tables: ['d1018_courses'],
+    prompt: `בטבלה d1018_courses יש קורסים באתר לימוד מקוון. החזירו את title ו-price של קורסים בקטגוריה 'data' או 'design' שמחירם גבוה מ-50 ויש להם דירוג (rating אינו חסר). מיינו לפי price מהגבוה לנמוך, ובמחיר זהה לפי title בסדר אלפביתי.`,
+    solution: `SELECT title, price FROM d1018_courses
+WHERE category IN ('data', 'design') AND price > 50 AND rating IS NOT NULL
+ORDER BY price DESC, title;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261018_b2', level: 'basic', added: '2026-10-18', source: 'מקורי', company: '', ref: '', url: '',
+    title: 'דירוג ממוצע לקטגוריה', tables: ['d1018_courses'],
+    prompt: `לכל קטגוריה בטבלה d1018_courses שיש בה לפחות 3 קורסים, החזירו: category, courses (מספר הקורסים בקטגוריה) ו-avg_rating (דירוג ממוצע של הקורסים שיש להם דירוג, מעוגל ל-2 ספרות אחרי הנקודה).`,
+    solution: `SELECT category, COUNT(*) AS courses, ROUND(AVG(rating), 2) AS avg_rating
+FROM d1018_courses GROUP BY category HAVING COUNT(*) >= 3;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261018_b3', level: 'basic', added: '2026-10-18', source: 'מקורי', company: '', ref: '', url: '',
+    title: 'קורסי SQL או קורסים ללא דירוג', tables: ['d1018_courses'],
+    prompt: `החזירו את course_id ו-title של כל הקורסים בטבלה d1018_courses ששמם (title) מכיל את הרצף sql, בלי קשר לאותיות גדולות או קטנות, וגם של כל הקורסים שאין להם דירוג.`,
+    solution: `SELECT course_id, title FROM d1018_courses WHERE title LIKE '%sql%' OR rating IS NULL;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261018_b4', level: 'basic', added: '2026-10-18', source: 'מקורי', company: '', ref: '', url: '',
+    title: 'קורסים לפי רמת מחיר', tables: ['d1018_courses'],
+    prompt: `סווגו כל קורס בטבלה d1018_courses לרמת מחיר: 'free' אם price הוא 0, 'premium' אם price הוא 100 ומעלה, ו-'standard' בכל מקרה אחר. החזירו לכל רמה את העמודות tier ו-courses (מספר הקורסים ברמה).`,
+    solution: `SELECT CASE WHEN price = 0 THEN 'free' WHEN price >= 100 THEN 'premium' ELSE 'standard' END AS tier, COUNT(*) AS courses
+FROM d1018_courses GROUP BY 1;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261018_b5', level: 'basic', added: '2026-10-18', source: 'מקורי', company: '', ref: '', url: '',
+    title: 'סטודנטים והכנסה לקורס', tables: ['d1018_enroll'],
+    prompt: `בטבלה d1018_enroll כל שורה היא הרשמה של סטודנט לקורס, וייתכן שאותו סטודנט נרשם לאותו קורס יותר מפעם אחת. לכל קורס שנרשמו אליו לפחות 2 סטודנטים שונים, החזירו: course_id, students (מספר הסטודנטים השונים) ו-total_paid (סך כל הסכומים ששולמו בעמודה paid, כולל הרשמות חוזרות).`,
+    solution: `SELECT course_id, COUNT(DISTINCT student) AS students, SUM(paid) AS total_paid
+FROM d1018_enroll GROUP BY course_id HAVING COUNT(DISTINCT student) >= 2;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261018_i1', level: 'intermediate', added: '2026-10-18', source: 'HackerRank', company: '',
+    ref: "Ollivander's Inventory", url: 'https://www.hackerrank.com/challenges/harry-potter-and-wands/problem',
+    title: 'השרביטים הזולים ביותר', tables: ['d1018_wands', 'd1018_wand_props'],
+    prompt: `בטבלה d1018_wands יש שרביטים למכירה, ובטבלה d1018_wand_props יש לכל code את גיל השרביט (age) ואם הוא מושחת (is_evil = 1). התעלמו משרביטים מושחתים. לכל צירוף של power ו-age, מצאו את השרביט (או השרביטים) בעלי המחיר הנמוך ביותר (coins_needed) מבין השרביטים הלא מושחתים בצירוף. החזירו: id, age, coins_needed, power. מיינו לפי power מהגבוה לנמוך, אחר כך לפי age מהגבוה לנמוך, ואחר כך לפי id.`,
+    solution: `SELECT w.id, p.age, w.coins_needed, w.power
+FROM d1018_wands w JOIN d1018_wand_props p ON w.code = p.code
+WHERE p.is_evil = 0 AND w.coins_needed = (
+  SELECT MIN(w2.coins_needed) FROM d1018_wands w2 JOIN d1018_wand_props p2 ON w2.code = p2.code
+  WHERE p2.is_evil = 0 AND w2.power = w.power AND p2.age = p.age)
+ORDER BY w.power DESC, p.age DESC, w.id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261018_i2', level: 'intermediate', added: '2026-10-18', source: 'LeetCode', company: '',
+    ref: 'Customer Who Visited but Did Not Make Any Transactions', url: 'https://leetcode.com/problems/customer-who-visited-but-did-not-make-any-transactions/',
+    title: 'ביקורים בלי קנייה', tables: ['d1018_visits', 'd1018_txns'],
+    prompt: `בטבלה d1018_visits יש ביקורים של לקוחות בחנות, ובטבלה d1018_txns יש עסקאות, שכל אחת מהן שייכת לביקור (visit_id). ביקור שאין לו אף עסקה נחשב ביקור ללא קנייה (גם עסקה בסכום 0 נחשבת עסקה). החזירו לכל לקוח שהיה לו לפחות ביקור אחד ללא קנייה את customer_id ואת count_no_trans, מספר הביקורים שלו ללא קנייה.`,
+    solution: `SELECT v.customer_id, COUNT(*) AS count_no_trans
+FROM d1018_visits v LEFT JOIN d1018_txns t ON t.visit_id = v.visit_id
+WHERE t.txn_id IS NULL GROUP BY v.customer_id;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261018_i3', level: 'intermediate', added: '2026-10-18', source: 'LeetCode', company: '',
+    ref: 'Page Recommendations', url: 'https://www.hellointerview.com/community/questions/page-recommendations/cm5eguhad02zi838o2yuo9ltp',
+    title: 'המלצות לדפים למשתמש 1', tables: ['d1018_friends', 'd1018_likes'],
+    prompt: `בטבלה d1018_friends כל שורה מציינת ששני משתמשים הם חברים (החברות הדדית, והמשתמש יכול להופיע בכל אחת משתי העמודות). בטבלה d1018_likes יש דפים שמשתמשים סימנו בלייק. החזירו עמודה אחת, page_id, עם כל הדפים (כל דף פעם אחת) שלפחות אחד מחבריו של משתמש 1 סימן בלייק, ושמשתמש 1 עצמו לא סימן בלייק.`,
+    solution: `SELECT DISTINCT page_id FROM d1018_likes
+WHERE user_id IN (SELECT user2 FROM d1018_friends WHERE user1 = 1 UNION SELECT user1 FROM d1018_friends WHERE user2 = 1)
+AND page_id NOT IN (SELECT page_id FROM d1018_likes WHERE user_id = 1);`,
+    ordered: false,
+  },
+  {
+    id: 'd20261018_i4', level: 'intermediate', added: '2026-10-18', source: 'LeetCode', company: '',
+    ref: 'Biggest Window Between Visits', url: 'https://www.algo.monster/liteproblems/1709',
+    title: 'הפער הגדול בין ביקורים', tables: ['d1018_user_visits'],
+    prompt: `בטבלה d1018_user_visits יש ביקורים של משתמשים באתר (ייתכנו שורות כפולות של אותו יום). לכל משתמש חשבו את הפער הגדול ביותר, בימים, בין שני ביקורים עוקבים שלו, כאשר גם הפער בין הביקור האחרון ל-2026-06-30 נחשב. החזירו user_id ו-biggest_window כמספר שלם.`,
+    solution: `WITH v AS (SELECT DISTINCT user_id, visit_date FROM d1018_user_visits),
+x AS (SELECT user_id, julianday(COALESCE(LEAD(visit_date) OVER (PARTITION BY user_id ORDER BY visit_date), '2026-06-30')) - julianday(visit_date) AS g FROM v)
+SELECT user_id, CAST(MAX(g) AS INTEGER) AS biggest_window FROM x GROUP BY user_id;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261018_i5', level: 'intermediate', added: '2026-10-18', source: 'HackerRank', company: '',
+    ref: 'Challenges', url: 'https://www.hackerrank.com/challenges/challenges/problem',
+    title: 'יוצרי האתגרים הבולטים', tables: ['d1018_hackers', 'd1018_chals'],
+    prompt: `בטבלה d1018_chals כל שורה היא אתגר שיצר האקר. חשבו לכל האקר את מספר האתגרים שיצר. החזירו רק האקרים שמספר האתגרים שלהם הוא המקסימלי (גם אם כמה האקרים חולקים אותו), או מספר שרק האקר אחד בדיוק יצר. עמודות: hacker_id, name, challenges_created. מיינו לפי challenges_created מהגבוה לנמוך ואחר כך לפי hacker_id.`,
+    solution: `WITH c AS (SELECT h.hacker_id, h.name, COUNT(*) AS n FROM d1018_hackers h JOIN d1018_chals x ON x.hacker_id = h.hacker_id GROUP BY h.hacker_id, h.name)
+SELECT hacker_id, name, n AS challenges_created FROM c
+WHERE n = (SELECT MAX(n) FROM c) OR n IN (SELECT n FROM c GROUP BY n HAVING COUNT(*) = 1)
+ORDER BY n DESC, hacker_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261018_a1', level: 'advanced', added: '2026-10-18', source: 'LeetCode', company: '',
+    ref: 'Find the Start and End Number of Continuous Ranges', url: 'https://leetcode.doocs.org/en/lc/1285/',
+    title: 'טווחים רציפים של מזהים', tables: ['d1018_logs'],
+    prompt: `בטבלה d1018_logs יש מזהי לוגים ייחודיים (log_id), עם חורים ביניהם. קבצו את המזהים לטווחים של מספרים עוקבים (בלי דילוג) והחזירו לכל טווח את start_id (המזהה הקטן בטווח) ואת end_id (הגדול בטווח). טווח של מזהה בודד יחזיר אותו בשתי העמודות. מיינו לפי start_id.`,
+    solution: `SELECT MIN(log_id) AS start_id, MAX(log_id) AS end_id
+FROM (SELECT log_id, log_id - ROW_NUMBER() OVER (ORDER BY log_id) AS grp FROM d1018_logs)
+GROUP BY grp ORDER BY start_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261018_a2', level: 'advanced', added: '2026-10-18', source: 'StrataScratch', company: 'Salesforce',
+    ref: 'Find the Retention Rates', url: 'https://stratascratch.com/blog/find-the-retention-rates-salesforce-sql-interview-question',
+    title: 'שימור משתמשים לפי חשבון', tables: ['d1018_acct_events'],
+    prompt: `בטבלה d1018_acct_events יש אירועי פעילות של משתמשים בחשבונות לקוח. לכל חשבון שהיה בו לפחות משתמש אחד פעיל במרץ 2026, חשבו את שיעור השימור: מתוך המשתמשים השונים שהיו פעילים במרץ 2026, איזה חלק היה פעיל גם באפריל 2026 (משתמשים שהופיעו לראשונה באפריל אינם נספרים). החזירו: account_id ו-retention_rate כשבר בין 0 ל-1 מעוגל ל-2 ספרות אחרי הנקודה.`,
+    solution: `SELECT a.account_id, ROUND(1.0 * COUNT(DISTINCT b.user_id) / COUNT(DISTINCT a.user_id), 2) AS retention_rate
+FROM d1018_acct_events a
+LEFT JOIN d1018_acct_events b ON b.account_id = a.account_id AND b.user_id = a.user_id AND substr(b.event_date, 1, 7) = '2026-04'
+WHERE substr(a.event_date, 1, 7) = '2026-03' GROUP BY a.account_id;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261018_a3', level: 'advanced', added: '2026-10-18', source: 'DataVidhya', company: '',
+    ref: 'Sessionization', url: 'https://datavidhya.com/learn/sql/interview-patterns/sessionization/',
+    title: 'חלוקת קליקים לסשנים', tables: ['d1018_clicks'],
+    prompt: `בטבלה d1018_clicks יש קליקים של משתמשים עם חותמת זמן ts. לכל משתמש, קליק שמתרחש יותר מ-30 דקות אחרי הקליק הקודם שלו מתחיל סשן חדש (פער של בדיוק 30 דקות נשאר באותו סשן), והקליק הראשון של משתמש פותח את הסשן הראשון שלו. מספרו את הסשנים של כל משתמש מ-1 לפי הסדר בזמן. החזירו: user_id, session_no, session_start (ts הראשון בסשן), session_end (ts האחרון בסשן) ו-clicks (מספר הקליקים). מיינו לפי user_id ואז session_no.`,
+    solution: `WITH g AS (SELECT user_id, ts, CASE WHEN strftime('%s', ts) - strftime('%s', LAG(ts) OVER (PARTITION BY user_id ORDER BY ts)) > 1800 THEN 1 ELSE 0 END AS brk FROM d1018_clicks),
+s AS (SELECT user_id, ts, SUM(brk) OVER (PARTITION BY user_id ORDER BY ts) + 1 AS session_no FROM g)
+SELECT user_id, session_no, MIN(ts) AS session_start, MAX(ts) AS session_end, COUNT(*) AS clicks
+FROM s GROUP BY user_id, session_no ORDER BY user_id, session_no;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261018_a4', level: 'advanced', added: '2026-10-18', source: 'LeetCode', company: '',
+    ref: 'Get the Second Most Recent Activity', url: 'https://leetcode.com/problems/get-the-second-most-recent-activity/',
+    title: 'הפעילות האחרונה פחות אחת', tables: ['d1018_user_activity'],
+    prompt: `בטבלה d1018_user_activity יש פעילויות של משתמשים, ולכל פעילות תאריכי התחלה וסיום (פעילויות של אותו משתמש אינן חופפות). לכל משתמש החזירו את הפעילות השנייה בסדר מהאחרונה (לפי start_date). אם למשתמש יש פעילות אחת בלבד, החזירו אותה. עמודות: username, activity, start_date, end_date.`,
+    solution: `SELECT username, activity, start_date, end_date FROM (
+  SELECT *, ROW_NUMBER() OVER (PARTITION BY username ORDER BY start_date DESC) AS rn, COUNT(*) OVER (PARTITION BY username) AS cnt
+  FROM d1018_user_activity) WHERE rn = 2 OR cnt = 1;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261018_a5', level: 'advanced', added: '2026-10-18', source: 'LeetCode', company: '',
+    ref: 'Running Total for Different Genders', url: 'https://leetcode.com/problems/running-total-for-different-genders/',
+    title: 'צבירת נקודות לפי מגדר', tables: ['d1018_gscores'],
+    prompt: `בטבלה d1018_gscores כל שורה היא ניקוד שזכה בו שחקן ביום מסוים, ולכל מגדר יש לכל היותר שורה אחת ביום. לכל שורה החזירו: gender, day ו-total, סך הנקודות המצטבר של אותו מגדר מהיום הראשון ועד היום הנוכחי (כולל). מיינו לפי gender ואז day.`,
+    solution: `SELECT gender, day, SUM(score_points) OVER (PARTITION BY gender ORDER BY day) AS total
+FROM d1018_gscores ORDER BY gender, day;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
