@@ -1754,6 +1754,159 @@ FROM s GROUP BY user_id, session_no ORDER BY user_id, session_no;`,
 FROM d1018_gscores ORDER BY gender, day;`,
     ordered: true,
   },
+  {
+    id: 'd20261019_b1', level: 'basic', added: '2026-10-19', source: 'StrataScratch', company: 'Uber',
+    ref: 'Uber SQL Interview Questions (total miles by business purpose)', url: 'https://www.stratascratch.com/blog/uber-sql-interview-questions',
+    title: 'סך מייל לפי מטרת נסיעה', tables: ['d1019_biz_trips'],
+    prompt: `בטבלה d1019_biz_trips יש נסיעות עסקיות של נהגים, עם מטרת הנסיעה (purpose) והמרחק במייל (miles). התעלמו מנסיעות שבהן המרחק לא נרשם. לכל מטרה החזירו: purpose ו-total_miles, סך המיילים. מיינו לפי total_miles מהגבוה לנמוך, ובשוויון לפי purpose בסדר אלפביתי.`,
+    solution: `SELECT purpose, SUM(miles) AS total_miles FROM d1019_biz_trips WHERE miles IS NOT NULL
+GROUP BY purpose ORDER BY total_miles DESC, purpose;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261019_b2', level: 'basic', added: '2026-10-19', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'שכר כולל ממוצע לפי מחלקה', tables: ['d1019_pay'],
+    prompt: `בטבלה d1019_pay יש לכל עובד מחלקה, משכורת (salary) ובונוס (bonus), כשעובד שלא קיבל בונוס מסומן ב-NULL ובונוסו נחשב 0. לכל מחלקה שיש בה לפחות שני עובדים החזירו: dept, מספר העובדים emp_count, והשכר הכולל הממוצע (משכורת ועוד בונוס) avg_total מעוגל לשתי ספרות אחרי הנקודה. מיינו לפי avg_total מהגבוה לנמוך.`,
+    solution: `SELECT dept, COUNT(*) AS emp_count, ROUND(AVG(salary + COALESCE(bonus, 0)), 2) AS avg_total
+FROM d1019_pay GROUP BY dept HAVING COUNT(*) >= 2 ORDER BY avg_total DESC;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261019_b3', level: 'basic', added: '2026-10-19', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'לקוחות ישראלים או בלי עיר', tables: ['d1019_customers'],
+    prompt: `בטבלה d1019_customers מופיעים לקוחות. החזירו את cust_id ואת name של לקוחות שנרשמו בשנת 2026 (signup_date) ושמתקיים בהם לפחות אחד מהשניים: כתובת הדוא"ל מסתיימת ב-.co.il, או שלא נרשמה להם עיר. מיינו לפי cust_id.`,
+    solution: `SELECT cust_id, name FROM d1019_customers
+WHERE signup_date >= '2026-01-01' AND signup_date < '2027-01-01' AND (email LIKE '%.co.il' OR city IS NULL)
+ORDER BY cust_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261019_b4', level: 'basic', added: '2026-10-19', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'לקוחות עם הרבה הזמנות שסופקו', tables: ['d1019_orders'],
+    prompt: `בטבלה d1019_orders יש הזמנות עם סטטוס (status). בהתחשב רק בהזמנות בסטטוס delivered, החזירו את הלקוחות שיש להם לפחות שתי הזמנות כאלה וסכום הסכומים שלהן גדול מ-300. עמודות: cust_id, delivered_orders (מספר ההזמנות), total_amount (הסכום הכולל). מיינו לפי cust_id.`,
+    solution: `SELECT cust_id, COUNT(*) AS delivered_orders, SUM(amount) AS total_amount
+FROM d1019_orders WHERE status = 'delivered'
+GROUP BY cust_id HAVING COUNT(*) >= 2 AND SUM(amount) > 300 ORDER BY cust_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261019_b5', level: 'basic', added: '2026-10-19', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'פילוח עובדים לפי רמת שכר', tables: ['d1019_pay'],
+    prompt: `בטבלה d1019_pay יש משכורת (salary) לכל עובד. סווגו כל עובד לרמה: Low אם המשכורת נמוכה מ-7000, Mid אם היא בין 7000 ל-9999 (כולל), ו-High אם היא 10000 ומעלה. החזירו לכל רמה שיש בה עובדים: band ו-emp_count, מספר העובדים.`,
+    solution: `SELECT CASE WHEN salary < 7000 THEN 'Low' WHEN salary < 10000 THEN 'Mid' ELSE 'High' END AS band, COUNT(*) AS emp_count
+FROM d1019_pay GROUP BY band;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261019_i1', level: 'intermediate', added: '2026-10-19', source: 'GitHub', company: '',
+    ref: 'Rising Temperature', url: 'https://github.com/ieshreya/sql-50-leetcode',
+    title: 'ימים חמים יותר מהיום הקודם', tables: ['d1019_weather'],
+    prompt: `בטבלה d1019_weather יש מדידת טמפרטורה אחת ליום, אך חלק מהימים חסרים. החזירו את id של כל יום שהטמפרטורה בו גבוהה מהטמפרטורה ביום הקלנדרי שקדם לו ישירות. יום שאין עבורו מדידה ליום הקודם אינו נחשב. עמודה: id.`,
+    solution: `SELECT w.id FROM d1019_weather w JOIN d1019_weather p ON julianday(w.record_date) - julianday(p.record_date) = 1
+WHERE w.temp > p.temp;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261019_i2', level: 'intermediate', added: '2026-10-19', source: 'GitHub', company: '',
+    ref: 'Product Sales Analysis III', url: 'https://github.com/ieshreya/sql-50-leetcode',
+    title: 'מכירות בשנה הראשונה של מוצר', tables: ['d1019_prod_sales'],
+    prompt: `בטבלה d1019_prod_sales כל שורה היא מכירה של מוצר בשנה מסוימת. לכל מוצר מצאו את השנה הראשונה שבה נמכר, והחזירו את כל המכירות שלו באותה שנה. עמודות: product_id, first_year, quantity, price.`,
+    solution: `SELECT s.product_id, s.year AS first_year, s.quantity, s.price FROM d1019_prod_sales s
+WHERE s.year = (SELECT MIN(year) FROM d1019_prod_sales WHERE product_id = s.product_id);`,
+    ordered: false,
+  },
+  {
+    id: 'd20261019_i3', level: 'intermediate', added: '2026-10-19', source: 'GitHub', company: '',
+    ref: 'Consecutive Numbers', url: 'https://github.com/Feminto/Sql3',
+    title: 'מספרים שחוזרים שלוש פעמים ברצף', tables: ['d1019_seq_log'],
+    prompt: `בטבלה d1019_seq_log כל שורה היא ערך (num) שנרשם ביומן, ו-id רץ ברצף ללא חורים לפי סדר הרישום. החזירו כל מספר שמופיע לפחות שלוש פעמים ברצף בשלוש שורות עוקבות, כל מספר פעם אחת. עמודה: num.`,
+    solution: `SELECT DISTINCT a.num FROM d1019_seq_log a JOIN d1019_seq_log b ON b.id = a.id + 1 JOIN d1019_seq_log c ON c.id = a.id + 2
+WHERE a.num = b.num AND b.num = c.num;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261019_i4', level: 'intermediate', added: '2026-10-19', source: 'DataLemur', company: 'Walmart',
+    ref: 'Frequently Purchased Pairs', url: 'https://datalemur.com/sql-interview-questions',
+    title: 'זוגות מוצרים שנקנים יחד', tables: ['d1019_basket'],
+    prompt: `בטבלה d1019_basket כל שורה היא מוצר שנקנה בעסקה (txn_id). מצאו זוגות שונים של מוצרים שנקנו יחד באותה עסקה בלפחות שתי עסקאות שונות. כל זוג מופיע פעם אחת, כשהמוצר הראשון קודם אלפביתית לשני. עמודות: product_a, product_b, pair_count (מספר העסקאות שבהן הזוג הופיע).`,
+    solution: `SELECT a.product AS product_a, b.product AS product_b, COUNT(*) AS pair_count
+FROM d1019_basket a JOIN d1019_basket b ON a.txn_id = b.txn_id AND a.product < b.product
+GROUP BY a.product, b.product HAVING COUNT(*) >= 2;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261019_i5', level: 'intermediate', added: '2026-10-19', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'נרשמו השנה ולא קיבלו הזמנה', tables: ['d1019_customers', 'd1019_orders'],
+    prompt: `החזירו את cust_id ואת name של לקוחות מהטבלה d1019_customers שנרשמו בשנת 2026 ואין להם אף הזמנה בסטטוס delivered בטבלה d1019_orders (כולל לקוחות שאין להם הזמנות כלל).`,
+    solution: `SELECT c.cust_id, c.name FROM d1019_customers c
+WHERE c.signup_date >= '2026-01-01' AND c.signup_date < '2027-01-01'
+AND NOT EXISTS (SELECT 1 FROM d1019_orders o WHERE o.cust_id = c.cust_id AND o.status = 'delivered');`,
+    ordered: false,
+  },
+  {
+    id: 'd20261019_a1', level: 'advanced', added: '2026-10-19', source: 'DataLemur', company: 'Uber',
+    ref: 'Third Transaction', url: 'https://datalemur.com/questions/sql-third-transaction',
+    title: 'העסקה השלישית של כל משתמש', tables: ['d1019_user_tx'],
+    prompt: `בטבלה d1019_user_tx יש עסקאות של משתמשים. סדרו את עסקאות כל משתמש לפי tx_date, ובשוויון בתאריך לפי tx_id. החזירו את העסקה השלישית של כל משתמש שיש לו לפחות שלוש עסקאות. עמודות: user_id, spend, tx_date.`,
+    solution: `SELECT user_id, spend, tx_date FROM (
+  SELECT *, ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY tx_date, tx_id) AS rn FROM d1019_user_tx
+) WHERE rn = 3;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261019_a2', level: 'advanced', added: '2026-10-19', source: 'DataLemur', company: 'Tesla',
+    ref: 'Analyzing Tesla Charging Stations Usage', url: 'https://datalemur.com/blog/tesla-sql-interview-questions',
+    title: 'שינוי בזמן הטעינה מול היום הקודם', tables: ['d1019_charge_log'],
+    prompt: `בטבלה d1019_charge_log כל שורה היא סשן טעינה בתחנה (station_id) ביום מסוים, עם משך בדקות (minutes). חשבו לכל תחנה ולכל יום שיש בו סשנים את סך הדקות. לכל יום שקדם לו בתחנה יום אחר עם נתונים, החזירו את ההפרש בין סך הדקות שלו לסך הדקות של היום האחרון שקדם לו באותה תחנה (גם אם חלפו כמה ימים). עמודות: station_id, day, total_minutes, diff_from_prev.`,
+    solution: `SELECT station_id, day, total_minutes, total_minutes - prev AS diff_from_prev FROM (
+  SELECT station_id, day, SUM(minutes) AS total_minutes,
+         LAG(SUM(minutes)) OVER (PARTITION BY station_id ORDER BY day) AS prev
+  FROM d1019_charge_log GROUP BY station_id, day
+) WHERE prev IS NOT NULL;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261019_a3', level: 'advanced', added: '2026-10-19', source: 'LeetCode', company: '',
+    ref: 'Restaurant Growth', url: 'https://velog.io/@dav74/코드카타-SQL-55-Restaurant-Growth',
+    title: 'ממוצע נע של שבעה ימים במסעדה', tables: ['d1019_rest_visits'],
+    prompt: `בטבלה d1019_rest_visits כל שורה היא ביקור של לקוח במסעדה עם הסכום ששילם, ויש ביקורים בכל יום בטווח התאריכים. לכל יום שיש לפניו לפחות שישה ימים קודמים בנתונים, חשבו על חלון של שבעה ימים (היום עצמו ושישה ימים לפניו): את סך הסכומים בחלון ואת הממוצע היומי שלו (סך הסכומים חלקי 7) מעוגל לשתי ספרות אחרי הנקודה. עמודות: visited_on, amount, average_amount. מיינו לפי visited_on.`,
+    solution: `SELECT visited_on, amount, ROUND(amount / 7.0, 2) AS average_amount FROM (
+  SELECT visited_on, SUM(daily) OVER (ORDER BY visited_on ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS amount,
+         ROW_NUMBER() OVER (ORDER BY visited_on) AS rn
+  FROM (SELECT visited_on, SUM(amount) AS daily FROM d1019_rest_visits GROUP BY visited_on)
+) WHERE rn >= 7 ORDER BY visited_on;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261019_a4', level: 'advanced', added: '2026-10-19', source: 'StrataScratch', company: 'Google',
+    ref: 'Activity Rank', url: 'https://www.stratascratch.com/blog/google-data-scientist-interview-questions',
+    title: 'דירוג משתמשים לפי כמות מיילים', tables: ['d1019_mail'],
+    prompt: `בטבלה d1019_mail כל שורה היא מייל ששלח משתמש (sender). דרגו את השולחים לפי מספר המיילים ששלחו, מהרב לפחות, כשדירוג כל שולח הוא מספר ייחודי: 1, 2, 3 וכן הלאה, ובשוויון במספר המיילים הדירוג נקבע לפי שם השולח בסדר אלפביתי. עמודות: sender, total_emails, activity_rank. מיינו לפי activity_rank.`,
+    solution: `SELECT sender, COUNT(*) AS total_emails, ROW_NUMBER() OVER (ORDER BY COUNT(*) DESC, sender) AS activity_rank
+FROM d1019_mail GROUP BY sender ORDER BY activity_rank;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261019_a5', level: 'advanced', added: '2026-10-19', source: 'PracHub', company: 'Uber',
+    ref: 'Write SQL for active counts and YTD top driver', url: 'https://prachub.com/interview-questions/write-sql-for-active-counts-and-ytd-top-driver',
+    title: 'הנהג המוביל מתחילת השנה בכל חודש', tables: ['d1019_driver_trips'],
+    prompt: `בטבלה d1019_driver_trips יש נסיעות של נהגים עם הרווח מכל נסיעה, כולן בשנת 2026. לכל חודש שיש בו נסיעות, מצאו את הנהג שהרווח המצטבר שלו מתחילת השנה ועד סוף אותו חודש הוא הגבוה ביותר (בשוויון, הנהג עם driver_id הנמוך). נהג נחשב גם אם לא נסע באותו חודש. עמודות: month (בפורמט YYYY-MM), driver_id, ytd_earnings. מיינו לפי month.`,
+    solution: `WITH months AS (SELECT DISTINCT substr(trip_date, 1, 7) AS month FROM d1019_driver_trips),
+ytd AS (
+  SELECT m.month, d.driver_id, SUM(d.earnings) AS ytd_earnings
+  FROM months m JOIN d1019_driver_trips d ON substr(d.trip_date, 1, 7) <= m.month
+  GROUP BY m.month, d.driver_id
+), ranked AS (
+  SELECT *, ROW_NUMBER() OVER (PARTITION BY month ORDER BY ytd_earnings DESC, driver_id) AS rn FROM ytd
+)
+SELECT month, driver_id, ytd_earnings FROM ranked WHERE rn = 1 ORDER BY month;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
