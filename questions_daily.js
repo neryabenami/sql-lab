@@ -1907,6 +1907,189 @@ ytd AS (
 SELECT month, driver_id, ytd_earnings FROM ranked WHERE rn = 1 ORDER BY month;`,
     ordered: true,
   },
+  {
+    id: 'd20261020_b1', level: 'basic', added: '2026-10-20', source: 'DataLemur', company: 'PayPal',
+    ref: 'Final Account Balance', url: 'https://datalemur.com/questions/final-account-balance',
+    title: 'יתרה סופית לכל חשבון', tables: ['d1020_acct_tx'],
+    prompt: `בטבלה d1020_acct_tx יש תנועות בחשבונות בנק. עמודה tx_type היא 'Deposit' (הפקדה) או 'Withdrawal' (משיכה), ו-amount הוא סכום חיובי. החזירו לכל חשבון את היתרה הסופית שלו: סך ההפקדות פחות סך המשיכות. עמודות: account_id, final_balance.`,
+    solution: `SELECT account_id, SUM(CASE WHEN tx_type = 'Deposit' THEN amount ELSE -amount END) AS final_balance
+FROM d1020_acct_tx GROUP BY account_id;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261020_b2', level: 'basic', added: '2026-10-20', source: 'DataLemur', company: 'LinkedIn',
+    ref: 'Duplicate Job Listings', url: 'https://datalemur.com/questions/duplicate-job-listings',
+    title: 'חברות עם משרות כפולות', tables: ['d1020_jobs'],
+    prompt: `בטבלה d1020_jobs יש משרות שפורסמו על ידי חברות. שתי משרות נחשבות כפולות אם הן של אותה חברה ויש להן אותו title ואותו description בדיוק. כמה חברות פרסמו לפחות משרה כפולה אחת? עמודה אחת: duplicate_companies.`,
+    solution: `SELECT COUNT(DISTINCT company_id) AS duplicate_companies FROM (
+  SELECT company_id FROM d1020_jobs GROUP BY company_id, title, description HAVING COUNT(*) > 1
+);`,
+    ordered: false,
+  },
+  {
+    id: 'd20261020_b3', level: 'basic', added: '2026-10-20', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'סכום נטו ללקוחות חוזרים', tables: ['d1020_orders'],
+    prompt: `בטבלה d1020_orders יש הזמנות. עמודה discount היא סכום ההנחה שניתן בהזמנה, והיא ריקה (NULL) כשלא ניתנה הנחה. התייחסו רק להזמנות בסטטוס 'completed'. החזירו לכל לקוח שיש לו לפחות 2 הזמנות כאלה: את שמו, מספר ההזמנות, והסכום נטו (סך amount פחות סך ההנחות). עמודות: customer, orders, net_total.`,
+    solution: `SELECT customer, COUNT(*) AS orders, SUM(amount - COALESCE(discount, 0)) AS net_total
+FROM d1020_orders WHERE status = 'completed'
+GROUP BY customer HAVING COUNT(*) >= 2;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261020_b4', level: 'basic', added: '2026-10-20', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'קטגוריות יקרות עם מוצרים שאזלו', tables: ['d1020_products'],
+    prompt: `בטבלה d1020_products יש מוצרים עם מחיר ומלאי. החזירו כל קטגוריה שמחיר המוצר הממוצע בה גבוה מ-100 ושיש בה לפחות 2 מוצרים שאזלו מהמלאי (stock = 0). עמודות: category, products (מספר המוצרים בקטגוריה), avg_price (ממוצע המחיר מעוגל לספרה אחת אחרי הנקודה).`,
+    solution: `SELECT category, COUNT(*) AS products, ROUND(AVG(price), 1) AS avg_price
+FROM d1020_products GROUP BY category
+HAVING AVG(price) > 100 AND SUM(CASE WHEN stock = 0 THEN 1 ELSE 0 END) >= 2;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261020_b5', level: 'basic', added: '2026-10-20', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'חברים עם כתובת co.il לפי מסלול', tables: ['d1020_members'],
+    prompt: `בטבלה d1020_members יש חברי מועדון עם כתובת אימייל ומסלול (plan). לכל מסלול החזירו את מספר החברים הכולל ואת מספר החברים שכתובת האימייל שלהם מסתיימת ב-.co.il (בדיוק, כך ש-.ac.il או כתובת שבה co.il מופיע באמצע לא נספרות). כל המסלולים צריכים להופיע, גם אם אין בהם כתובת כזו. עמודות: plan, total_members, il_members.`,
+    solution: `SELECT plan, COUNT(*) AS total_members, SUM(CASE WHEN email LIKE '%.co.il' THEN 1 ELSE 0 END) AS il_members
+FROM d1020_members GROUP BY plan;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261020_i1', level: 'intermediate', added: '2026-10-20', source: 'LeetCode', company: '',
+    ref: 'Monthly Transactions I', url: 'https://leetcode.doocs.org/lc/1193/',
+    title: 'סיכום עסקאות חודשי לפי מדינה', tables: ['d1020_trans'],
+    prompt: `בטבלה d1020_trans יש עסקאות עם מדינה (country, לעיתים ריקה), מצב ('approved' או 'declined'), סכום ותאריך. לכל צירוף של חודש ומדינה (עסקאות ללא מדינה מהוות קבוצה אחת משלהן) החזירו: את החודש בפורמט YYYY-MM, את המדינה, מספר העסקאות הכולל, מספר העסקאות שאושרו, סכום כל העסקאות וסכום העסקאות שאושרו. עמודות: month, country, trans_count, approved_count, trans_total_amount, approved_total_amount.`,
+    solution: `SELECT substr(trans_date, 1, 7) AS month, country, COUNT(*) AS trans_count,
+  SUM(CASE WHEN state = 'approved' THEN 1 ELSE 0 END) AS approved_count,
+  SUM(amount) AS trans_total_amount,
+  SUM(CASE WHEN state = 'approved' THEN amount ELSE 0 END) AS approved_total_amount
+FROM d1020_trans GROUP BY substr(trans_date, 1, 7), country;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261020_i2', level: 'intermediate', added: '2026-10-20', source: 'DataVidhya', company: 'Snapchat',
+    ref: 'Sending vs Opening Snaps by Age Group', url: 'https://datavidhya.com/coding-problems/questionDetails/question/aggregation-snaps-send-vs-open-by-age/',
+    title: 'שליחה מול פתיחה של סנאפים לפי קבוצת גיל', tables: ['d1020_snap_activity', 'd1020_snap_users'],
+    prompt: `בטבלה d1020_snap_activity יש פעולות של משתמשים (activity_type הוא 'send', 'open' או 'chat') עם משך הזמן שהושקע, ובטבלה d1020_snap_users יש את קבוצת הגיל של כל משתמש. התעלמו מפעולות 'chat'. לכל קבוצת גיל שיש בה פעולות כאלה, החזירו את אחוז הזמן שהושקע בשליחה ואת אחוז הזמן שהושקע בפתיחה, מתוך סך הזמן של שליחה ופתיחה יחד בקבוצה, מעוגלים לשתי ספרות אחרי הנקודה. עמודות: age_bucket, send_pct, open_pct. מיינו לפי age_bucket.`,
+    solution: `SELECT u.age_bucket,
+  ROUND(100.0 * SUM(CASE WHEN a.activity_type = 'send' THEN a.time_spent ELSE 0 END) / SUM(a.time_spent), 2) AS send_pct,
+  ROUND(100.0 * SUM(CASE WHEN a.activity_type = 'open' THEN a.time_spent ELSE 0 END) / SUM(a.time_spent), 2) AS open_pct
+FROM d1020_snap_activity a JOIN d1020_snap_users u ON u.user_id = a.user_id
+WHERE a.activity_type IN ('send', 'open')
+GROUP BY u.age_bucket ORDER BY u.age_bucket;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261020_i3', level: 'intermediate', added: '2026-10-20', source: 'StrataScratch', company: 'Meta',
+    ref: 'Share of new and existing users', url: 'https://www.stratascratch.com/blog/facebook-and-microsoft-data-science-sql-interview-questions',
+    title: 'משתמשים חדשים מול קיימים בספטמבר', tables: ['d1020_user_activity'],
+    prompt: `בטבלה d1020_user_activity יש שורה לכל חודש שבו משתמש היה פעיל (activity_month בפורמט YYYY-MM, ייתכנו שורות כפולות). משתמש פעיל בספטמבר 2026 נחשב "חדש" אם לא היה פעיל באף חודש מוקדם יותר, ו"קיים" אם היה פעיל לפחות בחודש מוקדם אחד. פעילות בחודשים מאוחרים יותר לא משפיעה. החזירו את אחוז המשתמשים החדשים ואת אחוז המשתמשים הקיימים מתוך כל המשתמשים הפעילים בספטמבר 2026, מעוגלים לשתי ספרות אחרי הנקודה. עמודות: new_pct, existing_pct.`,
+    solution: `WITH sep AS (SELECT DISTINCT user_id FROM d1020_user_activity WHERE activity_month = '2026-09')
+SELECT
+  ROUND(100.0 * SUM(CASE WHEN EXISTS (SELECT 1 FROM d1020_user_activity e WHERE e.user_id = s.user_id AND e.activity_month < '2026-09') THEN 0 ELSE 1 END) / COUNT(*), 2) AS new_pct,
+  ROUND(100.0 * SUM(CASE WHEN EXISTS (SELECT 1 FROM d1020_user_activity e WHERE e.user_id = s.user_id AND e.activity_month < '2026-09') THEN 1 ELSE 0 END) / COUNT(*), 2) AS existing_pct
+FROM sep s;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261020_i4', level: 'intermediate', added: '2026-10-20', source: 'Towards Data Science', company: 'Microsoft',
+    ref: 'SQL challenge case study (most popular client among call-heavy users)', url: 'https://towardsdatascience.com/sql-challenge-case-study-7bd75eb864ac/',
+    title: 'הלקוח הפופולרי בקרב משתמשי שיחות', tables: ['d1020_call_events'],
+    prompt: `בטבלה d1020_call_events יש אירועים של משתמשים ובכל אירוע ה-client_id שבו הם משתמשים (לכל משתמש client_id אחד). אירועי שיחה הם event_type מסוג 'call_start', 'call_end' ו-'call_drop'. משתמש "מוכוון שיחות" אם לפחות 50% מהאירועים שלו הם אירועי שיחה. מצאו את ה-client_id שיש בו הכי הרבה משתמשים מוכווני שיחות (בשוויון, ה-client_id הראשון לפי סדר אלפביתי). עמודות: client_id, users (מספר המשתמשים המוכווני שיחות בו).`,
+    solution: `SELECT client_id, COUNT(*) AS users FROM (
+  SELECT user_id, client_id FROM d1020_call_events GROUP BY user_id, client_id
+  HAVING 1.0 * SUM(CASE WHEN event_type IN ('call_start', 'call_end', 'call_drop') THEN 1 ELSE 0 END) / COUNT(*) >= 0.5
+) GROUP BY client_id ORDER BY users DESC, client_id LIMIT 1;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261020_i5', level: 'intermediate', added: '2026-10-20', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'עובדים מעל ממוצע המחלקה ושם המנהל', tables: ['d1020_staff'],
+    prompt: `בטבלה d1020_staff יש עובדים עם מחלקה, שכר ומזהה המנהל הישיר (manager_id, ריק אצל מי שאין לו מנהל). החזירו כל עובד ששכרו גבוה ממש מהשכר הממוצע של כל עובדי מחלקתו (כולל העובד עצמו בחישוב הממוצע), יחד עם שם המנהל שלו (ריק אם אין מנהל). עמודות: name, dept, salary, manager_name. מיינו לפי dept, אחר כך לפי salary מהגבוה לנמוך, ולבסוף לפי name.`,
+    solution: `SELECT s.name, s.dept, s.salary, m.name AS manager_name
+FROM d1020_staff s LEFT JOIN d1020_staff m ON m.staff_id = s.manager_id
+WHERE s.salary > (SELECT AVG(x.salary) FROM d1020_staff x WHERE x.dept = s.dept)
+ORDER BY s.dept, s.salary DESC, s.name;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261020_a1', level: 'advanced', added: '2026-10-20', source: 'DataLemur', company: 'Google',
+    ref: 'Odd and Even Measurements', url: 'https://datalemur.com/questions/odd-even-measurements',
+    title: 'סכום מדידות אי-זוגיות וזוגיות לכל יום', tables: ['d1020_meas'],
+    prompt: `בטבלה d1020_meas יש מדידות של חיישן עם ערך וזמן מדידה (measurement_time). בכל יום, סדרו את המדידות לפי זמן המדידה: המדידה הראשונה באותו יום היא מספר 1, השנייה מספר 2 וכן הלאה. החזירו לכל יום את סכום הערכים של המדידות במקומות האי-זוגיים (1, 3, 5, ...) ואת סכום הערכים של המדידות במקומות הזוגיים (2, 4, 6, ...). עמודות: measurement_day (בפורמט YYYY-MM-DD), odd_sum, even_sum. מיינו לפי measurement_day.`,
+    solution: `WITH r AS (
+  SELECT date(measurement_time) AS d, measurement_value AS v,
+    ROW_NUMBER() OVER (PARTITION BY date(measurement_time) ORDER BY measurement_time) AS rn
+  FROM d1020_meas
+)
+SELECT d AS measurement_day,
+  ROUND(SUM(CASE WHEN rn % 2 = 1 THEN v ELSE 0 END), 2) AS odd_sum,
+  ROUND(SUM(CASE WHEN rn % 2 = 0 THEN v ELSE 0 END), 2) AS even_sum
+FROM r GROUP BY d ORDER BY d;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261020_a2', level: 'advanced', added: '2026-10-20', source: 'DataLemur', company: 'Wayfair',
+    ref: 'Y-on-Y Growth Rate', url: 'https://datalemur.com/questions/yoy-growth-rate',
+    title: 'צמיחה שנתית בהוצאה לכל מוצר', tables: ['d1020_spend'],
+    prompt: `בטבלה d1020_spend יש עסקאות עם מוצר, סכום הוצאה ותאריך. לכל מוצר ולכל שנה שיש בה עסקאות, החזירו את סך ההוצאה בשנה, את סך ההוצאה בשנה הקלנדרית הקודמת (ריק אם לא הייתה הוצאה במוצר באותה שנה), ואת אחוז הצמיחה: (השנה הנוכחית פחות הקודמת) חלקי הקודמת כפול 100, מעוגל לשתי ספרות אחרי הנקודה (ריק אם אין שנה קודמת). עמודות: year, product_id, curr_year_spend, prev_year_spend, yoy_rate. מיינו לפי product_id ואז לפי year.`,
+    solution: `WITH y AS (
+  SELECT CAST(strftime('%Y', txn_date) AS INTEGER) AS yr, product_id, SUM(spend) AS s
+  FROM d1020_spend GROUP BY 1, 2
+)
+SELECT c.yr AS year, c.product_id, c.s AS curr_year_spend, p.s AS prev_year_spend,
+  ROUND(100.0 * (c.s - p.s) / p.s, 2) AS yoy_rate
+FROM y c LEFT JOIN y p ON p.product_id = c.product_id AND p.yr = c.yr - 1
+ORDER BY c.product_id, c.yr;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261020_a3', level: 'advanced', added: '2026-10-20', source: 'DataLemur', company: 'Twitter',
+    ref: "Tweets' Rolling Averages", url: 'https://datalemur.com/questions/rolling-average-tweets',
+    title: 'ממוצע נע של ציוצים ל-3 ימים', tables: ['d1020_tweets'],
+    prompt: `בטבלה d1020_tweets יש לכל משתמש מספר ציוצים בימים שבהם צייץ (ימים ללא שורה אינם מופיעים). לכל שורה, החזירו את הממוצע של tweet_count של אותו משתמש על פני שלושת הימים הקלנדריים המסתיימים בתאריך השורה (היום עצמו והיומיים שלפניו), כאשר נספרות רק שורות קיימות של אותו משתמש בטווח הזה. עיגול לשתי ספרות אחרי הנקודה. עמודות: user_id, tweet_date, rolling_avg_3d. מיינו לפי user_id ואז לפי tweet_date.`,
+    solution: `SELECT t.user_id, t.tweet_date, ROUND(AVG(w.tweet_count), 2) AS rolling_avg_3d
+FROM d1020_tweets t JOIN d1020_tweets w
+  ON w.user_id = t.user_id AND w.tweet_date BETWEEN date(t.tweet_date, '-2 days') AND t.tweet_date
+GROUP BY t.user_id, t.tweet_date ORDER BY t.user_id, t.tweet_date;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261020_a4', level: 'advanced', added: '2026-10-20', source: 'StrataScratch', company: 'Meta',
+    ref: 'Facebook Interview Question Walkthrough - Popular Posts', url: 'https://www.stratascratch.com/blog/facebook-interview-question-walkthrough-popular-posts',
+    title: 'אחוז זמן הצפייה בפוסטים בכל סשן', tables: ['d1020_sessions', 'd1020_views'],
+    prompt: `בטבלה d1020_sessions יש סשנים עם שניית התחלה ושניית סיום, ובטבלה d1020_views יש צפיות בפוסטים בתוך הסשן (view_start, view_end בשניות מתחילת הסשן). צפיות באותו סשן עשויות לחפוף זו לזו. זמן הצפייה של סשן הוא מספר השניות שבהן הייתה פעילה לפחות צפייה אחת (שנייה שמכוסה בכמה צפיות נספרת פעם אחת). לכל סשן שיש בו לפחות צפייה אחת, החזירו את זמן הצפייה ואת אחוזו מאורך הסשן (end_sec פחות start_sec), מעוגל לשתי ספרות אחרי הנקודה. עמודות: session_id, viewed_seconds, viewed_pct. מיינו לפי session_id.`,
+    solution: `WITH o AS (
+  SELECT session_id, view_start AS s, view_end AS e,
+    MAX(view_end) OVER (PARTITION BY session_id ORDER BY view_start, view_end ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS pm
+  FROM d1020_views
+), g AS (
+  SELECT *, SUM(CASE WHEN pm IS NULL OR s > pm THEN 1 ELSE 0 END) OVER (PARTITION BY session_id ORDER BY s, e ROWS UNBOUNDED PRECEDING) AS grp FROM o
+), isl AS (
+  SELECT session_id, grp, MAX(e) - MIN(s) AS len FROM g GROUP BY session_id, grp
+), c AS (
+  SELECT session_id, SUM(len) AS covered FROM isl GROUP BY session_id
+)
+SELECT c.session_id, c.covered AS viewed_seconds,
+  ROUND(100.0 * c.covered / (se.end_sec - se.start_sec), 2) AS viewed_pct
+FROM c JOIN d1020_sessions se ON se.session_id = c.session_id ORDER BY c.session_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261020_a5', level: 'advanced', added: '2026-10-20', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'הרגע הראשון שבו היתרה נהייתה שלילית', tables: ['d1020_wallet'],
+    prompt: `בטבלה d1020_wallet יש תנועות בארנק של משתמשים (amount חיובי הוא הפקדה ושלילי הוא הוצאה). סדרו את התנועות של כל משתמש לפי tx_date ובשוויון לפי tx_id. לכל משתמש שהיתרה המצטברת שלו ירדה מתחת לאפס בנקודה כלשהי, החזירו את תאריך התנועה הראשונה שאחריה היתרה שלילית ואת היתרה באותה נקודה. עמודות: user_name, first_negative_date, balance. מיינו לפי user_name.`,
+    solution: `WITH r AS (
+  SELECT user_name, tx_date, tx_id, SUM(amount) OVER (PARTITION BY user_name ORDER BY tx_date, tx_id) AS bal FROM d1020_wallet
+), n AS (
+  SELECT *, ROW_NUMBER() OVER (PARTITION BY user_name ORDER BY tx_date, tx_id) AS rn FROM r WHERE bal < 0
+)
+SELECT user_name, tx_date AS first_negative_date, bal AS balance FROM n WHERE rn = 1 ORDER BY user_name;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
