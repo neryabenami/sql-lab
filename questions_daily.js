@@ -2090,6 +2090,160 @@ FROM c JOIN d1020_sessions se ON se.session_id = c.session_id ORDER BY c.session
 SELECT user_name, tx_date AS first_negative_date, bal AS balance FROM n WHERE rn = 1 ORDER BY user_name;`,
     ordered: true,
   },
+  // ===== 2026-10-21 =====
+  {
+    id: 'd20261021_b1', level: 'basic', added: '2026-10-21', source: 'GitHub', company: '',
+    ref: 'Net amount with default discount', url: 'https://github.com/zaskulpitona-ux/sql-interview-tasks/blob/main/tasks/junior.md',
+    title: 'סכום נטו אחרי הנחה', tables: ['d1021_payments'],
+    prompt: `בטבלה d1021_payments יש תשלומים, כולל סכום, הנחה (שעשויה להיות חסרה, ואז אין הנחה) ושיטת תשלום (שעשויה להיות חסרה). החזירו לכל תשלום את ה-id, את שיטת התשלום (כשהיא חסרה הציגו את הטקסט 'not specified') ואת הסכום נטו, כלומר הסכום פחות ההנחה. עמודות: id, method, net_amount. מיינו לפי id.`,
+    solution: `SELECT id, COALESCE(payment_method, 'not specified') AS method, amount - COALESCE(discount, 0) AS net_amount FROM d1021_payments ORDER BY id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261021_b2', level: 'basic', added: '2026-10-21', source: 'GitHub', company: '',
+    ref: 'Active and canceled subscriptions per plan', url: 'https://github.com/zaskulpitona-ux/sql-interview-tasks/blob/main/tasks/junior.md',
+    title: 'מנויים פעילים ומבוטלים לפי תוכנית', tables: ['d1021_subs'],
+    prompt: `בטבלה d1021_subs יש מנויים, כל אחד עם תוכנית (plan) וסטטוס (active, canceled או paused). לכל תוכנית החזירו את מספר המנויים הכולל, את מספר המנויים הפעילים ואת מספר המנויים המבוטלים. עמודות: plan, total, active, canceled. מיינו לפי שם התוכנית.`,
+    solution: `SELECT plan, COUNT(*) AS total, SUM(status = 'active') AS active, SUM(status = 'canceled') AS canceled FROM d1021_subs GROUP BY plan ORDER BY plan;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261021_b3', level: 'basic', added: '2026-10-21', source: 'GitHub', company: '',
+    ref: 'Categories with revenue at or above a threshold', url: 'https://github.com/zaskulpitona-ux/sql-interview-tasks/blob/main/tasks/junior.md',
+    title: 'קטגוריות עם הכנסה של לפחות 10,000', tables: ['d1021_lines'],
+    prompt: `בטבלה d1021_lines יש שורות מכירה עם קטגוריה, כמות ומחיר ליחידה. ההכנסה של שורה היא כמות כפול מחיר. החזירו את הקטגוריות שסך ההכנסה שלהן הוא לפחות 10,000, עם סך ההכנסה מעוגל לשתי ספרות אחרי הנקודה. עמודות: category, revenue. מיינו לפי revenue מהגבוה לנמוך ובשוויון לפי category.`,
+    solution: `SELECT category, ROUND(SUM(quantity * unit_price), 2) AS revenue FROM d1021_lines GROUP BY category HAVING SUM(quantity * unit_price) >= 10000 ORDER BY revenue DESC, category;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261021_b4', level: 'basic', added: '2026-10-21', source: 'GitHub', company: '',
+    ref: 'Products whose names start with "Coffee"', url: 'https://github.com/zaskulpitona-ux/sql-interview-tasks/blob/main/tasks/junior.md',
+    title: 'מוצרים ששמם מתחיל ב-Coffee', tables: ['d1021_items'],
+    prompt: `בטבלה d1021_items יש מוצרים (השם עשוי להיות חסר). החזירו את השם והמחיר של המוצרים ששמם מתחיל במילה Coffee (מוצר ששם נמצא בו Coffee באמצע לא נחשב). עמודות: name, price. מיינו לפי price מהנמוך לגבוה ובשוויון לפי name.`,
+    solution: `SELECT name, price FROM d1021_items WHERE name LIKE 'Coffee %' ORDER BY price, name;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261021_b5', level: 'basic', added: '2026-10-21', source: 'GitHub', company: '',
+    ref: 'Products with the maximum price', url: 'https://github.com/zaskulpitona-ux/sql-interview-tasks/blob/main/tasks/junior.md',
+    title: 'כל המוצרים במחיר הגבוה ביותר', tables: ['d1021_catalog'],
+    prompt: `בטבלה d1021_catalog יש מוצרים, ולחלקם אין מחיר (מחיר חסר). החזירו את כל המוצרים שמחירם שווה למחיר הגבוה ביותר בטבלה (אם כמה מוצרים חולקים אותו מחיר, החזירו את כולם). עמודות: id, title, price. מיינו לפי id.`,
+    solution: `SELECT id, title, price FROM d1021_catalog WHERE price = (SELECT MAX(price) FROM d1021_catalog) ORDER BY id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261021_i1', level: 'intermediate', added: '2026-10-21', source: 'GitHub', company: '',
+    ref: 'Products never ordered (anti-join)', url: 'https://github.com/zaskulpitona-ux/sql-interview-tasks/blob/main/tasks/middle.md',
+    title: 'מוצרים שמעולם לא הוזמנו', tables: ['d1021_prod', 'd1021_oi'],
+    prompt: `בטבלה d1021_prod יש מוצרים ובטבלה d1021_oi יש פריטים בהזמנות (ייתכן שבחלק מהשורות product_id חסר). החזירו את המוצרים שאינם מופיעים באף פריט הזמנה. עמודות: product_id, name, price, stock. מיינו לפי product_id.`,
+    solution: `SELECT p.product_id, p.name, p.price, p.stock FROM d1021_prod p WHERE NOT EXISTS (SELECT 1 FROM d1021_oi o WHERE o.product_id = p.product_id) ORDER BY p.product_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261021_i2', level: 'intermediate', added: '2026-10-21', source: 'GitHub', company: '',
+    ref: 'Posts with likes above the author\'s average', url: 'https://github.com/zaskulpitona-ux/sql-interview-tasks/blob/main/tasks/middle.md',
+    title: 'פוסטים עם יותר לייקים מהממוצע של הכותב', tables: ['d1021_posts'],
+    prompt: `בטבלה d1021_posts יש פוסטים עם כותב (user_id) ומספר לייקים. החזירו את הפוסטים שמספר הלייקים שלהם גבוה בהחלט מממוצע הלייקים של פוסטים של אותו כותב. עמודות: post_id, user_id, likes. מיינו לפי user_id ובשוויון לפי post_id.`,
+    solution: `SELECT p.post_id, p.user_id, p.likes FROM d1021_posts p WHERE p.likes > (SELECT AVG(likes) FROM d1021_posts WHERE user_id = p.user_id) ORDER BY p.user_id, p.post_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261021_i3', level: 'intermediate', added: '2026-10-21', source: 'GitHub', company: '',
+    ref: 'API usage spike days', url: 'https://github.com/zaskulpitona-ux/sql-interview-tasks/blob/main/tasks/middle.md',
+    title: 'ימי שיא בשימוש ב-API', tables: ['d1021_usage'],
+    prompt: `בטבלה d1021_usage יש מספר קריאות API ליום לכל חשבון. החזירו את הימים שבהם מספר הקריאות היה לפחות פי 1.5 מממוצע הקריאות היומי של אותו חשבון (ממוצע על פני כל הימים של החשבון בטבלה). עמודות: account_id, usage_date, api_calls. מיינו לפי account_id ובשוויון לפי usage_date.`,
+    solution: `SELECT u.account_id, u.usage_date, u.api_calls FROM d1021_usage u JOIN (SELECT account_id, AVG(api_calls) AS avg_calls FROM d1021_usage GROUP BY account_id) a ON a.account_id = u.account_id WHERE u.api_calls >= 1.5 * a.avg_calls ORDER BY u.account_id, u.usage_date;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261021_i4', level: 'intermediate', added: '2026-10-21', source: 'GitHub', company: '',
+    ref: 'Customers with an order in the last 30 days (EXISTS)', url: 'https://github.com/zaskulpitona-ux/sql-interview-tasks/blob/main/tasks/middle.md',
+    title: 'לקוחות עם הזמנה ב-30 הימים האחרונים', tables: ['d1021_custs', 'd1021_ords'],
+    prompt: `בטבלה d1021_custs יש לקוחות ובטבלה d1021_ords יש הזמנות (בחלקן תאריך ההזמנה חסר). תאריך הדוח הוא 2026-07-17. החזירו את הלקוחות שיש להם לפחות הזמנה אחת בטווח של 30 הימים שמסתיים בתאריך הדוח, כלומר מ-2026-06-17 ועד 2026-07-17 כולל. הזמנות עתידיות אחרי תאריך הדוח אינן נספרות. עמודות: customer_id, name. מיינו לפי customer_id.`,
+    solution: `SELECT c.customer_id, c.name FROM d1021_custs c WHERE EXISTS (SELECT 1 FROM d1021_ords o WHERE o.customer_id = c.customer_id AND o.ordered_at BETWEEN '2026-06-17' AND '2026-07-17') ORDER BY c.customer_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261021_i5', level: 'intermediate', added: '2026-10-21', source: 'GitHub', company: '',
+    ref: 'Same-city user pairs', url: 'https://github.com/zaskulpitona-ux/sql-interview-tasks/blob/main/tasks/junior.md',
+    title: 'זוגות משתמשים מאותה עיר', tables: ['d1021_users2'],
+    prompt: `בטבלה d1021_users2 יש משתמשים עם עיר (לחלקם העיר חסרה). החזירו כל זוג משתמשים שגרים באותה עיר, כל זוג פעם אחת בלבד (המשתמש עם ה-id הקטן יופיע ראשון) וללא זוג של משתמש עם עצמו. משתמשים שהעיר שלהם חסרה אינם נחשבים כגרים באותה עיר. עמודות: user1, user2, city (user1 ו-user2 הם שמות). מיינו לפי city, אחר כך user1 ואחר כך user2.`,
+    solution: `SELECT a.name AS user1, b.name AS user2, a.city FROM d1021_users2 a JOIN d1021_users2 b ON a.city = b.city AND a.id < b.id ORDER BY a.city, a.name, b.name;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261021_a1', level: 'advanced', added: '2026-10-21', source: 'GitHub', company: '',
+    ref: 'Checkout funnel with step-by-step conversion', url: 'https://github.com/zaskulpitona-ux/sql-interview-tasks/blob/main/tasks/senior.md',
+    title: 'משפך רכישה והמרה בין שלבים', tables: ['d1021_funnel'],
+    prompt: `בטבלה d1021_funnel יש אירועי משתמשים בשלבי רכישה: view, cart, checkout, purchase (בסדר הזה). משתמש יכול להופיע כמה פעמים באותו שלב. לכל שלב החזירו את מספר המשתמשים השונים שהגיעו אליו ואת אחוז ההמרה ביחס לשלב הקודם (מספר המשתמשים בשלב חלקי מספר המשתמשים בשלב הקודם, באחוזים, מעוגל לספרה אחת אחרי הנקודה). בשלב הראשון אחוז ההמרה הוא NULL. עמודות: step, users, conv_pct. מיינו לפי סדר השלבים.`,
+    solution: `WITH s AS (
+  SELECT step, COUNT(DISTINCT user_id) AS users,
+    CASE step WHEN 'view' THEN 1 WHEN 'cart' THEN 2 WHEN 'checkout' THEN 3 ELSE 4 END AS ord
+  FROM d1021_funnel GROUP BY step
+)
+SELECT step, users, ROUND(100.0 * users / LAG(users) OVER (ORDER BY ord), 1) AS conv_pct FROM s ORDER BY ord;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261021_a2', level: 'advanced', added: '2026-10-21', source: 'GitHub', company: '',
+    ref: 'Median payment amount by segment', url: 'https://github.com/zaskulpitona-ux/sql-interview-tasks/blob/main/tasks/senior.md',
+    title: 'חציון תשלום לפי סגמנט', tables: ['d1021_pay'],
+    prompt: `בטבלה d1021_pay יש תשלומים לפי סגמנט. לכל סגמנט החזירו את חציון סכומי התשלום (כשמספר התשלומים זוגי, החציון הוא ממוצע שני הערכים האמצעיים), מעוגל לשתי ספרות אחרי הנקודה. עמודות: segment, median_amount. מיינו לפי segment.`,
+    solution: `WITH r AS (
+  SELECT segment, amount,
+    ROW_NUMBER() OVER (PARTITION BY segment ORDER BY amount) AS rn,
+    COUNT(*) OVER (PARTITION BY segment) AS n
+  FROM d1021_pay
+)
+SELECT segment, ROUND(AVG(amount), 2) AS median_amount FROM r WHERE rn IN ((n + 1) / 2, (n + 2) / 2) GROUP BY segment ORDER BY segment;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261021_a3', level: 'advanced', added: '2026-10-21', source: 'GitHub', company: '',
+    ref: 'SCD Type-2 intervals from change history', url: 'https://github.com/zaskulpitona-ux/sql-interview-tasks/blob/main/tasks/senior.md',
+    title: 'בניית טווחי תוקף מהיסטוריית שינויים', tables: ['d1021_cust_changes'],
+    prompt: `בטבלה d1021_cust_changes יש היסטוריית שינויים של סגמנט לקוח (segment עשוי להיות NULL, כלומר ללא סגמנט). שינויים רצופים של אותו לקוח לאותו ערך (כולל NULL אחרי NULL) הם גרסה אחת. לכל גרסה החזירו את תאריך תחילתה (תאריך השינוי הראשון בגרסה), את תאריך סיומה (היום שלפני תחילת הגרסה הבאה של אותו לקוח, או NULL בגרסה האחרונה) ודגל is_current שהוא 1 לגרסה האחרונה של הלקוח ו-0 לאחרות. עמודות: customer_id, segment, valid_from, valid_to, is_current. מיינו לפי customer_id ואז valid_from.`,
+    solution: `WITH x AS (
+  SELECT customer_id, segment, changed_at,
+    ROW_NUMBER() OVER (PARTITION BY customer_id ORDER BY changed_at) AS rn,
+    LAG(segment) OVER (PARTITION BY customer_id ORDER BY changed_at) AS prev_seg
+  FROM d1021_cust_changes
+), v AS (
+  SELECT customer_id, segment, changed_at AS valid_from FROM x WHERE rn = 1 OR segment IS NOT prev_seg
+)
+SELECT customer_id, segment, valid_from,
+  DATE(LEAD(valid_from) OVER (PARTITION BY customer_id ORDER BY valid_from), '-1 day') AS valid_to,
+  CASE WHEN LEAD(valid_from) OVER (PARTITION BY customer_id ORDER BY valid_from) IS NULL THEN 1 ELSE 0 END AS is_current
+FROM v ORDER BY customer_id, valid_from;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261021_a4', level: 'advanced', added: '2026-10-21', source: 'GitHub', company: '',
+    ref: 'First-touch attribution of revenue by channel', url: 'https://github.com/zaskulpitona-ux/sql-interview-tasks/blob/main/tasks/senior.md',
+    title: 'ייחוס הכנסות לערוץ המגע הראשון', tables: ['d1021_touches', 'd1021_convs'],
+    prompt: `בטבלה d1021_touches יש מגעים שיווקיים של משתמשים בערוצים שונים, ובטבלה d1021_convs יש המרות עם הכנסה. כל המרה מיוחסת לערוץ של המגע המוקדם ביותר של אותו משתמש (touch_time הקטן ביותר, ובשוויון המגע עם touch_id הקטן יותר). המרות של משתמשים שאין להם אף מגע מיוחסות לערוץ 'direct'. החזירו לכל ערוץ את מספר ההמרות ואת סך ההכנסה. עמודות: channel, conversions, total_revenue. מיינו לפי total_revenue מהגבוה לנמוך ובשוויון לפי channel.`,
+    solution: `WITH first_touch AS (
+  SELECT user_id, channel, ROW_NUMBER() OVER (PARTITION BY user_id ORDER BY touch_time, touch_id) AS rn FROM d1021_touches
+)
+SELECT COALESCE(f.channel, 'direct') AS channel, COUNT(*) AS conversions, SUM(c.revenue) AS total_revenue
+FROM d1021_convs c LEFT JOIN first_touch f ON f.user_id = c.user_id AND f.rn = 1
+GROUP BY COALESCE(f.channel, 'direct') ORDER BY total_revenue DESC, channel;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261021_a5', level: 'advanced', added: '2026-10-21', source: 'GitHub', company: '',
+    ref: 'Rolling 7-day WAU', url: 'https://github.com/zaskulpitona-ux/sql-interview-tasks/blob/main/tasks/senior.md',
+    title: 'משתמשים פעילים בחלון נע של 7 ימים', tables: ['d1021_sessions'],
+    prompt: `בטבלה d1021_sessions יש סשנים של שחקנים (שחקן יכול להופיע כמה פעמים באותו יום). לכל יום בלוח השנה, מהיום הראשון בטבלה ועד האחרון, כולל ימים ללא אף סשן, החזירו את מספר השחקנים השונים שהיה להם לפחות סשן אחד ב-7 הימים שמסתיימים באותו יום (היום עצמו ו-6 הימים שלפניו). עמודות: day, wau. מיינו לפי day.`,
+    solution: `WITH RECURSIVE cal(day) AS (
+  SELECT MIN(play_date) FROM d1021_sessions
+  UNION ALL
+  SELECT DATE(day, '+1 day') FROM cal WHERE day < (SELECT MAX(play_date) FROM d1021_sessions)
+)
+SELECT cal.day AS day, (SELECT COUNT(DISTINCT s.player_id) FROM d1021_sessions s WHERE s.play_date BETWEEN DATE(cal.day, '-6 day') AND cal.day) AS wau
+FROM cal ORDER BY cal.day;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
