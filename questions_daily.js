@@ -2244,6 +2244,163 @@ SELECT cal.day AS day, (SELECT COUNT(DISTINCT s.player_id) FROM d1021_sessions s
 FROM cal ORDER BY cal.day;`,
     ordered: true,
   },
+  {
+    id: 'd20261022_b1', level: 'basic', added: '2026-10-22', source: 'StrataScratch', company: 'Airbnb',
+    ref: 'Ranking Hosts by Beds', url: 'https://www.stratascratch.com/blog/sql-window-functions-interview-questions-by-airbnb',
+    title: 'סך המיטות לכל מארח', tables: ['d1022_listings'],
+    prompt: `בטבלה d1022_listings יש מודעות אירוח, ולכל מודעה מארח (host_id) ומספר מיטות (beds, ייתכן ריק כשהנתון חסר). החזירו לכל מארח את סך המיטות בכל המודעות שלו (נתון חסר אינו נספר). עמודות: host_id, total_beds. מיינו לפי total_beds מהגבוה לנמוך ובשוויון לפי host_id עולה.`,
+    solution: `SELECT host_id, SUM(beds) AS total_beds FROM d1022_listings GROUP BY host_id ORDER BY total_beds DESC, host_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261022_b2', level: 'basic', added: '2026-10-22', source: 'University of Rochester Career Education', company: '',
+    ref: 'Count messages per sender in a date range', url: 'https://careereducation.rochester.edu/blog/2025/03/05/top-25-sql-data-engineering-interview-questions/',
+    title: 'הודעות לכל שולח בטווח תאריכים', tables: ['d1022_messages'],
+    prompt: `בטבלה d1022_messages יש הודעות, ולכל הודעה שולח (sender_id) וזמן שליחה (sent_at, בפורמט YYYY-MM-DD HH:MM). החזירו את מספר ההודעות של כל שולח שנשלחו בין 2026-08-10 ל-2026-08-20 כולל, כאשר כל שעות היום האחרון נכללות. הציגו רק שולחים עם לפחות 2 הודעות בטווח. עמודות: sender_id, msg_count. מיינו לפי msg_count מהגבוה לנמוך ובשוויון לפי sender_id עולה.`,
+    solution: `SELECT sender_id, COUNT(*) AS msg_count FROM d1022_messages
+WHERE sent_at >= '2026-08-10' AND sent_at < '2026-08-21'
+GROUP BY sender_id HAVING COUNT(*) >= 2 ORDER BY msg_count DESC, sender_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261022_b3', level: 'basic', added: '2026-10-22', source: 'LeetCode', company: '',
+    ref: 'Number of Calls Between Two Persons', url: 'https://leetcode.com/problems/number-of-calls-between-two-persons/',
+    title: 'שיחות בין זוגות אנשים', tables: ['d1022_calls'],
+    prompt: `בטבלה d1022_calls יש שיחות טלפון: caller_id, callee_id ו-duration (בשניות). לכל זוג אנשים, ללא קשר לכיוון השיחה, החזירו את מספר השיחות ביניהם וסך משך השיחות. הזוג מוצג פעם אחת כך ש-person1 קטן מ-person2. עמודות: person1, person2, call_count, total_duration.`,
+    solution: `SELECT MIN(caller_id, callee_id) AS person1, MAX(caller_id, callee_id) AS person2, COUNT(*) AS call_count, SUM(duration) AS total_duration
+FROM d1022_calls GROUP BY MIN(caller_id, callee_id), MAX(caller_id, callee_id);`,
+    ordered: false,
+  },
+  {
+    id: 'd20261022_b4', level: 'basic', added: '2026-10-22', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'ממוצע מחיר נסיעה לעיר', tables: ['d1022_rides'],
+    prompt: `בטבלה d1022_rides יש נסיעות עם עיר (city), מחיר (fare) וסטטוס (status). בחנו רק נסיעות בסטטוס completed. החזירו לכל עיר עם לפחות 3 נסיעות כאלה את מספר הנסיעות ואת ממוצע המחיר מעוגל ל-2 ספרות אחרי הנקודה. עמודות: city, rides, avg_fare. מיינו לפי avg_fare מהגבוה לנמוך.`,
+    solution: `SELECT city, COUNT(*) AS rides, ROUND(AVG(fare), 2) AS avg_fare FROM d1022_rides
+WHERE status = 'completed' GROUP BY city HAVING COUNT(*) >= 3 ORDER BY avg_fare DESC;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261022_b5', level: 'basic', added: '2026-10-22', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'פניות פתוחות לפי עדיפות', tables: ['d1022_tickets'],
+    prompt: `בטבלה d1022_tickets יש פניות תמיכה. פנייה שעדיין לא טופלה היא פנייה שאין לה זמן סגירה (resolved_at ריק). לכל רמת עדיפות (priority) שיש בה לפחות פנייה פתוחה אחת, החזירו את סך הפניות, מספר הפניות הפתוחות ואחוז הפתוחות מתוך הכול, מעוגל לספרה אחת אחרי הנקודה. עמודות: priority, total_tickets, open_tickets, open_pct.`,
+    solution: `SELECT priority, COUNT(*) AS total_tickets, SUM(resolved_at IS NULL) AS open_tickets, ROUND(100.0 * SUM(resolved_at IS NULL) / COUNT(*), 1) AS open_pct
+FROM d1022_tickets GROUP BY priority HAVING SUM(resolved_at IS NULL) > 0;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261022_i1', level: 'intermediate', added: '2026-10-22', source: 'DataLemur', company: 'Robinhood',
+    ref: 'Completed Trades', url: 'https://datalemur.com/questions/completed-trades',
+    title: 'שלוש הערים עם הכי הרבה עסקאות שהושלמו', tables: ['d1022_trades', 'd1022_users'],
+    prompt: `בטבלה d1022_trades יש הוראות מסחר (order_id, user_id, status), ובטבלה d1022_users יש את עיר המגורים של כל משתמש. החזירו את שלוש הערים עם מספר ההוראות הגבוה ביותר בסטטוס Completed. עמודות: city, completed_orders. מיינו לפי completed_orders מהגבוה לנמוך (אין שוויון בין שלושת המקומות הראשונים).`,
+    solution: `SELECT u.city, COUNT(*) AS completed_orders FROM d1022_trades t JOIN d1022_users u ON u.user_id = t.user_id
+WHERE t.status = 'Completed' GROUP BY u.city ORDER BY completed_orders DESC LIMIT 3;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261022_i2', level: 'intermediate', added: '2026-10-22', source: 'LeetCode', company: '',
+    ref: 'Count Salary Categories', url: 'https://leetcode.com/problems/count-salary-categories/description/',
+    title: 'חשבונות לפי קטגוריית הכנסה', tables: ['d1022_accounts'],
+    prompt: `בטבלה d1022_accounts יש חשבונות בנק עם הכנסה חודשית (income). סווגו כל חשבון: Low Salary אם ההכנסה קטנה מ-20000, Average Salary אם היא בין 20000 ל-50000 כולל, High Salary אם היא גדולה מ-50000. החזירו את מספר החשבונות בכל אחת משלוש הקטגוריות, וגם קטגוריה שאין בה חשבונות מוצגת עם 0. עמודות: category, accounts_count.`,
+    solution: `SELECT c.category, COUNT(a.account_id) AS accounts_count
+FROM (SELECT 'Low Salary' AS category UNION ALL SELECT 'Average Salary' UNION ALL SELECT 'High Salary') c
+LEFT JOIN d1022_accounts a ON c.category = CASE WHEN a.income < 20000 THEN 'Low Salary' WHEN a.income <= 50000 THEN 'Average Salary' ELSE 'High Salary' END
+GROUP BY c.category;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261022_i3', level: 'intermediate', added: '2026-10-22', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'לקוחות שלא הזמינו מאז תחילת ספטמבר', tables: ['d1022_customers', 'd1022_orders'],
+    prompt: `בטבלאות d1022_customers ו-d1022_orders, החזירו את הלקוחות שאין להם אף הזמנה בתאריך 2026-09-01 או אחריו, כולל לקוחות שמעולם לא הזמינו. עבור כל אחד הציגו את תאריך ההזמנה האחרונה שלו (ריק אם אין). עמודות: customer_id, name, last_order_date.`,
+    solution: `SELECT c.customer_id, c.name, MAX(o.order_date) AS last_order_date
+FROM d1022_customers c LEFT JOIN d1022_orders o ON o.customer_id = c.customer_id
+GROUP BY c.customer_id, c.name HAVING COALESCE(MAX(o.order_date), '') < '2026-09-01';`,
+    ordered: false,
+  },
+  {
+    id: 'd20261022_i4', level: 'intermediate', added: '2026-10-22', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'שיעור משלוחים מאחרים לכל מסעדה', tables: ['d1022_dlv'],
+    prompt: `בטבלה d1022_dlv יש משלוחים עם זמן מובטח (promised_min) וזמן בפועל (actual_min, ריק למשלוח שבוטל). משלוח מאחר הוא משלוח שהזמן בפועל שלו גדול מהמובטח. התעלמו ממשלוחים שבוטלו. לכל מסעדה עם לפחות 3 משלוחים שנמסרו, החזירו את מספר המשלוחים שנמסרו, מספר המאחרים ואחוז המאחרים מעוגל לספרה אחת אחרי הנקודה. עמודות: restaurant, delivered, late_count, late_pct.`,
+    solution: `SELECT restaurant, COUNT(*) AS delivered, SUM(actual_min > promised_min) AS late_count, ROUND(100.0 * SUM(actual_min > promised_min) / COUNT(*), 1) AS late_pct
+FROM d1022_dlv WHERE actual_min IS NOT NULL GROUP BY restaurant HAVING COUNT(*) >= 3;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261022_i5', level: 'intermediate', added: '2026-10-22', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'נרשמים משני ערוצים', tables: ['d1022_web_signups', 'd1022_app_signups'],
+    prompt: `הטבלאות d1022_web_signups ו-d1022_app_signups מכילות הרשמות דרך האתר ודרך האפליקציה. כתובת אותו משתמש עשויה להופיע באותיות גדולות וקטנות שונות. החזירו לכל כתובת דוא"ל (באותיות קטנות) שתאריך ההרשמה הראשון שלה היה במרץ 2026 את תאריך ההרשמה המוקדם ביותר שלה בכל הערוצים יחד ואת מספר הערוצים השונים שבהם נרשמה. עמודות: email, first_signup_date, channels.`,
+    solution: `WITH s AS (
+  SELECT LOWER(email) AS email, signup_date, 'web' AS ch FROM d1022_web_signups
+  UNION ALL
+  SELECT LOWER(email), signup_date, 'app' FROM d1022_app_signups
+)
+SELECT email, MIN(signup_date) AS first_signup_date, COUNT(DISTINCT ch) AS channels
+FROM s GROUP BY email HAVING MIN(signup_date) >= '2026-03-01' AND MIN(signup_date) < '2026-04-01';`,
+    ordered: false,
+  },
+  {
+    id: 'd20261022_a1', level: 'advanced', added: '2026-10-22', source: 'DataLemur', company: 'DoorDash',
+    ref: 'Rank Drivers by Daily Delivery Performance', url: 'https://datalemur.com/blog/doordash-sql-interview-questions',
+    title: 'דירוג נהגים לפי זמן משלוח יומי', tables: ['d1022_dd'],
+    prompt: `בטבלה d1022_dd יש משלוחים עם נהג (driver_id), זמן התחלה וזמן סיום (end_time ריק למשלוח שלא הסתיים; התעלמו ממנו). משך משלוח הוא מספר הדקות השלמות בין ההתחלה לסיום. לכל נהג ולכל יום (לפי זמן ההתחלה) החזירו את ממוצע משך המשלוחים ביום, מעוגל ל-2 ספרות, את דירוג הנהג באותו יום לפי הממוצע היומי מהנמוך לגבוה (נהגים עם אותו ממוצע מקבלים אותו מקום, והמקום הבא מדולג), ואת ממוצע משך כל המשלוחים של הנהג בכל הימים, מעוגל ל-2 ספרות. עמודות: driver_id, delivery_date, avg_minutes, daily_rank, driver_overall_avg.`,
+    solution: `WITH d AS (
+  SELECT driver_id, DATE(start_time) AS delivery_date, (strftime('%s', end_time) - strftime('%s', start_time)) / 60 AS mins
+  FROM d1022_dd WHERE end_time IS NOT NULL
+), daily AS (
+  SELECT driver_id, delivery_date, AVG(mins) AS avg_minutes FROM d GROUP BY driver_id, delivery_date
+)
+SELECT driver_id, delivery_date, ROUND(avg_minutes, 2) AS avg_minutes,
+  RANK() OVER (PARTITION BY delivery_date ORDER BY avg_minutes) AS daily_rank,
+  ROUND((SELECT AVG(mins) FROM d WHERE d.driver_id = daily.driver_id), 2) AS driver_overall_avg
+FROM daily;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261022_a2', level: 'advanced', added: '2026-10-22', source: 'LeetCode', company: '',
+    ref: 'Find the Missing IDs', url: 'https://leetcode.com/discuss/post/1601295/Database-SQL-Primer-(Part-4)-Recursive-CTEs/',
+    title: 'מזהים חסרים ברצף', tables: ['d1022_members'],
+    prompt: `בטבלה d1022_members יש חברים עם member_id. החזירו את כל המספרים השלמים בין 1 ל-member_id הגבוה ביותר בטבלה שאינם מופיעים בה כמזהה של אף חבר. עמודה: missing_id. מיינו מהקטן לגדול.`,
+    solution: `WITH RECURSIVE n(i) AS (
+  SELECT 1 UNION ALL SELECT i + 1 FROM n WHERE i < (SELECT MAX(member_id) FROM d1022_members)
+)
+SELECT i AS missing_id FROM n WHERE i NOT IN (SELECT member_id FROM d1022_members) ORDER BY missing_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261022_a3', level: 'advanced', added: '2026-10-22', source: 'LeetCode', company: '',
+    ref: 'Average Salary: Departments VS Company', url: 'https://leetcode.com/problems/average-salary-departments-vs-company/',
+    title: 'שכר ממוצע של מחלקה מול החברה', tables: ['d1022_salary'],
+    prompt: `בטבלה d1022_salary יש תשלומי שכר לעובדים לפי מחלקה (dept) וחודש (pay_month). לכל חודש ולכל מחלקה, השוו את ממוצע השכר של המחלקה באותו חודש לממוצע השכר של כל עובדי החברה באותו חודש. החזירו higher אם ממוצע המחלקה גבוה יותר, lower אם נמוך יותר, same אם שווה. עמודות: pay_month, dept, comparison.`,
+    solution: `WITH dm AS (SELECT pay_month, dept, AVG(amount) AS d_avg FROM d1022_salary GROUP BY pay_month, dept),
+cm AS (SELECT pay_month, AVG(amount) AS c_avg FROM d1022_salary GROUP BY pay_month)
+SELECT dm.pay_month, dm.dept, CASE WHEN d_avg > c_avg THEN 'higher' WHEN d_avg < c_avg THEN 'lower' ELSE 'same' END AS comparison
+FROM dm JOIN cm ON cm.pay_month = dm.pay_month;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261022_a4', level: 'advanced', added: '2026-10-22', source: 'StrataScratch', company: 'Airbnb',
+    ref: 'Ranking Most Active Guests', url: 'https://www.stratascratch.com/blog/sql-window-functions-interview-questions-by-airbnb',
+    title: 'דירוג האורחים הפעילים ביותר', tables: ['d1022_guest_msgs'],
+    prompt: `בטבלה d1022_guest_msgs יש לכל שורה אורח (guest_id), מארח (host_id) ומספר ההודעות (n_messages) ששלח האורח למארח. דרגו את האורחים לפי סך ההודעות שלהם מהגבוה לנמוך: אורחים עם אותו סך מקבלים אותו דירוג, והדירוג הבא הוא המספר העוקב ללא דילוג. עמודות: guest_id, total_messages, ranking. מיינו לפי ranking ובשוויון לפי guest_id עולה.`,
+    solution: `SELECT guest_id, SUM(n_messages) AS total_messages, DENSE_RANK() OVER (ORDER BY SUM(n_messages) DESC) AS ranking
+FROM d1022_guest_msgs GROUP BY guest_id ORDER BY ranking, guest_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261022_a5', level: 'advanced', added: '2026-10-22', source: 'StrataScratch', company: 'Spotify',
+    ref: 'Days at Number One', url: 'https://platform.stratascratch.com/coding',
+    title: 'רצף הימים הארוך ביותר במקום הראשון', tables: ['d1022_no1'],
+    prompt: `בטבלה d1022_no1 יש לכל תאריך (chart_date) השיר שהיה במקום הראשון במצעד באותו יום; בחלק מהתאריכים אין שורה כלל. לכל שיר, החזירו את מספר הימים הרצופים (בלוח השנה) הארוך ביותר שבו היה במקום הראשון. עמודות: song, longest_streak. מיינו לפי longest_streak מהגבוה לנמוך ובשוויון לפי song.`,
+    solution: `WITH g AS (
+  SELECT song, chart_date, JULIANDAY(chart_date) - ROW_NUMBER() OVER (PARTITION BY song ORDER BY chart_date) AS grp FROM d1022_no1
+), runs AS (SELECT song, COUNT(*) AS len FROM g GROUP BY song, grp)
+SELECT song, MAX(len) AS longest_streak FROM runs GROUP BY song ORDER BY longest_streak DESC, song;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
