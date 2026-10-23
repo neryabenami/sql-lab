@@ -2401,6 +2401,171 @@ FROM d1022_guest_msgs GROUP BY guest_id ORDER BY ranking, guest_id;`,
 SELECT song, MAX(len) AS longest_streak FROM runs GROUP BY song ORDER BY longest_streak DESC, song;`,
     ordered: true,
   },
+  {
+    id: 'd20261023_b1', level: 'basic', added: '2026-10-23', source: 'Data Interview', company: 'Netflix',
+    ref: 'GROUP BY / HAVING: users who watched at least 3 different series', url: 'https://www.datainterview.com/courses/sql/sql-having',
+    title: 'צופים בלפחות שלוש סדרות שונות', tables: ['d1023_watch'],
+    prompt: `בטבלה d1023_watch כל שורה היא צפייה בפרק של סדרה על ידי משתמש. החזירו את המשתמשים שצפו בלפחות 3 סדרות שונות, יחד עם מספר הסדרות השונות שצפו בהן. עמודות: user_id, series_count. מיינו לפי series_count מהגבוה לנמוך ובשוויון לפי user_id עולה.`,
+    solution: `SELECT user_id, COUNT(DISTINCT series) AS series_count FROM d1023_watch GROUP BY user_id HAVING COUNT(DISTINCT series) >= 3 ORDER BY series_count DESC, user_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261023_b2', level: 'basic', added: '2026-10-23', source: 'StrataScratch', company: 'Apple',
+    ref: 'Apple Data Scientist Interview Questions (events of MacBook Pro users)', url: 'https://www.stratascratch.com/blog/apple-data-scientist-interview-questions',
+    title: 'אירועים של משתמשי MacBook Pro', tables: ['d1023_apple_events'],
+    prompt: `בטבלה d1023_apple_events נרשמים אירועי משתמשים יחד עם המכשיר שבו בוצעו. לכל סוג אירוע (event_name), ספרו כמה אירועים בוצעו במכשיר מסוג MacBook Pro. עמודות: event_name, event_count. מיינו לפי event_count מהגבוה לנמוך ובשוויון לפי event_name בסדר אלפביתי.`,
+    solution: `SELECT event_name, COUNT(*) AS event_count FROM d1023_apple_events WHERE device = 'MacBook Pro' GROUP BY event_name ORDER BY event_count DESC, event_name;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261023_b3', level: 'basic', added: '2026-10-23', source: 'StrataScratch', company: 'Apple',
+    ref: 'Apple Data Scientist Interview Questions (number of speakers of each language by country)', url: 'https://www.stratascratch.com/blog/apple-data-scientist-interview-questions',
+    title: 'שפות שמדוברות ביותר ממדינה אחת', tables: ['d1023_speakers'],
+    prompt: `בטבלה d1023_speakers יש לכל מדינה ואזור את השפות המדוברות בהם ומספר הדוברים. החזירו את השפות שמדוברות בשתי מדינות שונות או יותר, עם מספר המדינות וסך כל הדוברים בכל המדינות. עמודות: language, countries, total_speakers. מיינו לפי total_speakers מהגבוה לנמוך ובשוויון לפי language.`,
+    solution: `SELECT language, COUNT(DISTINCT country) AS countries, SUM(speakers) AS total_speakers FROM d1023_speakers GROUP BY language HAVING COUNT(DISTINCT country) >= 2 ORDER BY total_speakers DESC, language;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261023_b4', level: 'basic', added: '2026-10-23', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'פריטי מלאי שדורשים הזמנה מחדש', tables: ['d1023_inventory'],
+    prompt: `בטבלה d1023_inventory יש כמות במלאי (qty) לכל מק"ט בכל מחסן, ורף להזמנה מחדש (reorder_level) שיכול להיות ריק. פריט דורש הזמנה מחדש אם הכמות קטנה מהרף. כשאין רף מוגדר, הפריט דורש הזמנה מחדש רק אם הכמות שלו היא 0. החזירו את הפריטים שדורשים הזמנה מחדש. עמודות: sku, warehouse, qty. מיינו לפי sku ואז לפי warehouse.`,
+    solution: `SELECT sku, warehouse, qty FROM d1023_inventory WHERE qty < reorder_level OR (reorder_level IS NULL AND qty = 0) ORDER BY sku, warehouse;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261023_b5', level: 'basic', added: '2026-10-23', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'ממוצע תשלום לביקורים שהושלמו במרפאות', tables: ['d1023_visits'],
+    prompt: `בטבלה d1023_visits רשומים ביקורי מטופלים במרפאות, עם סטטוס וסכום תשלום (fee) שחסר בחלק מהביקורים. לכל מרפאה, חשבו את מספר הביקורים בסטטוס done ואת ממוצע התשלום שלהם (ביקורים ללא סכום אינם נכללים בממוצע), מעוגל ל-2 ספרות אחרי הנקודה. הציגו רק מרפאות שיש בהן לפחות שני ביקורים בסטטוס done. עמודות: clinic, done_visits, avg_fee. מיינו לפי avg_fee מהגבוה לנמוך ובשוויון לפי clinic.`,
+    solution: `SELECT clinic, COUNT(*) AS done_visits, ROUND(AVG(fee), 2) AS avg_fee FROM d1023_visits WHERE status = 'done' GROUP BY clinic HAVING COUNT(*) >= 2 ORDER BY avg_fee DESC, clinic;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261023_i1', level: 'intermediate', added: '2026-10-23', source: 'DataLemur', company: 'Etsy',
+    ref: 'Etsy SQL Interview Questions (signed up and purchased within 7 days)', url: 'https://datalemur.com/blog/etsy-sql-interview-questions',
+    title: 'שיעור הנרשמים שקנו בתוך שבוע', tables: ['d1023_signups', 'd1023_purchases'],
+    prompt: `בטבלה d1023_signups תאריך ההרשמה של כל משתמש, ובטבלה d1023_purchases רכישות (למשתמש יכולות להיות כמה). חשבו איזה חלק מהנרשמים ביצעו רכישה כלשהי בתוך 7 ימים מיום ההרשמה, כולל יום ההרשמה עצמו וכולל היום השביעי. רכישה שבוצעה לפני ההרשמה לא נחשבת, ורכישות של משתמשים שאינם בטבלת ההרשמות מתעלמים מהן. החזירו עמודה אחת, activation_rate, כשבר בין 0 ל-1 מעוגל ל-2 ספרות אחרי הנקודה.`,
+    solution: `SELECT ROUND(1.0 * COUNT(DISTINCT s.user_id) / (SELECT COUNT(*) FROM d1023_signups), 2) AS activation_rate
+FROM d1023_signups s JOIN d1023_purchases p ON p.user_id = s.user_id
+ AND p.purchase_date BETWEEN s.signup_date AND DATE(s.signup_date, '+7 days');`,
+    ordered: false,
+  },
+  {
+    id: 'd20261023_i2', level: 'intermediate', added: '2026-10-23', source: 'DataLemur', company: 'Etsy',
+    ref: 'Etsy SQL Interview Questions (first transaction)', url: 'https://datalemur.com/blog/etsy-sql-interview-questions',
+    title: 'לקוחות שהעסקה הראשונה שלהם גדולה', tables: ['d1023_tx'],
+    prompt: `בטבלה d1023_tx רשומות עסקאות של לקוחות. העסקה הראשונה של לקוח היא זו עם התאריך המוקדם ביותר, ובשוויון תאריכים זו עם tx_id הנמוך יותר. החזירו את הלקוחות שסכום העסקה הראשונה שלהם הוא 50 לפחות, יחד עם סכום העסקה הראשונה ומספר העסקאות הכולל של הלקוח. עמודות: customer_id, first_amount, tx_count. מיינו לפי customer_id.`,
+    solution: `SELECT t.customer_id, t.amount AS first_amount, (SELECT COUNT(*) FROM d1023_tx x WHERE x.customer_id = t.customer_id) AS tx_count
+FROM d1023_tx t
+WHERE t.tx_id = (SELECT x.tx_id FROM d1023_tx x WHERE x.customer_id = t.customer_id ORDER BY x.tx_date, x.tx_id LIMIT 1)
+  AND t.amount >= 50
+ORDER BY t.customer_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261023_i3', level: 'intermediate', added: '2026-10-23', source: 'DataLemur', company: 'Netflix',
+    ref: 'Netflix SQL Interview Questions (top users by hours watched last month)', url: 'https://datalemur.com/blog/netflix-sql-interview-questions',
+    title: 'שלושת הצופים המובילים בחודש מרץ', tables: ['d1023_views'],
+    prompt: `בטבלה d1023_views נרשמות צפיות של משתמשים בדקות. מצאו את שלושת המשתמשים שצפו הכי הרבה שעות בחודש מרץ 2026 (כולל הימים 1 ו-31 במרץ). עמודות: user_id, hours_watched (דקות חלקי 60, מעוגל ל-2 ספרות אחרי הנקודה). מיינו לפי סך הדקות מהגבוה לנמוך ובשוויון לפי user_id עולה, והחזירו רק שלוש שורות.`,
+    solution: `SELECT user_id, ROUND(SUM(minutes) / 60.0, 2) AS hours_watched FROM d1023_views
+WHERE view_date BETWEEN '2026-03-01' AND '2026-03-31'
+GROUP BY user_id ORDER BY SUM(minutes) DESC, user_id LIMIT 3;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261023_i4', level: 'intermediate', added: '2026-10-23', source: 'LeetCode', company: '',
+    ref: 'Customer Order Frequency', url: 'https://cloud.tencent.cn/developer/article/1787716',
+    title: 'לקוחות שהוציאו לפחות 100 ביוני וגם ביולי', tables: ['d1023_cust', 'd1023_ord', 'd1023_prod'],
+    prompt: `הטבלאות d1023_cust (לקוחות), d1023_prod (מחיר ליחידה) ו-d1023_ord (הזמנות עם כמות) מתארות רכישות. החזירו את הלקוחות שסכום ההוצאה שלהם (כמות כפול מחיר) היה לפחות 100 גם בחודש יוני 2026 וגם בחודש יולי 2026. עמודות: customer_id, name. מיינו לפי customer_id.`,
+    solution: `SELECT c.customer_id, c.name FROM d1023_cust c
+JOIN d1023_ord o ON o.customer_id = c.customer_id JOIN d1023_prod p ON p.product_id = o.product_id
+GROUP BY c.customer_id, c.name
+HAVING SUM(CASE WHEN o.order_date LIKE '2026-06%' THEN o.quantity * p.price ELSE 0 END) >= 100
+   AND SUM(CASE WHEN o.order_date LIKE '2026-07%' THEN o.quantity * p.price ELSE 0 END) >= 100
+ORDER BY c.customer_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261023_i5', level: 'intermediate', added: '2026-10-23', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'מרוויחים מעל ממוצע המחלקה שמנהלם במחלקה אחרת', tables: ['d1023_hr_emp'],
+    prompt: `בטבלה d1023_hr_emp יש עובדים עם מחלקה, שכר ומזהה מנהל (manager_id, ריק אצל מי שאין לו מנהל). החזירו את העובדים שיש להם מנהל, שהמנהל שלהם שייך למחלקה אחרת משלהם, ושהשכר שלהם גבוה בהחלט מהשכר הממוצע במחלקה שלהם. עמודות: emp_id, name, dept. מיינו לפי emp_id.`,
+    solution: `SELECT e.emp_id, e.name, e.dept FROM d1023_hr_emp e
+JOIN d1023_hr_emp m ON m.emp_id = e.manager_id
+WHERE m.dept <> e.dept AND e.salary > (SELECT AVG(salary) FROM d1023_hr_emp d WHERE d.dept = e.dept)
+ORDER BY e.emp_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261023_a1', level: 'advanced', added: '2026-10-23', source: 'Dataford', company: 'Next Insurance',
+    ref: 'How would you write a query to find the retention rate of customers year over year grouped by their industry classification', url: 'https://dataford.io/questions/how-would-you-write-a-query-to-find-the-retention-rate-of-customers-year-over-year-grouped-by-their-industry-classification-at-next-insurance',
+    title: 'שימור לקוחות משנה לשנה לפי ענף', tables: ['d1023_cust_years'],
+    prompt: `בטבלה d1023_cust_years יש שורה לכל לקוח וכל שנה שבה היה פעיל, יחד עם הענף שלו. לכל ענף ולכל שנה Y בין 2024 ל-2025, חשבו איזה אחוז מהלקוחות שהיו פעילים בשנה Y-1 היו פעילים גם בשנה Y. עמודות: industry, year, retention_pct (אחוז מעוגל ל-2 ספרות אחרי הנקודה). מיינו לפי industry ואז לפי year.`,
+    solution: `SELECT a.industry, b.y AS year, ROUND(100.0 * COUNT(c.customer_id) / COUNT(*), 2) AS retention_pct
+FROM d1023_cust_years a
+JOIN (SELECT 2024 AS y UNION ALL SELECT 2025) b ON a.active_year = b.y - 1
+LEFT JOIN d1023_cust_years c ON c.customer_id = a.customer_id AND c.active_year = b.y
+GROUP BY a.industry, b.y ORDER BY a.industry, b.y;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261023_a2', level: 'advanced', added: '2026-10-23', source: 'Scribd', company: '',
+    ref: 'Write a query to calculate monthly retention rates (cohort by first purchase month)', url: 'https://www.scribd.com/document/862057097/Amazon-SQL-Question',
+    title: 'שימור חודשי לפי קבוצת חודש הרכישה הראשונה', tables: ['d1023_shop_orders'],
+    prompt: `בטבלה d1023_shop_orders יש הזמנות של לקוחות. קבוצת הלקוח היא החודש (בפורמט YYYY-MM) של ההזמנה הראשונה שלו. לכל קבוצה ולכל היסט חודשים (0 הוא חודש הקבוצה עצמו) שבו היה לפחות לקוח אחד פעיל מהקבוצה, החזירו כמה לקוחות מהקבוצה הזמינו באותו חודש ואיזה אחוז הם מגודל הקבוצה, מעוגל ל-2 ספרות אחרי הנקודה. עמודות: cohort_month, month_offset, active_customers, retention_pct. מיינו לפי cohort_month ואז month_offset.`,
+    solution: `WITH f AS (SELECT customer_id, STRFTIME('%Y-%m', MIN(order_date)) AS cohort_month FROM d1023_shop_orders GROUP BY customer_id),
+size AS (SELECT cohort_month, COUNT(*) AS n FROM f GROUP BY cohort_month),
+act AS (
+  SELECT DISTINCT o.customer_id, f.cohort_month,
+    (CAST(STRFTIME('%Y', o.order_date) AS INTEGER) - CAST(SUBSTR(f.cohort_month, 1, 4) AS INTEGER)) * 12
+    + CAST(STRFTIME('%m', o.order_date) AS INTEGER) - CAST(SUBSTR(f.cohort_month, 6, 2) AS INTEGER) AS month_offset
+  FROM d1023_shop_orders o JOIN f ON f.customer_id = o.customer_id)
+SELECT a.cohort_month, a.month_offset, COUNT(*) AS active_customers, ROUND(100.0 * COUNT(*) / s.n, 2) AS retention_pct
+FROM act a JOIN size s ON s.cohort_month = a.cohort_month
+GROUP BY a.cohort_month, a.month_offset ORDER BY a.cohort_month, a.month_offset;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261023_a3', level: 'advanced', added: '2026-10-23', source: 'Codemia', company: 'Pinterest',
+    ref: 'Optimize a slow query on orders (Pinterest Data Scientist take-home)', url: 'https://codemia.io/practice/optimize-a-slow-query-on-orders-6',
+    title: 'הזמנות גדולות מהממוצע של ההזמנות הקודמות של הלקוח', tables: ['d1023_cust_orders'],
+    prompt: `בטבלה d1023_cust_orders יש הזמנות של לקוחות. סדר ההזמנות של לקוח נקבע לפי order_date ובשוויון לפי order_id. עבור כל הזמנה שיש לפניה לפחות הזמנה אחת קודמת של אותו לקוח, חשבו את ממוצע הסכומים של כל ההזמנות הקודמות שלו (prev_avg, מעוגל ל-2 ספרות אחרי הנקודה). החזירו רק הזמנות שסכומן גבוה בהחלט מהממוצע הזה. עמודות: order_id, customer_id, amount, prev_avg. מיינו לפי customer_id, ואז order_date, ואז order_id.`,
+    solution: `WITH t AS (
+  SELECT order_id, customer_id, order_date, amount,
+    AVG(amount) OVER (PARTITION BY customer_id ORDER BY order_date, order_id ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS pa
+  FROM d1023_cust_orders)
+SELECT order_id, customer_id, amount, ROUND(pa, 2) AS prev_avg FROM t WHERE pa IS NOT NULL AND amount > pa
+ORDER BY customer_id, order_date, order_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261023_a4', level: 'advanced', added: '2026-10-23', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'ממוצע נע של 3 ימים עם ימים חסרים', tables: ['d1023_daily_rev'],
+    prompt: `בטבלה d1023_daily_rev יש הכנסה יומית, ובחלק מהימים בין 2026-05-01 ל-2026-05-12 אין שורה כלל, והכנסתם נחשבת 0. לכל יום בין 2026-05-03 ל-2026-05-12 (כולל), חשבו את ממוצע ההכנסה של אותו יום ושני ימי הלוח שלפניו (שלושה ימי לוח בסך הכל), מעוגל ל-2 ספרות אחרי הנקודה. עמודות: day, avg_revenue_3d. החזירו שורה לכל אחד מהימים בטווח, ממוינת לפי day.`,
+    solution: `WITH RECURSIVE cal(day) AS (SELECT '2026-05-01' UNION ALL SELECT DATE(day, '+1 day') FROM cal WHERE day < '2026-05-12'),
+d AS (SELECT cal.day, COALESCE(r.revenue, 0) AS rev FROM cal LEFT JOIN d1023_daily_rev r ON r.day = cal.day),
+m AS (SELECT day, AVG(rev) OVER (ORDER BY day ROWS BETWEEN 2 PRECEDING AND CURRENT ROW) AS a FROM d)
+SELECT day, ROUND(a, 2) AS avg_revenue_3d FROM m WHERE day >= '2026-05-03' ORDER BY day;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261023_a5', level: 'advanced', added: '2026-10-23', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'משפך פרסום עם סדר אירועים לכל קמפיין', tables: ['d1023_ad_events'],
+    prompt: `בטבלה d1023_ad_events נרשמים אירועי חשיפה (impression), לחיצה (click) ורכישה (purchase) של משתמשים בקמפיינים. לכל קמפיין, ספרו משתמשים ייחודיים בשלושה שלבים: impressions הם משתמשים עם חשיפה כלשהי; clicks הם משתמשים שלחצו אחרי החשיפה הראשונה שלהם בקמפיין; purchases הם משתמשים שרכשו אחרי הלחיצה הראשונה שהתבצעה אחרי החשיפה הראשונה. אירוע שקרה לפני השלב שקדם לו אינו נספר. עמודות: campaign, impressions, clicks, purchases. מיינו לפי campaign.`,
+    solution: `WITH imp AS (SELECT user_id, campaign, MIN(event_ts) AS t FROM d1023_ad_events WHERE event_type = 'impression' GROUP BY user_id, campaign),
+clk AS (SELECT i.user_id, i.campaign, MIN(e.event_ts) AS t FROM imp i JOIN d1023_ad_events e
+  ON e.user_id = i.user_id AND e.campaign = i.campaign AND e.event_type = 'click' AND e.event_ts > i.t GROUP BY i.user_id, i.campaign),
+pur AS (SELECT c.user_id, c.campaign FROM clk c JOIN d1023_ad_events e
+  ON e.user_id = c.user_id AND e.campaign = c.campaign AND e.event_type = 'purchase' AND e.event_ts > c.t GROUP BY c.user_id, c.campaign)
+SELECT i.campaign, COUNT(*) AS impressions, COUNT(c.user_id) AS clicks, COUNT(p.user_id) AS purchases
+FROM imp i LEFT JOIN clk c ON c.user_id = i.user_id AND c.campaign = i.campaign
+LEFT JOIN pur p ON p.user_id = i.user_id AND p.campaign = i.campaign
+GROUP BY i.campaign ORDER BY i.campaign;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
