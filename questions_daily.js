@@ -2566,6 +2566,138 @@ LEFT JOIN pur p ON p.user_id = i.user_id AND p.campaign = i.campaign
 GROUP BY i.campaign ORDER BY i.campaign;`,
     ordered: true,
   },
+  {
+    id: 'd20261024_b1', level: 'basic', added: '2026-10-24', source: 'HackerRank', company: '',
+    ref: 'Weather Observation Station 18', url: 'https://www.hackerrank.com/challenges/weather-observation-station-18/leaderboard',
+    title: 'מרחק מנהטן בין פינות המפה', tables: ['d1024_stations'],
+    prompt: `בטבלה d1024_stations כל שורה היא תחנת מדידה עם קו רוחב (lat_n) וקו אורך (long_w). דמיינו מלבן שפינתו האחת היא (הערך המינימלי של lat_n, הערך המינימלי של long_w) והפינה הנגדית היא (הערך המקסימלי של lat_n, הערך המקסימלי של long_w). החזירו שורה אחת עם מרחק מנהטן בין שתי הפינות (סכום ההפרשים המוחלטים בכל ציר), מעוגל ל-4 ספרות אחרי הנקודה. עמודה: manhattan_distance.`,
+    solution: `SELECT ROUND(ABS(MAX(lat_n) - MIN(lat_n)) + ABS(MAX(long_w) - MIN(long_w)), 4) AS manhattan_distance FROM d1024_stations;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261024_b2', level: 'basic', added: '2026-10-24', source: 'Interview Query', company: 'Fetch Rewards',
+    ref: 'Fetch Rewards Data Analyst interview: duplicate receipts', url: 'https://interviewquery.com/interview-guides/fetch-rewards-llc-data-analyst',
+    title: 'קבלות כפולות', tables: ['d1024_receipts'],
+    prompt: `בטבלה d1024_receipts כל שורה היא קבלה שנסרקה באפליקציה. קבלות נחשבות כפולות כשיש להן אותם user_id, store, total ו-receipt_date. החזירו כל קבוצת קבלות כפולות (שמופיעה יותר מפעם אחת) יחד עם מספר ההעתקים שלה. עמודות: user_id, store, receipt_date, total, copies. מיינו לפי user_id ובשוויון לפי receipt_date עולה.`,
+    solution: `SELECT user_id, store, receipt_date, total, COUNT(*) AS copies FROM d1024_receipts GROUP BY user_id, store, receipt_date, total HAVING COUNT(*) > 1 ORDER BY user_id, receipt_date;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261024_b3', level: 'basic', added: '2026-10-24', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'מוצרים לפי רמת מחיר', tables: ['d1024_products'],
+    prompt: `בטבלה d1024_products כל שורה היא מוצר. סווגו כל מוצר לרמת מחיר: מחיר נמוך מ-20 הוא 'cheap', מחיר מ-20 ועד פחות מ-100 הוא 'mid', ומחיר 100 ומעלה הוא 'premium'. לכל רמה החזירו את מספר המוצרים ואת המחיר הממוצע, מעוגל לספרה אחת אחרי הנקודה. עמודות: tier, products, avg_price.`,
+    solution: `SELECT CASE WHEN price < 20 THEN 'cheap' WHEN price < 100 THEN 'mid' ELSE 'premium' END AS tier, COUNT(*) AS products, ROUND(AVG(price), 1) AS avg_price FROM d1024_products GROUP BY tier;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261024_b4', level: 'basic', added: '2026-10-24', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'משימות באיחור לפי אחראי', tables: ['d1024_tasks'],
+    prompt: `בטבלה d1024_tasks כל שורה היא משימה. משימה נחשבת באיחור אם לא הושלמה (done_date ריק) ותאריך היעד שלה (due_date) קטן מ-2026-10-01. ספרו משימות באיחור לכל אחראי; משימות ללא אחראי יוצגו תחת השם 'unassigned'. אחראים ללא משימות באיחור לא יופיעו. עמודות: assignee, overdue_tasks. מיינו לפי overdue_tasks מהגבוה לנמוך ובשוויון לפי assignee בסדר אלפביתי.`,
+    solution: `SELECT COALESCE(assignee, 'unassigned') AS assignee, COUNT(*) AS overdue_tasks FROM d1024_tasks WHERE done_date IS NULL AND due_date < '2026-10-01' GROUP BY COALESCE(assignee, 'unassigned') ORDER BY overdue_tasks DESC, assignee;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261024_b5', level: 'basic', added: '2026-10-24', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'טווח מחירים של מוצרים במלאי', tables: ['d1024_products'],
+    prompt: `בטבלה d1024_products, עבור מוצרים שיש מהם מלאי (stock גדול מ-0) בלבד, החזירו לכל קטגוריה את המחיר הנמוך ביותר ואת המחיר הגבוה ביותר. הציגו רק קטגוריות שיש בהן לפחות 2 מוצרים במלאי. עמודות: category, min_price, max_price. מיינו לפי category בסדר אלפביתי.`,
+    solution: `SELECT category, MIN(price) AS min_price, MAX(price) AS max_price FROM d1024_products WHERE stock > 0 GROUP BY category HAVING COUNT(*) >= 2 ORDER BY category;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261024_i1', level: 'intermediate', added: '2026-10-24', source: 'HackerRank', company: '',
+    ref: 'African Cities', url: 'https://github.com/cuongtrans/hackerrank-sql-challenges',
+    title: 'ערים גדולות באפריקה', tables: ['d1024_city', 'd1024_country'],
+    prompt: `בטבלה d1024_city נתונות ערים עם קוד מדינה (country_code), ובטבלה d1024_country נתונות מדינות עם היבשת שלהן (continent). החזירו את שמות הערים שנמצאות במדינה ביבשת 'Africa' ואוכלוסייתן (population) לפחות 1,000,000. עמודה: name. מיינו לפי name בסדר אלפביתי.`,
+    solution: `SELECT c.name FROM d1024_city c JOIN d1024_country k ON k.code = c.country_code WHERE k.continent = 'Africa' AND c.population >= 1000000 ORDER BY c.name;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261024_i2', level: 'intermediate', added: '2026-10-24', source: 'LeetCode', company: '',
+    ref: 'Market Analysis I', url: 'https://www.scribd.com/document/887610471/LeetCode-SQL-Problems',
+    title: 'הזמנות של כל חבר בשנת 2025', tables: ['d1024_members', 'd1024_mkt_orders'],
+    prompt: `בטבלה d1024_members נתונים חברי מועדון עם תאריך הצטרפות, ובטבלה d1024_mkt_orders נתונות הזמנות. לכל חבר, כולל חברים שלא ביצעו אף הזמנה, החזירו כמה הזמנות ביצע במהלך שנת 2025 (מ-2025-01-01 עד 2025-12-31 כולל). עמודות: member_id, join_date, orders_2025.`,
+    solution: `SELECT m.member_id, m.join_date, COUNT(o.order_id) AS orders_2025 FROM d1024_members m LEFT JOIN d1024_mkt_orders o ON o.member_id = m.member_id AND o.order_date BETWEEN '2025-01-01' AND '2025-12-31' GROUP BY m.member_id, m.join_date;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261024_i3', level: 'intermediate', added: '2026-10-24', source: 'LeetCode', company: '',
+    ref: 'Number of Comments per Post', url: 'https://medium.com/@checkedandchanged/leetcode-sql-questions-41ce9797689c',
+    title: 'מספר תגובות לכל פוסט', tables: ['d1024_submissions'],
+    prompt: `בטבלה d1024_submissions כל שורה היא פריט שפורסם: פוסט (parent_id ריק) או תגובה (parent_id הוא מזהה הפריט שאליו מגיבים). ייתכנו שורות כפולות לאותו sub_id. לכל פוסט (מזהה ייחודי), החזירו את מספר התגובות השונות שהוגשו ישירות אליו. תגובה לתגובה אינה נספרת לאף פוסט, ופוסט ללא תגובות מקבל 0. עמודות: post_id, number_of_comments. מיינו לפי post_id עולה.`,
+    solution: `SELECT p.sub_id AS post_id, COUNT(DISTINCT c.sub_id) AS number_of_comments FROM (SELECT DISTINCT sub_id FROM d1024_submissions WHERE parent_id IS NULL) p LEFT JOIN d1024_submissions c ON c.parent_id = p.sub_id GROUP BY p.sub_id ORDER BY p.sub_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261024_i4', level: 'intermediate', added: '2026-10-24', source: 'Interview Query', company: 'Amazon',
+    ref: 'Top 13 Amazon SQL Interview Questions (unique pairs of locations in a flight_routes table)', url: 'https://www.interviewquery.com/p/amazon-sql-interview-questions',
+    title: 'זוגות ערים ייחודיים', tables: ['d1024_flights'],
+    prompt: `בטבלה d1024_flights כל שורה היא טיסה ממקור (origin) ליעד (destination). טיסה מ-A ל-B וטיסה מ-B ל-A הן אותו קו, וייתכנו גם שורות כפולות. החזירו כל קו ייחודי פעם אחת, כאשר city_a הוא השם הקטן יותר בסדר אלפביתי ו-city_b הגדול יותר. עמודות: city_a, city_b. מיינו לפי city_a ובשוויון לפי city_b.`,
+    solution: `SELECT DISTINCT MIN(origin, destination) AS city_a, MAX(origin, destination) AS city_b FROM d1024_flights ORDER BY city_a, city_b;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261024_i5', level: 'intermediate', added: '2026-10-24', source: 'Interview Query', company: 'Amazon',
+    ref: 'Amazon Data Engineer guide: users currently Excited who were never Bored', url: 'https://interviewquery.com/interview-guides/amazon-data-engineer',
+    title: 'נרגשים כרגע שמעולם לא שיעממו', tables: ['d1024_user_moods'],
+    prompt: `בטבלה d1024_user_moods כל שורה היא דיווח מצב רוח של משתמש (mood) בזמן מסוים (ts). המצב הנוכחי של משתמש הוא מצב הרוח בדיווח האחרון שלו. החזירו את המשתמשים שהמצב הנוכחי שלהם הוא 'Excited' ושמעולם לא דיווחו 'Bored'. עמודה: user_id. מיינו לפי user_id עולה.`,
+    solution: `SELECT m.user_id FROM d1024_user_moods m WHERE m.mood = 'Excited' AND m.ts = (SELECT MAX(ts) FROM d1024_user_moods x WHERE x.user_id = m.user_id) AND m.user_id NOT IN (SELECT user_id FROM d1024_user_moods WHERE mood = 'Bored') ORDER BY m.user_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261024_a1', level: 'advanced', added: '2026-10-24', source: 'DataLemur', company: 'Meta',
+    ref: 'Event Friends Rec', url: 'https://datalemur.com/questions/event-friends-rec',
+    title: 'המלצות חברים לפי אירועים פרטיים', tables: ['d1024_friend_pairs', 'd1024_rsvp'],
+    prompt: `בטבלה d1024_rsvp נרשמות תשובות הגעה לאירועים (event_type הוא 'public' או 'private', ו-status הוא 'going', 'maybe' או 'not_going'; ייתכנו שורות כפולות). משתמש מעוניין להגיע לאירוע אם ה-status שלו הוא 'going' או 'maybe'. בטבלה d1024_friend_pairs כל שורה היא חברות בין שני משתמשים, בכל סדר. המליצו על זוגות משתמשים שאינם חברים ושמעוניינים להגיע לפחות ל-2 אירועים פרטיים משותפים שונים. כל זוג יופיע בשני הכיוונים. עמודות: user_a_id, user_b_id. מיינו לפי user_a_id ובשוויון לפי user_b_id.`,
+    solution: `WITH interest AS (SELECT DISTINCT user_id, event_id FROM d1024_rsvp WHERE event_type = 'private' AND status IN ('going', 'maybe'))
+SELECT a.user_id AS user_a_id, b.user_id AS user_b_id
+FROM interest a JOIN interest b ON a.event_id = b.event_id AND a.user_id <> b.user_id
+WHERE NOT EXISTS (SELECT 1 FROM d1024_friend_pairs f WHERE (f.user_a = a.user_id AND f.user_b = b.user_id) OR (f.user_a = b.user_id AND f.user_b = a.user_id))
+GROUP BY a.user_id, b.user_id HAVING COUNT(*) >= 2
+ORDER BY user_a_id, user_b_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261024_a2', level: 'advanced', added: '2026-10-24', source: 'DataVidhya', company: 'Meta',
+    ref: 'Users By Average Session Time', url: 'https://datavidhya.com/coding-problems/questionDetails/question/aggregation-users-avg-session-time/',
+    title: 'זמן סשן ממוצע לכל משתמש', tables: ['d1024_web_log'],
+    prompt: `בטבלה d1024_web_log נרשמים אירועי page_load ו-page_exit של משתמשים. סשן הוא פער הזמן בין טעינת עמוד ליציאה ממנו, ולכל משתמש יש לכל היותר סשן אחד ביום. אם באותו יום יש כמה טעינות או כמה יציאות, משתמשים בטעינה האחרונה של היום וביציאה המוקדמת ביותר של היום. יום נחשב רק אם הטעינה שנבחרה מוקדמת מהיציאה שנבחרה. לכל משתמש עם לפחות סשן תקף אחד, החזירו את ממוצע משך הסשנים בשניות, מעוגל ל-2 ספרות אחרי הנקודה. עמודות: user_id, avg_session_seconds. מיינו לפי user_id עולה.`,
+    solution: `WITH d AS (SELECT user_id, date(ts) AS day, MAX(CASE WHEN action = 'page_load' THEN ts END) AS load_ts, MIN(CASE WHEN action = 'page_exit' THEN ts END) AS exit_ts FROM d1024_web_log GROUP BY user_id, date(ts))
+SELECT user_id, ROUND(AVG(strftime('%s', exit_ts) - strftime('%s', load_ts)), 2) AS avg_session_seconds
+FROM d WHERE load_ts < exit_ts GROUP BY user_id ORDER BY user_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261024_a3', level: 'advanced', added: '2026-10-24', source: 'Interview Query', company: 'Amazon',
+    ref: 'Top 13 Amazon SQL Interview Questions (cumulative new users per day, resetting each month)', url: 'https://www.interviewquery.com/p/amazon-sql-interview-questions',
+    title: 'משתמשים חדשים מצטברים לפי חודש', tables: ['d1024_signups'],
+    prompt: `בטבלה d1024_signups כל שורה היא הרשמה של משתמש חדש עם חותמת זמן. לכל יום שבו היו הרשמות, החזירו את מספר המשתמשים החדשים באותו יום ואת הסכום המצטבר של משתמשים חדשים מתחילת החודש הקלנדרי ועד אותו יום כולל (הסכום מתאפס בתחילת כל חודש). עמודות: day (בפורמט YYYY-MM-DD), new_users, month_to_date. מיינו לפי day עולה.`,
+    solution: `WITH d AS (SELECT date(created_at) AS day, COUNT(*) AS new_users FROM d1024_signups GROUP BY date(created_at))
+SELECT day, new_users, SUM(new_users) OVER (PARTITION BY strftime('%Y-%m', day) ORDER BY day) AS month_to_date FROM d ORDER BY day;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261024_a4', level: 'advanced', added: '2026-10-24', source: 'LeetCode', company: '',
+    ref: 'Product Sales Analysis IV', url: 'https://www.hellointerview.com/community/questions/product-sales-4/cm5eguhah03sy838o9yubp1qu',
+    title: 'המוצר שעליו כל משתמש הוציא הכי הרבה', tables: ['d1024_sales', 'd1024_prod'],
+    prompt: `בטבלה d1024_sales כל שורה היא רכישה של משתמש (כמות quantity ממוצר), ובטבלה d1024_prod מחיר ליחידה לכל מוצר. לכל משתמש החזירו את המוצר שעליו הוציא סך כסף הגבוה ביותר (סכום quantity כפול price על פני כל רכישותיו של אותו מוצר). אם כמה מוצרים שווים בסכום הגבוה ביותר, החזירו את כולם. עמודות: user_id, product_id. מיינו לפי user_id ובשוויון לפי product_id.`,
+    solution: `WITH t AS (SELECT s.user_id, s.product_id, SUM(s.quantity * p.price) AS spent FROM d1024_sales s JOIN d1024_prod p ON p.product_id = s.product_id GROUP BY s.user_id, s.product_id),
+r AS (SELECT *, RANK() OVER (PARTITION BY user_id ORDER BY spent DESC) AS rk FROM t)
+SELECT user_id, product_id FROM r WHERE rk = 1 ORDER BY user_id, product_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261024_a5', level: 'advanced', added: '2026-10-24', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'הלקוחות שמרכיבים חצי מההכנסות', tables: ['d1024_invoices'],
+    prompt: `בטבלה d1024_invoices כל שורה היא חשבונית של לקוח. חשבו את סך החשבוניות לכל לקוח וסדרו את הלקוחות מהסכום הגבוה לנמוך (בשוויון לפי שם הלקוח בסדר אלפביתי). החזירו את הקבוצה הקטנה ביותר של לקוחות מראש הרשימה הזו שסכומם המצטבר מגיע לפחות ל-50% מסך כל החשבוניות. עמודות: customer, total_amount. מיינו לפי total_amount מהגבוה לנמוך ובשוויון לפי customer.`,
+    solution: `WITH t AS (SELECT customer, SUM(amount) AS total_amount FROM d1024_invoices GROUP BY customer),
+c AS (SELECT customer, total_amount, SUM(total_amount) OVER (ORDER BY total_amount DESC, customer ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS before_amt, SUM(total_amount) OVER () AS grand FROM t)
+SELECT customer, total_amount FROM c WHERE COALESCE(before_amt, 0) * 2 < grand ORDER BY total_amount DESC, customer;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
