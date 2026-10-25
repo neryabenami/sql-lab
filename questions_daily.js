@@ -2698,6 +2698,190 @@ c AS (SELECT customer, total_amount, SUM(total_amount) OVER (ORDER BY total_amou
 SELECT customer, total_amount FROM c WHERE COALESCE(before_amt, 0) * 2 < grand ORDER BY total_amount DESC, customer;`,
     ordered: true,
   },
+  // ===== 2026-10-25 =====
+  {
+    id: 'd20261025_b1', level: 'basic', added: '2026-10-25', source: 'HackerRank', company: '',
+    ref: 'Average Population of Each Continent', url: 'https://dev.to/mrpunkdasilva/hackerrank-sql-average-population-of-each-continent-11bn',
+    title: 'אוכלוסיית עיר ממוצעת בכל יבשת', tables: ['d1025_city', 'd1025_country'],
+    prompt: `בטבלה d1025_city יש ערים ואוכלוסייתן, ובטבלה d1025_country יש לכל מדינה את היבשת שלה (countrycode בטבלת הערים מתאים ל-code בטבלת המדינות). לכל יבשת החזירו את גודל האוכלוסייה הממוצע של הערים בה, מעוגל כלפי מטה למספר שלם. עמודות: continent, avg_population. התעלמו מערים שאין להן מדינה בטבלת המדינות, ומיבשות שאין בהן ערים.`,
+    solution: `SELECT co.continent, CAST(AVG(c.population) AS INTEGER) AS avg_population
+FROM d1025_city c JOIN d1025_country co ON co.code = c.countrycode
+GROUP BY co.continent;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261025_b2', level: 'basic', added: '2026-10-25', source: 'Interview Query', company: 'Twitch',
+    ref: 'Session Difference', url: 'https://www.interviewquery.com/questions/session-difference',
+    title: 'ימים בין הסשן הראשון לאחרון', tables: ['d1025_user_sessions'],
+    prompt: `בטבלה d1025_user_sessions כל שורה היא סשן של משתמש (created_at הוא תאריך בפורמט YYYY-MM-DD). התייחסו רק לסשנים שהתרחשו בשנת 2020. לכל משתמש שהיה לו לפחות סשן אחד ב-2020 החזירו את מספר הימים בין הסשן הראשון לסשן האחרון שלו באותה שנה (משתמש עם סשן יחיד מקבל 0). עמודות: user_id, days_between.`,
+    solution: `SELECT user_id, CAST(julianday(MAX(created_at)) - julianday(MIN(created_at)) AS INTEGER) AS days_between
+FROM d1025_user_sessions
+WHERE created_at >= '2020-01-01' AND created_at < '2021-01-01'
+GROUP BY user_id;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261025_b3', level: 'basic', added: '2026-10-25', source: 'Dataford', company: '',
+    ref: 'Write a query to extract the top 10 customers based on sales from a database', url: 'https://dataford.io/questions/write-a-query-to-extract-the-top-10-customers-based-on-sales-from-a-database',
+    title: 'שלושת הלקוחות המובילים במכירות', tables: ['d1025_cust_sales'],
+    prompt: `בטבלה d1025_cust_sales יש מכירות לפי לקוח. התחשבו רק במכירות בסטטוס 'paid'. החזירו את שלושת הלקוחות עם סך המכירות הגבוה ביותר. עמודות: customer, total_sales. מיינו לפי total_sales מהגבוה לנמוך ובשוויון לפי customer בסדר אלפביתי; בשוויון על המקום האחרון בחרו לפי אותו סדר.`,
+    solution: `SELECT customer, SUM(amount) AS total_sales
+FROM d1025_cust_sales
+WHERE status = 'paid'
+GROUP BY customer
+ORDER BY total_sales DESC, customer
+LIMIT 3;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261025_b4', level: 'basic', added: '2026-10-25', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'דירוג ממוצע לז\'אנר', tables: ['d1025_games'],
+    prompt: `בטבלה d1025_games יש משחקים עם ז'אנר ודירוג (rating), כשחלק מהמשחקים עדיין לא מדורגים (NULL). לכל ז'אנר שיש בו לפחות שני משחקים מדורגים החזירו את מספר המשחקים המדורגים ואת הדירוג הממוצע שלהם מעוגל לשתי ספרות אחרי הנקודה. עמודות: genre, rated_games, avg_rating.`,
+    solution: `SELECT genre, COUNT(rating) AS rated_games, ROUND(AVG(rating), 2) AS avg_rating
+FROM d1025_games
+GROUP BY genre
+HAVING COUNT(rating) >= 2;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261025_b5', level: 'basic', added: '2026-10-25', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'דומיינים נפוצים באנשי קשר', tables: ['d1025_contacts'],
+    prompt: `בטבלה d1025_contacts יש כתובות אימייל של אנשי קשר (חלקן NULL, וחלקן עם אותיות גדולות). הדומיין הוא החלק שאחרי ה-@, ויש להתייחס אליו באותיות קטנות בלבד. החזירו כל דומיין שמופיע אצל יותר מאיש קשר אחד, ואת מספר אנשי הקשר שלו. עמודות: domain, contacts.`,
+    solution: `SELECT LOWER(SUBSTR(email, INSTR(email, '@') + 1)) AS domain, COUNT(*) AS contacts
+FROM d1025_contacts
+WHERE email IS NOT NULL
+GROUP BY domain
+HAVING COUNT(*) > 1;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261025_i1', level: 'intermediate', added: '2026-10-25', source: 'LeetCode', company: '',
+    ref: 'Customers Who Bought Products A and B but Not C', url: 'https://leetcode.doocs.org/en/lc/1398/',
+    title: 'קנו A ו-B אבל לא C', tables: ['d1025_customers', 'd1025_orders'],
+    prompt: `בטבלה d1025_orders יש הזמנות של לקוחות (product_name הוא שם המוצר), ובטבלה d1025_customers שמות הלקוחות. החזירו את הלקוחות שהזמינו גם את המוצר 'A' וגם את המוצר 'B' אך מעולם לא הזמינו את המוצר 'C'. עמודות: customer_id, customer_name.`,
+    solution: `SELECT c.customer_id, c.customer_name
+FROM d1025_customers c
+JOIN d1025_orders o ON o.customer_id = c.customer_id
+GROUP BY c.customer_id, c.customer_name
+HAVING SUM(o.product_name = 'A') > 0 AND SUM(o.product_name = 'B') > 0 AND SUM(o.product_name = 'C') = 0;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261025_i2', level: 'intermediate', added: '2026-10-25', source: 'LeetCode', company: '',
+    ref: 'Primary Department for Each Employee', url: 'https://leetcode.doocs.org/en/lc/1789/',
+    title: 'המחלקה הראשית של כל עובד', tables: ['d1025_emp_dept'],
+    prompt: `בטבלה d1025_emp_dept כל שורה מציינת שעובד שייך למחלקה, ו-primary_flag הוא 'Y' אם זו המחלקה הראשית שלו ו-'N' אחרת. עובד ששייך ליותר ממחלקה אחת מסומן 'Y' בדיוק באחת מהן. עובד ששייך למחלקה אחת בלבד נחשב כשייך אליה כמחלקה ראשית, גם אם הדגל שלו הוא 'N'. החזירו לכל עובד את המחלקה הראשית שלו. עמודות: employee_id, department_id.`,
+    solution: `SELECT employee_id, department_id FROM d1025_emp_dept WHERE primary_flag = 'Y'
+UNION
+SELECT employee_id, MIN(department_id) FROM d1025_emp_dept GROUP BY employee_id HAVING COUNT(*) = 1;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261025_i3', level: 'intermediate', added: '2026-10-25', source: 'StrataScratch', company: 'Noom',
+    ref: 'Noom Data Analyst Interview Question (average transaction per billing cycle)', url: 'https://stratascratch.com/blog/noom-data-analyst-interview-question',
+    title: 'ממוצע עסקאות לרשומים ותיקים', tables: ['d1025_plans', 'd1025_signups', 'd1025_signup_txns'],
+    prompt: `בטבלה d1025_signups יש הרשמות למנוי (start_date הוא תאריך תחילת המנוי), בטבלה d1025_plans לכל תוכנית יש מחזור חיוב (billing_cycle), ובטבלה d1025_signup_txns יש עסקאות לפי הרשמה. התייחסו רק להרשמות שהחלו יותר מ-10 חודשים לפני התאריך 2026-10-01 (כלומר לפני 2025-12-01). לכל הרשמה כזו שיש לה עסקאות החזירו את מחזור החיוב של התוכנית ואת סכום העסקה הממוצע שלה מעוגל לשתי ספרות אחרי הנקודה. עמודות: billing_cycle, signup_id, avg_amount. מיינו לפי billing_cycle בסדר אלפביתי הפוך (מ-z ל-a) ובשוויון לפי signup_id בסדר עולה.`,
+    solution: `SELECT p.billing_cycle, s.signup_id, ROUND(AVG(t.amount), 2) AS avg_amount
+FROM d1025_signups s
+JOIN d1025_plans p ON p.plan_id = s.plan_id
+JOIN d1025_signup_txns t ON t.signup_id = s.signup_id
+WHERE s.start_date < date('2026-10-01', '-10 months')
+GROUP BY p.billing_cycle, s.signup_id
+ORDER BY p.billing_cycle DESC, s.signup_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261025_i4', level: 'intermediate', added: '2026-10-25', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'משתמשים בערוץ יחיד', tables: ['d1025_web_events', 'd1025_app_events'],
+    prompt: `בטבלאות d1025_web_events ו-d1025_app_events יש אירועים של משתמשים באתר ובאפליקציה. החזירו כל משתמש שהופיע בערוץ אחד בלבד מבין השניים (באתר בלבד או באפליקציה בלבד), פעם אחת לכל משתמש, ואת הערוץ שלו: 'web' או 'app'. עמודות: user_id, channel.`,
+    solution: `SELECT user_id, 'web' AS channel FROM (SELECT DISTINCT user_id FROM d1025_web_events) WHERE user_id NOT IN (SELECT user_id FROM d1025_app_events)
+UNION ALL
+SELECT user_id, 'app' FROM (SELECT DISTINCT user_id FROM d1025_app_events) WHERE user_id NOT IN (SELECT user_id FROM d1025_web_events);`,
+    ordered: false,
+  },
+  {
+    id: 'd20261025_i5', level: 'intermediate', added: '2026-10-25', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'שיעור ביטולים חודשי', tables: ['d1025_bookings_log'],
+    prompt: `בטבלה d1025_bookings_log יש הזמנות עם תאריך (booking_date) וסטטוס ('confirmed' או 'cancelled'). לכל חודש קלנדרי שבו היו לפחות 2 הזמנות החזירו את החודש בפורמט YYYY-MM, מספר ההזמנות, מספר ההזמנות שבוטלו ואחוז הביטולים מתוך כלל ההזמנות בחודש מעוגל לספרה אחת אחרי הנקודה. עמודות: month, total_bookings, cancelled, cancel_pct.`,
+    solution: `SELECT strftime('%Y-%m', booking_date) AS month, COUNT(*) AS total_bookings, SUM(status = 'cancelled') AS cancelled,
+       ROUND(100.0 * SUM(status = 'cancelled') / COUNT(*), 1) AS cancel_pct
+FROM d1025_bookings_log
+GROUP BY month
+HAVING COUNT(*) >= 2;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261025_a1', level: 'advanced', added: '2026-10-25', source: 'LeetCode', company: 'Pinterest',
+    ref: 'Find Median Given Frequency of Numbers', url: 'https://leetcode.doocs.org/en/lc/571/',
+    title: 'חציון לפי טבלת שכיחויות', tables: ['d1025_numbers'],
+    prompt: `בטבלה d1025_numbers כל שורה מציינת ערך (num) ואת מספר הפעמים שהוא מופיע במדגם (frequency). חשבו את החציון של כל הערכים במדגם, כאילו כל ערך חוזר בדיוק frequency פעמים. אם מספר הערכים זוגי, החציון הוא הממוצע של שני הערכים האמצעיים. החזירו שורה אחת, עמודה אחת בשם median, מעוגלת לספרה אחת אחרי הנקודה.`,
+    solution: `WITH c AS (SELECT num, frequency, SUM(frequency) OVER (ORDER BY num) AS cum, SUM(frequency) OVER () AS total FROM d1025_numbers)
+SELECT ROUND(AVG(num), 1) AS median FROM c
+WHERE (cum - frequency < (total + 1) / 2 AND cum >= (total + 1) / 2)
+   OR (cum - frequency < (total + 2) / 2 AND cum >= (total + 2) / 2);`,
+    ordered: false,
+  },
+  {
+    id: 'd20261025_a2', level: 'advanced', added: '2026-10-25', source: 'LeetCode', company: '',
+    ref: 'Number of Transactions per Visit', url: 'https://leetcode.doocs.org/en/lc/1336/',
+    title: 'התפלגות עסקאות לביקור', tables: ['d1025_visits', 'd1025_visit_txns'],
+    prompt: `בטבלה d1025_visits כל שורה היא ביקור של משתמש בחנות ביום מסוים, ובטבלה d1025_visit_txns כל שורה היא עסקה של משתמש באותו יום ביקור. עסקה שייכת לביקור של אותו משתמש באותו תאריך. לכל ערך k מ-0 ועד המספר המרבי של עסקאות בביקור בודד (כולל ערכים ביניים שאף ביקור לא מתאים להם) החזירו כמה ביקורים כללו בדיוק k עסקאות. עמודות: transactions_count, visits_count. מיינו לפי transactions_count בסדר עולה.`,
+    solution: `WITH RECURSIVE per_visit AS (
+  SELECT v.user_id, v.visit_date, COUNT(t.user_id) AS n
+  FROM d1025_visits v LEFT JOIN d1025_visit_txns t ON t.user_id = v.user_id AND t.transaction_date = v.visit_date
+  GROUP BY v.user_id, v.visit_date),
+seq(k) AS (SELECT 0 UNION ALL SELECT k + 1 FROM seq WHERE k < (SELECT MAX(n) FROM per_visit))
+SELECT seq.k AS transactions_count, COUNT(p.n) AS visits_count
+FROM seq LEFT JOIN per_visit p ON p.n = seq.k
+GROUP BY seq.k
+ORDER BY seq.k;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261025_a3', level: 'advanced', added: '2026-10-25', source: 'PracHub', company: 'DoorDash',
+    ref: 'Analyze Order Spending Patterns Across Cities Using SQL', url: 'https://prachub.com/coding-questions/analyze-order-spending-patterns-across-cities-using-sql',
+    title: 'דירוג הזמנות בעיר והזמנה קודמת', tables: ['d1025_dd_orders'],
+    prompt: `בטבלה d1025_dd_orders יש הזמנות משלוח לפי משתמש ועיר. לכל הזמנה החזירו: order_id; city_rank - הדירוג של ערך ההזמנה (order_value) בתוך העיר שלה מהגבוה לנמוך, כך שהזמנות עם ערך זהה באותה עיר מקבלות אותו דירוג והדירוג הבא מדלג בהתאם; ו-prev_order_value - ערך ההזמנה הקודמת של אותו משתמש לפי order_date (ובשוויון לפי order_id), או NULL אם זו ההזמנה הראשונה שלו. מיינו לפי order_id.`,
+    solution: `SELECT order_id,
+       RANK() OVER (PARTITION BY city ORDER BY order_value DESC) AS city_rank,
+       LAG(order_value) OVER (PARTITION BY user_id ORDER BY order_date, order_id) AS prev_order_value
+FROM d1025_dd_orders
+ORDER BY order_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261025_a4', level: 'advanced', added: '2026-10-25', source: 'Interview Query', company: 'DoorDash',
+    ref: 'How would you calculate weekly consumer retention for DoorDash users by cohort?', url: 'https://www.interviewquery.com/interview-guides/Doordash-Data-Analyst',
+    title: 'שימור שבועי לפי קוהורט', tables: ['d1025_consumer_orders'],
+    prompt: `בטבלה d1025_consumer_orders יש הזמנות של לקוחות. שבוע מתחיל ביום שני. הקוהורט של לקוח הוא השבוע שבו ביצע את ההזמנה הראשונה שלו. לכל קוהורט ולכל מספר שבועות מאז שבוע הקוהורט (0 הוא שבוע הקוהורט עצמו) שבהם לפחות לקוח אחד מהקוהורט הזמין, החזירו: cohort_week (תאריך יום השני של שבוע הקוהורט בפורמט YYYY-MM-DD), weeks_since (מספר שלם), active_customers (מספר הלקוחות השונים מהקוהורט שהזמינו באותו שבוע), ו-retention_pct - אחוז הלקוחות הפעילים מתוך גודל הקוהורט, מעוגל לספרה אחת אחרי הנקודה. מיינו לפי cohort_week ואז weeks_since.`,
+    solution: `WITH o AS (SELECT consumer_id, order_date, date(order_date, '-' || ((CAST(strftime('%w', order_date) AS INTEGER) + 6) % 7) || ' days') AS wk FROM d1025_consumer_orders),
+f AS (SELECT consumer_id, MIN(wk) AS cohort_week FROM o GROUP BY consumer_id),
+sz AS (SELECT cohort_week, COUNT(*) AS size FROM f GROUP BY cohort_week),
+a AS (SELECT f.cohort_week, CAST((julianday(o.wk) - julianday(f.cohort_week)) / 7 AS INTEGER) AS weeks_since, COUNT(DISTINCT o.consumer_id) AS active_customers
+      FROM o JOIN f ON f.consumer_id = o.consumer_id GROUP BY f.cohort_week, weeks_since)
+SELECT a.cohort_week, a.weeks_since, a.active_customers, ROUND(100.0 * a.active_customers / sz.size, 1) AS retention_pct
+FROM a JOIN sz ON sz.cohort_week = a.cohort_week
+ORDER BY a.cohort_week, a.weeks_since;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261025_a5', level: 'advanced', added: '2026-10-25', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'שרשרת הפניות של משתמשים', tables: ['d1025_referrals'],
+    prompt: `בטבלה d1025_referrals לכל משתמש יש referred_by - המשתמש שהפנה אותו (NULL אם הצטרף בלי הפניה). הפנייה עקיפה נחשבת גם היא: אם A הפנה את B ו-B הפנה את C, אז C נספר גם אצל A. לכל משתמש בטבלה החזירו את המספר הכולל של המשתמשים שהגיעו דרכו, ישירות או בעקיפין (0 אם אף אחד). עמודות: user_id, total_referred.`,
+    solution: `WITH RECURSIVE d(root, node) AS (
+  SELECT referred_by, user_id FROM d1025_referrals WHERE referred_by IS NOT NULL
+  UNION ALL
+  SELECT d.root, r.user_id FROM d JOIN d1025_referrals r ON r.referred_by = d.node)
+SELECT u.user_id, COUNT(d.node) AS total_referred
+FROM d1025_referrals u LEFT JOIN d ON d.root = u.user_id
+GROUP BY u.user_id;`,
+    ordered: false,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
