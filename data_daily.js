@@ -1082,4 +1082,53 @@ CREATE TABLE d1101_users (user_id INTEGER, signup_date TEXT);
 INSERT INTO d1101_users VALUES (1,'2026-01-05'),(2,'2026-01-12'),(3,'2026-01-28'),(4,'2026-02-03'),(5,'2026-02-14'),(6,'2026-02-20'),(7,'2026-02-27'),(8,'2026-03-02'),(9,'2026-03-15');
 CREATE TABLE d1101_sessions (user_id INTEGER, session_date TEXT);
 INSERT INTO d1101_sessions VALUES (1,'2026-01-05'),(1,'2026-01-09'),(1,'2026-02-10'),(1,'2026-04-01'),(2,'2026-01-12'),(2,'2026-01-14'),(2,'2026-02-02'),(3,'2026-01-28'),(3,'2026-03-05'),(4,'2026-02-03'),(4,'2026-02-05'),(4,'2026-03-20'),(5,'2026-02-14'),(5,'2026-02-15'),(6,'2026-02-20'),(6,'2026-03-01'),(6,'2026-03-02'),(7,'2026-02-27'),(8,'2026-03-02'),(8,'2026-03-08'),(9,'2026-03-15'),(9,'2026-04-20');
+-- 2026-11-02
+CREATE TABLE d1102_ads (ad_id INTEGER, action TEXT);
+INSERT INTO d1102_ads VALUES (1,'Clicked'),(1,'Clicked'),(1,'Viewed'),(1,'Ignored'),(2,'Clicked'),(2,'Viewed'),(2,'Viewed'),(3,'Viewed'),(3,'Ignored'),(4,'Ignored'),(5,'Clicked'),(5,'Viewed'),(5,'Viewed'),(5,'Viewed'),(5,'Viewed'),(6,'Clicked'),(6,'Clicked');
+CREATE TABLE d1102_posts (post_id INTEGER, author TEXT, likes INTEGER, posted_on TEXT);
+INSERT INTO d1102_posts VALUES (1,'dana',10,'2026-01-03'),(2,'dana',NULL,'2026-02-10'),(3,'omer',25,'2026-01-15'),(4,'omer',5,'2025-12-30'),(5,'noa',7,'2026-03-01'),(6,'noa',7,'2026-03-05'),(7,'noa',3,'2026-04-01'),(8,'yoni',40,'2026-02-02'),(9,'dana',20,'2026-05-05'),(10,'lior',12,'2026-06-06'),(11,'lior',NULL,'2025-06-06'),(12,'omer',15,'2026-07-07');
+CREATE TABLE d1102_hist_orders (order_id INTEGER, user_id INTEGER);
+INSERT INTO d1102_hist_orders VALUES (1,1),(2,1),(3,1),(4,2),(5,3),(6,4),(7,4),(8,5),(9,5),(10,5),(11,6),(12,7),(13,7),(14,7),(15,7),(16,7),(17,8),(18,8),(19,9);
+CREATE TABLE d1102_staff (emp_id INTEGER, name TEXT, dept TEXT, salary INTEGER, bonus INTEGER);
+INSERT INTO d1102_staff VALUES (1,'Avi','RnD',20000,2000),(2,'Bat','RnD',18000,NULL),(3,'Gal','RnD',25000,5000),(4,'Dor','Sales',12000,6000),(5,'Hila','Sales',11000,NULL),(6,'Tal','Sales',13000,4000),(7,'Yael','Sales',10000,1000),(8,'Ron','HR',14000,NULL),(9,'Shir','HR',15000,500),(10,'Uri','Ops',9000,NULL),(11,'Zvi','Ops',9500,NULL),(12,'Maya','Ops',9800,200);
+CREATE TABLE d1102_players (player_id INTEGER, nickname TEXT, platform TEXT, level INTEGER, country TEXT);
+INSERT INTO d1102_players VALUES (1,'NinjaKid','pc',35,NULL),(2,'darkninja77','console',42,NULL),(3,'ninja_x','pc',19,NULL),(4,'ShadowNINJA','mobile',20,NULL),(5,'ninjaMom','pc',50,'IL'),(6,'Zed','pc',60,NULL),(7,'sniper','mobile',25,NULL),(8,'ninjutsu','console',33,NULL),(9,'Ninja99','mobile',41,NULL),(10,'bob','pc',5,'US');
+CREATE TABLE d1102_friends (user1_id INTEGER, user2_id INTEGER);
+INSERT INTO d1102_friends VALUES (1,2),(1,3),(1,4),(1,5),(2,3),(2,4),(2,5),(3,4),(3,5),(6,7),(6,8),(6,9),(6,10),(7,8),(7,9),(7,10),(8,9),(8,10),(1,6),(3,6);
+CREATE TABLE d1102_books (book_id INTEGER, name TEXT, available_from TEXT);
+INSERT INTO d1102_books VALUES (1,'Kalila','2025-01-01'),(2,'Dune','2024-05-20'),(3,'Pixels','2026-06-01'),(4,'Atlas','2025-03-03'),(5,'Zeda','2026-05-23'),(6,'Opal','2026-05-24'),(7,'Lumen','2024-01-01');
+CREATE TABLE d1102_book_orders (order_id INTEGER, book_id INTEGER, quantity INTEGER, dispatch_date TEXT);
+INSERT INTO d1102_book_orders VALUES (1,1,4,'2026-01-01'),(2,1,5,'2025-06-23'),(3,1,3,'2026-06-23'),(4,2,6,'2025-09-01'),(5,2,6,'2026-03-03'),(6,5,2,'2026-06-10'),(7,1,50,'2026-06-24'),(8,7,10,'2026-02-02');
+CREATE TABLE d1102_stu (student_id INTEGER, name TEXT);
+INSERT INTO d1102_stu VALUES (1,'Hadas'),(2,'Boaz'),(3,'Carmel'),(4,'Dvir'),(5,'Eden'),(6,'Fanny'),(7,'Nitzan'),(8,'Gil'),(9,'Hen'),(10,'Ido');
+CREATE TABLE d1102_exams (exam_id INTEGER, student_id INTEGER, score INTEGER);
+INSERT INTO d1102_exams VALUES (10,1,70),(10,2,90),(10,3,50),(10,7,60),(20,1,80),(20,2,85),(20,4,75),(20,7,78),(30,1,70),(30,4,60),(30,5,90),(30,3,80),(40,9,55),(40,10,55);
+CREATE TABLE d1102_bank_users (account INTEGER, name TEXT);
+INSERT INTO d1102_bank_users VALUES (900001,'Alice'),(900002,'Bob'),(900003,'Alex'),(900004,'Dina'),(900005,'Eli');
+CREATE TABLE d1102_bank_tx (trans_id INTEGER, account INTEGER, amount INTEGER, transacted_on TEXT);
+INSERT INTO d1102_bank_tx VALUES (1,900001,7000,'2026-08-02'),(2,900001,7000,'2026-08-20'),(3,900001,-3000,'2026-09-01'),(4,900002,1000,'2026-07-01'),(5,900002,2000,'2026-07-09'),(6,900002,-4000,'2026-09-30'),(7,900003,6000,'2026-06-11'),(8,900003,6000,'2026-09-15'),(9,900004,10000,'2026-09-01'),(10,900004,500,'2026-10-05');
+CREATE TABLE d1102_bk_bookings (booking_id INTEGER, user_id INTEGER, booking_date TEXT, channel TEXT);
+INSERT INTO d1102_bk_bookings VALUES (1,1,'2026-01-05','search'),(2,1,'2026-02-01','email'),(3,2,'2026-01-07','email'),(4,2,'2026-01-07','search'),(5,3,'2026-01-09','ads'),(6,3,'2026-01-02','search'),(7,4,'2026-03-03','email'),(8,5,'2026-03-04','ads'),(9,5,'2026-03-10','ads'),(10,6,'2026-04-04','referral'),(11,7,'2026-04-05','referral');
+CREATE TABLE d1102_mtch (player_id INTEGER, match_day TEXT, result TEXT);
+INSERT INTO d1102_mtch VALUES (1,'2026-03-01','Win'),(1,'2026-03-02','Win'),(1,'2026-03-03','Lose'),(1,'2026-03-04','Win'),(1,'2026-03-05','Win'),(1,'2026-03-06','Win'),(1,'2026-03-07','Draw'),(2,'2026-03-01','Lose'),(2,'2026-03-02','Lose'),(2,'2026-03-03','Draw'),(3,'2026-03-01','Win'),(3,'2026-03-02','Win'),(3,'2026-03-03','Win'),(3,'2026-03-04','Win'),(3,'2026-03-05','Win'),(4,'2026-03-01','Win'),(4,'2026-03-02','Lose'),(4,'2026-03-03','Win'),(4,'2026-03-04','Lose'),(4,'2026-03-05','Win'),(5,'2026-03-01','Win'),(5,'2026-03-02','Win'),(5,'2026-03-03','Draw'),(5,'2026-03-04','Win'),(5,'2026-03-05','Win');
+CREATE TABLE d1102_teams (team_id INTEGER, team_name TEXT);
+INSERT INTO d1102_teams VALUES (1,'Lions'),(2,'Bulls'),(3,'Hawks'),(4,'Wolves'),(5,'Eagles');
+CREATE TABLE d1102_league (home_team_id INTEGER, away_team_id INTEGER, home_goals INTEGER, away_goals INTEGER);
+INSERT INTO d1102_league VALUES (1,2,2,1),(3,4,1,1),(1,3,0,0),(2,4,3,1),(1,4,1,2),(2,3,0,1);
+CREATE TABLE d1102_refs (user_id INTEGER, referred_by INTEGER);
+INSERT INTO d1102_refs VALUES (1,NULL),(2,1),(3,2),(4,3),(5,NULL),(6,5),(7,5),(8,7),(9,1),(10,NULL);
+CREATE TABLE d1102_funnel (user_id INTEGER, event TEXT, ts TEXT);
+INSERT INTO d1102_funnel VALUES
+(1,'visit','2026-01-01 09:00'),(1,'visit','2026-01-02 09:00'),(1,'signup','2026-01-01 10:00'),(1,'trial','2026-01-03 10:00'),(1,'paid','2026-01-10 10:00'),
+(2,'visit','2026-01-01 09:00'),(2,'signup','2026-01-01 09:30'),(2,'trial','2026-01-02 09:00'),
+(3,'visit','2026-01-02 09:00'),(3,'signup','2026-01-02 11:00'),
+(4,'visit','2026-01-02 12:00'),
+(5,'signup','2026-01-02 08:00'),(5,'visit','2026-01-05 08:00'),(5,'trial','2026-01-06 08:00'),
+(6,'visit','2026-01-03 08:00'),(6,'signup','2026-01-03 08:30'),(6,'paid','2026-01-04 08:00'),
+(7,'visit','2026-01-04 08:00'),(7,'visit','2026-01-09 08:00'),(7,'signup','2026-01-04 09:00'),(7,'trial','2026-01-05 09:00'),(7,'paid','2026-01-06 09:00'),
+(8,'visit','2026-01-01 07:00'),(8,'trial','2026-01-01 08:00'),(8,'signup','2026-01-01 09:00'),
+(9,'visit','2026-01-05 08:00'),(9,'signup','2026-01-05 08:10'),(9,'trial','2026-01-06 08:00'),(9,'paid','2026-01-07 08:00'),
+(10,'visit','2026-01-06 08:00'),(10,'signup','2026-01-06 09:00'),(10,'trial','2026-01-08 09:00'),(10,'paid','2026-01-07 09:00');
+CREATE TABLE d1102_subs_rev (rev_id INTEGER, month TEXT, amount INTEGER);
+INSERT INTO d1102_subs_rev VALUES (1,'2026-01',600),(2,'2026-01',400),(3,'2026-02',700),(4,'2026-02',500),(5,'2026-03',900),(6,'2026-04',1000),(7,'2026-04',500),(8,'2026-05',800),(9,'2026-05',700),(10,'2026-06',1000),(11,'2026-06',650),(12,'2026-07',720),(13,'2026-07',600);
 `;
