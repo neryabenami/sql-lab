@@ -1417,4 +1417,34 @@ CREATE TABLE d1110_cust_orders (order_id INTEGER, customer_id INTEGER, order_dat
 INSERT INTO d1110_cust_orders VALUES (1,1,'2026-01-01'),(2,1,'2026-01-05'),(3,1,'2026-01-12'),(4,2,'2026-01-01'),(5,2,'2026-01-20'),(6,2,'2026-02-10'),(7,3,'2026-02-01'),(8,3,'2026-02-11'),(9,4,'2026-03-01'),(10,4,'2026-03-11'),(11,4,'2026-03-21'),(12,4,'2026-03-31'),(13,5,'2026-03-01'),(14,5,'2026-03-02'),(15,5,'2026-03-02'),(16,5,'2026-03-30');
 CREATE TABLE d1110_funnel (user_id INTEGER, step TEXT, ts TEXT);
 INSERT INTO d1110_funnel VALUES (1,'view','2026-10-10 10:00'),(1,'cart','2026-10-10 10:20'),(1,'purchase','2026-10-10 10:55'),(2,'view','2026-10-10 10:00'),(2,'cart','2026-10-10 10:30'),(2,'purchase','2026-10-10 11:00'),(3,'view','2026-10-10 10:00'),(3,'cart','2026-10-10 10:30'),(3,'purchase','2026-10-10 11:01'),(4,'purchase','2026-10-10 09:00'),(4,'view','2026-10-10 10:00'),(4,'cart','2026-10-10 10:10'),(5,'view','2026-10-10 09:00'),(5,'view','2026-10-10 12:00'),(5,'cart','2026-10-10 12:10'),(5,'purchase','2026-10-10 12:20'),(6,'view','2026-10-10 10:00'),(6,'cart','2026-10-10 10:05'),(6,'cart','2026-10-10 10:15'),(6,'purchase','2026-10-10 10:50'),(7,'view','2026-10-10 10:00'),(7,'cart','2026-10-10 10:00'),(7,'purchase','2026-10-10 10:30');
+
+-- 2026-11-11
+CREATE TABLE d1111_customers (customer_id INTEGER, name TEXT, segment TEXT);
+INSERT INTO d1111_customers VALUES (1,'Dana','retail'),(2,'Omer','retail'),(3,'Noa','business'),(4,'Yuval','business'),(5,'Lior','enterprise'),(6,'Maya','retail'),(7,'Tal','enterprise');
+CREATE TABLE d1111_orders (order_id INTEGER, customer_id INTEGER, order_date TEXT, amount REAL, status TEXT);
+INSERT INTO d1111_orders VALUES (1,1,'2026-10-02',60,'completed'),(2,1,'2026-10-20',45,'completed'),(3,2,'2026-10-05',120,'completed'),(4,2,'2026-11-03',30,'cancelled'),(5,3,'2026-10-10',200,'completed'),(6,3,'2026-11-02',150,'completed'),(7,4,'2026-10-15',80,'completed'),(8,5,'2026-10-01',500,'completed'),(9,5,'2026-11-05',300,'completed'),(10,6,'2026-10-28',40,'completed'),(11,6,'2026-11-09',65,'completed'),(12,1,'2026-11-08',70,'completed'),(13,4,'2026-10-31',90,'cancelled'),(14,2,'2026-10-12',25,'completed');
+CREATE TABLE d1111_order_items (order_id INTEGER, product TEXT, qty INTEGER);
+INSERT INTO d1111_order_items VALUES (1,'A',2),(1,'B',1),(2,'C',3),(3,'A',1),(3,'D',4),(3,'B',2),(5,'E',1),(6,'A',5),(6,'C',1),(7,'B',2),(8,'F',1),(8,'A',1),(9,'D',2),(10,'C',1),(11,'B',1),(11,'E',2),(12,'A',1);
+CREATE TABLE d1111_deliveries (order_id INTEGER, delivery_type TEXT, order_date TEXT, revenue REAL);
+INSERT INTO d1111_deliveries VALUES (1,'standard','2026-10-19',20),(2,'express','2026-10-20',35),(3,'standard','2026-10-25',15),(4,'standard','2026-10-26',25),(5,'standard','2026-10-30',10.5),(6,'express','2026-10-31',40),(7,'standard','2026-11-01',12),(8,'standard','2026-11-09',30),(9,'standard','2026-11-11',18),(10,'express','2026-11-02',50);
+CREATE TABLE d1111_reviews (review_id INTEGER, product TEXT, rating INTEGER);
+INSERT INTO d1111_reviews VALUES (1,'Lamp',5),(2,'Lamp',4),(3,'Lamp',NULL),(4,'Desk',3),(5,'Desk',NULL),(6,'Chair',4),(7,'Chair',2),(8,'Chair',5),(9,'Rug',NULL),(10,'Rug',NULL),(11,'Desk',4);
+CREATE TABLE d1111_members (member_id INTEGER, email TEXT);
+INSERT INTO d1111_members VALUES (1,'a@gmail.com'),(2,'b@walla.co.il'),(3,'c@corp.com'),(4,'d@gmail.com'),(5,'e@gmail.com.au'),(6,'f@nana10.co.il'),(7,'g@yahoo.com'),(8,'h@GMAIL.COM'),(9,'i@mail.co.il.example.com');
+CREATE TABLE d1111_fulfil (order_id INTEGER, customer_id INTEGER, order_date TEXT, status TEXT);
+INSERT INTO d1111_fulfil VALUES (1,1,'2026-10-01','unfulfilled'),(2,1,'2026-10-20','unfulfilled'),(3,2,'2026-10-17','unfulfilled'),(4,2,'2026-09-20','fulfilled'),(5,3,'2026-10-16','unfulfilled'),(6,3,'2026-10-05','unfulfilled'),(7,4,'2026-10-02','fulfilled'),(8,5,'2026-10-10','unfulfilled'),(9,6,'2026-10-30','unfulfilled');
+CREATE TABLE d1111_products (product_id INTEGER, name TEXT);
+INSERT INTO d1111_products VALUES (1,'Kettle'),(2,'Toaster'),(3,'Blender');
+CREATE TABLE d1111_sales (sale_id INTEGER, product_id INTEGER, sale_date TEXT, amount REAL);
+INSERT INTO d1111_sales VALUES (1,1,'2026-09-03',100),(2,1,'2026-09-20',140),(3,1,'2026-10-05',90),(4,2,'2026-09-15',60),(5,2,'2026-10-02',80),(6,2,'2026-10-25',45),(7,2,'2026-10-30',70),(8,3,'2026-10-11',200),(9,3,'2026-10-12',50),(10,1,'2026-10-28',111),(11,3,'2026-09-09',60);
+CREATE TABLE d1111_rest_deliv (delivery_id INTEGER, restaurant_id INTEGER, minutes INTEGER);
+INSERT INTO d1111_rest_deliv VALUES (1,1,25),(2,1,30),(3,1,28),(4,1,27),(5,1,26),(6,1,29),(7,1,120),(8,2,40),(9,2,45),(10,2,50),(11,2,42),(12,3,15),(13,3,18),(14,3,60),(15,3,16);
+CREATE TABLE d1111_regions (region_id INTEGER, region_name TEXT);
+INSERT INTO d1111_regions VALUES (1,'North'),(2,'South'),(3,'Center');
+CREATE TABLE d1111_sla (order_id INTEGER, region_id INTEGER, promised_ts TEXT, delivered_ts TEXT);
+INSERT INTO d1111_sla VALUES (1,1,'2026-11-01 12:00','2026-11-01 12:30'),(2,1,'2026-11-02 18:00','2026-11-02 17:50'),(3,1,'2026-11-03 09:00','2026-11-03 09:00'),(4,1,'2026-11-05 14:00',NULL),(5,2,'2026-11-01 10:00','2026-11-01 11:15'),(6,2,'2026-11-06 20:00','2026-11-06 20:05'),(7,2,'2026-11-07 23:00','2026-11-08 00:10'),(8,2,'2026-11-08 10:00','2026-11-08 10:30'),(9,3,'2026-10-31 12:00','2026-10-31 13:00'),(10,3,'2026-11-04 12:00','2026-11-04 11:40'),(11,3,'2026-11-05 12:00','2026-11-05 12:20');
+CREATE TABLE d1111_shopper_days (shopper_id INTEGER, day TEXT, deliveries INTEGER);
+INSERT INTO d1111_shopper_days VALUES (1,'2026-11-01',4),(1,'2026-11-02',6),(1,'2026-11-03',5),(1,'2026-11-05',9),(1,'2026-11-06',3),(2,'2026-11-01',2),(2,'2026-11-04',8),(2,'2026-11-05',7);
+CREATE TABLE d1111_pay (pay_id INTEGER, order_id INTEGER, pay_date TEXT, amount REAL, status TEXT);
+INSERT INTO d1111_pay VALUES (1,1,'2026-10-02',60,'ok'),(2,2,'2026-10-20',45,'ok'),(3,3,'2026-10-05',120,'ok'),(4,5,'2026-10-10',200,'ok'),(5,5,'2026-10-10',20,'ok'),(6,7,'2026-10-15',80,'ok'),(7,13,'2026-10-31',90,'ok'),(8,10,'2026-10-28',40,'ok'),(9,8,'2026-10-01',500,'failed'),(10,8,'2026-10-02',500,'ok'),(11,14,'2026-10-12',25,'ok'),(12,6,'2026-11-02',150,'ok'),(13,9,'2026-11-05',300,'ok'),(14,12,'2026-11-08',70,'ok'),(15,11,'2026-11-09',65,'ok'),(16,10,'2026-10-29',15,'ok');
 `;
