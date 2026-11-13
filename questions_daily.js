@@ -5171,6 +5171,220 @@ GROUP BY u.user_id;`,
     solution: `SELECT account_id, tx_date AS first_negative_date, bal AS balance FROM (SELECT account_id, tx_date, bal, ROW_NUMBER() OVER (PARTITION BY account_id ORDER BY tx_date, tx_id) AS rn FROM (SELECT account_id, tx_id, tx_date, SUM(amount) OVER (PARTITION BY account_id ORDER BY tx_date, tx_id) AS bal FROM d1112_ledger) WHERE bal < 0) WHERE rn = 1 ORDER BY account_id;`,
     ordered: true,
   },
+  // ===== 2026-11-13 =====
+  {
+    id: 'd20261113_b1', level: 'basic', added: '2026-11-13', source: "DataLemur", company: "NVIDIA",
+    ref: "Average GPU Temperature per Model", url: "https://datalemur.com/blog/nvidia-sql-interview-questions",
+    title: "טמפרטורת GPU לפי דגם", tables: ["d1113_gpu_temps"],
+    prompt: "בטבלה d1113_gpu_temps יש מדידות טמפרטורה של כרטיסי GPU במרכז נתונים. חלק מהמדידות חסרות (temp_c ריק) ואינן נספרות כמדידה. לכל דגם (gpu_model) החזירו: gpu_model, הטמפרטורה הממוצעת מעוגלת לשתי ספרות אחרי הנקודה (avg_temp), הטמפרטורה המקסימלית (max_temp) ומספר המדידות התקינות (readings).",
+    solution: `SELECT gpu_model, ROUND(AVG(temp_c), 2) AS avg_temp, MAX(temp_c) AS max_temp, COUNT(temp_c) AS readings
+FROM d1113_gpu_temps
+GROUP BY gpu_model;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261113_b2', level: 'basic', added: '2026-11-13', source: "DataLemur", company: "Goldman Sachs",
+    ref: "Average Trade Amount for each Client Segment", url: "https://datalemur.com/blog/goldman-sachs-sql-interview-questions",
+    title: "ממוצע עסקה לפי סגמנט ולפי חודש", tables: ["d1113_trades"],
+    prompt: "בטבלה d1113_trades יש עסקאות מסחר של לקוחות בנק השקעות, כל לקוח שייך לסגמנט (client_segment). לכל חודש (בפורמט YYYY-MM, העמודה month) ולכל סגמנט החזירו את סכום העסקה הממוצע מעוגן לשתי ספרות אחרי הנקודה (avg_amount). עמודות: month, client_segment, avg_amount. מיינו לפי החודש מהחדש לישן, ובתוך כל חודש לפי הממוצע מהגבוה לנמוך.",
+    solution: `SELECT strftime('%Y-%m', trade_date) AS month, client_segment, ROUND(AVG(amount), 2) AS avg_amount
+FROM d1113_trades
+GROUP BY month, client_segment
+ORDER BY month DESC, avg_amount DESC;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261113_b3', level: 'basic', added: '2026-11-13', source: "DataLemur", company: "Hilton",
+    ref: "Hotel Booking Analysis", url: "https://datalemur.com/blog/hilton-sql-interview-questions",
+    title: "הזמנות לפי חודש וסוג חדר", tables: ["d1113_hotel_bookings"],
+    prompt: "בטבלה d1113_hotel_bookings יש הזמנות חדרים במלון. התייחסו רק להזמנות של לקוחות מארה\"ב (USA) ומבריטניה (UK). לכל חודש (YYYY-MM, העמודה month) ולכל סוג חדר החזירו את מספר ההזמנות. עמודות: month, room_type, bookings. מיינו לפי החודש מהמוקדם למאוחר, אחר כך לפי מספר ההזמנות מהגבוה לנמוך, ובשוויון לפי room_type בסדר אלפביתי.",
+    solution: `SELECT strftime('%Y-%m', booked_on) AS month, room_type, COUNT(*) AS bookings
+FROM d1113_hotel_bookings
+WHERE customer_country IN ('USA', 'UK')
+GROUP BY month, room_type
+ORDER BY month, bookings DESC, room_type;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261113_b4', level: 'basic', added: '2026-11-13', source: "DataLemur", company: "NVIDIA",
+    ref: "Monthly Average Reviews for NVIDIA Products", url: "https://datalemur.com/blog/nvidia-sql-interview-questions",
+    title: "דירוג ממוצע חודשי למוצר", tables: ["d1113_gpu_reviews"],
+    prompt: "בטבלה d1113_gpu_reviews יש ביקורות כוכבים על כרטיסי מסך. ביקורת ללא דירוג (stars ריק) אינה נחשבת. לכל מוצר ולכל חודש (YYYY-MM, העמודה month) שבו יש לו לפחות ביקורת מדורגת אחת, החזירו את מספר הכוכבים הממוצע מעוגן לשתי ספרות אחרי הנקודה (avg_stars). עמודות: month, product_id, avg_stars. מיינו לפי החודש ואז לפי product_id, שניהם בסדר עולה.",
+    solution: `SELECT strftime('%Y-%m', submit_date) AS month, product_id, ROUND(AVG(stars), 2) AS avg_stars
+FROM d1113_gpu_reviews
+GROUP BY month, product_id
+HAVING COUNT(stars) > 0
+ORDER BY month, product_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261113_b5', level: 'basic', added: '2026-11-13', source: "מקורי", company: "",
+    ref: "", url: "",
+    title: "מרפאות עם ביקורים ללא ביטוח", tables: ["d1113_visits"],
+    prompt: "בטבלה d1113_visits יש ביקורי מטופלים במרפאות. ביקור ללא ביטוח הוא ביקור שבו insurance ריק. לכל מרפאה שיש בה לפחות 2 ביקורים ללא ביטוח החזירו: clinic, מספר הביקורים ללא ביטוח (uninsured_visits) וסך התשלומים עליהם (total_fee). מיינו לפי total_fee מהגבוה לנמוך.",
+    solution: `SELECT clinic, COUNT(*) AS uninsured_visits, SUM(fee) AS total_fee
+FROM d1113_visits
+WHERE insurance IS NULL
+GROUP BY clinic
+HAVING COUNT(*) >= 2
+ORDER BY total_fee DESC;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261113_i1', level: 'intermediate', added: '2026-11-13', source: "DataLemur", company: "Hilton",
+    ref: "Average Review Score per City per Month", url: "https://datalemur.com/blog/hilton-sql-interview-questions",
+    title: "העיר עם הציון הגבוה בכל חודש", tables: ["d1113_hotels", "d1113_hotel_reviews"],
+    prompt: "בטבלה d1113_hotels יש מלונות ועיר של כל אחד, ובטבלה d1113_hotel_reviews יש ביקורות עם ציון (score). לכל חודש (YYYY-MM, העמודה month) מצאו את העיר שציון הביקורת הממוצע שלה באותו חודש הוא הגבוה ביותר (הממוצע על פני כל הביקורות של מלונות העיר). אם כמה ערים שוות, החזירו את זו הראשונה לפי סדר אלפביתי. עמודות: month, city, avg_score (מעוגן לשתי ספרות אחרי הנקודה).",
+    solution: `SELECT month, city, avg_score FROM (
+  SELECT strftime('%Y-%m', r.review_date) AS month, h.city, ROUND(AVG(r.score), 2) AS avg_score,
+         ROW_NUMBER() OVER (PARTITION BY strftime('%Y-%m', r.review_date) ORDER BY AVG(r.score) DESC, h.city) AS rn
+  FROM d1113_hotel_reviews r JOIN d1113_hotels h ON h.hotel_id = r.hotel_id
+  GROUP BY month, h.city
+) WHERE rn = 1;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261113_i2', level: 'intermediate', added: '2026-11-13', source: "DataLemur", company: "Booking.com",
+    ref: "VIP Customers (five-star hotel bookings per month)", url: "https://datalemur.com/blog/booking-sql-interview-questions",
+    title: "לקוחות VIP לפי הזמנות במלונות 5 כוכבים", tables: ["d1113_bk_hotels", "d1113_bk_bookings"],
+    prompt: "בטבלה d1113_bk_hotels יש מלונות עם דירוג כוכבים (stars), ובטבלה d1113_bk_bookings יש הזמנות של משתמשים. משתמש נחשב VIP בחודש מסוים אם הזמין באותו חודש קלנדרי לפחות 2 הזמנות במלונות של 5 כוכבים. החזירו את כל זוגות המשתמש-חודש שבהם המשתמש VIP: user_id, month (YYYY-MM) ו-five_star_bookings (מספר ההזמנות במלונות 5 כוכבים באותו חודש).",
+    solution: `SELECT b.user_id, strftime('%Y-%m', b.booked_on) AS month, COUNT(*) AS five_star_bookings
+FROM d1113_bk_bookings b JOIN d1113_bk_hotels h ON h.hotel_id = b.hotel_id
+WHERE h.stars = 5
+GROUP BY b.user_id, month
+HAVING COUNT(*) >= 2;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261113_i3', level: 'intermediate', added: '2026-11-13', source: "PracHub", company: "Amazon",
+    ref: "Find Top Three Books by City in Recent Months", url: "https://prachub.com/interview-questions/find-top-three-books-by-city-in-recent-months",
+    title: "שלושת הספרים המובילים בכל עיר", tables: ["d1113_book_sales"],
+    prompt: "בטבלה d1113_book_sales יש מכירות ספרים לפי עיר. התייחסו רק למכירות מ-1 בספטמבר 2026 ואילך. ההכנסה של ספר בעיר היא סכום של units כפול unit_price על פני כל מכירותיו שם. לכל עיר החזירו עד שלושה ספרים עם ההכנסה הגבוהה ביותר, ובשוויון בהכנסה העדיפו asin קטן יותר בסדר אלפביתי. עמודות: city, asin, revenue, position (המיקום 1 עד 3 בתוך העיר).",
+    solution: `SELECT city, asin, revenue, position FROM (
+  SELECT city, asin, SUM(units * unit_price) AS revenue,
+         ROW_NUMBER() OVER (PARTITION BY city ORDER BY SUM(units * unit_price) DESC, asin) AS position
+  FROM d1113_book_sales
+  WHERE sale_date >= '2026-09-01'
+  GROUP BY city, asin
+) WHERE position <= 3;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261113_i4', level: 'intermediate', added: '2026-11-13', source: "Codemia", company: "",
+    ref: "Join events and messages to find time to first action", url: "https://codemia.io/practice/join-events-and-messages-to-find-time-to-first-action",
+    title: "זמן מההודעה הראשונה לפעולה הראשונה", tables: ["d1113_cx_msgs", "d1113_cx_actions"],
+    prompt: "בטבלה d1113_cx_msgs יש הודעות ששלחו משתמשים, ובטבלה d1113_cx_actions יש פעולות של משתמשים באפליקציה. לכל משתמש ששלח לפחות הודעה אחת החזירו את מספר הדקות (שלם) מרגע ההודעה הראשונה שלו ועד הפעולה הראשונה שלו שהתרחשה באותו רגע או אחריו. אם אין למשתמש פעולה כזו, הערך יהיה NULL. עמודות: user_id, minutes_to_first_action.",
+    solution: `SELECT m.user_id,
+       ROUND((julianday(MIN(a.action_at)) - julianday(m.first_msg)) * 1440) AS minutes_to_first_action
+FROM (SELECT user_id, MIN(sent_at) AS first_msg FROM d1113_cx_msgs GROUP BY user_id) m
+LEFT JOIN d1113_cx_actions a ON a.user_id = m.user_id AND a.action_at >= m.first_msg
+GROUP BY m.user_id, m.first_msg;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261113_i5', level: 'intermediate', added: '2026-11-13', source: "מקורי", company: "",
+    ref: "", url: "",
+    title: "מחלקות עם עובדים ללא הדרכה ב-2026", tables: ["d1113_staff", "d1113_trainings"],
+    prompt: "בטבלה d1113_staff יש עובדים ומחלקה, ובטבלה d1113_trainings יש הדרכות. הדרכה נחשבת רק אם יש לה completed_on והיא הושלמה בשנת 2026. לכל מחלקה שיש בה לפחות עובד אחד בלי הדרכה כזו, החזירו: dept, מספר העובדים במחלקה (total_staff) ומספר העובדים בלי הדרכה כזו (untrained_staff).",
+    solution: `SELECT s.dept, COUNT(*) AS total_staff,
+       SUM(CASE WHEN NOT EXISTS (SELECT 1 FROM d1113_trainings t WHERE t.emp_id = s.emp_id AND strftime('%Y', t.completed_on) = '2026') THEN 1 ELSE 0 END) AS untrained_staff
+FROM d1113_staff s
+GROUP BY s.dept
+HAVING untrained_staff > 0;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261113_a1', level: 'advanced', added: '2026-11-13', source: "PracHub", company: "Amazon",
+    ref: "Compute a Rolling Seven-Day Revenue Sum with Missing Dates", url: "https://prachub.com/interview-questions/compute-a-rolling-seven-day-revenue-sum-with-missing-dates",
+    title: "הכנסה מתגלגלת של 7 ימים לכל מוכר", tables: ["d1113_seller_orders"],
+    prompt: "בטבלה d1113_seller_orders יש הזמנות של מוכרים. רק הזמנות בסטטוס 'completed' נחשבות. ההכנסה היומית של מוכר היא סכום ההזמנות שלו באותו תאריך קלנדרי (החלק של התאריך ב-order_ts), ו-0 בתאריך שבו אין לו הזמנות. לכל מוכר בנו רצף תאריכים רציף מתאריך ההזמנה הראשונה שלו ועד תאריך ההזמנה האחרונה שלו (כולל ימים ריקים), והחזירו לכל יום: order_date, seller_id, daily_revenue, ו-rolling_7d_revenue, סכום ההכנסה היומית של אותו יום ושל 6 הימים הקלנדריים שלפניו (בתחילת הרצף - רק הימים הקיימים). מיינו לפי seller_id ואז order_date.",
+    solution: `WITH RECURSIVE bounds AS (
+  SELECT seller_id, MIN(date(order_ts)) AS d0, MAX(date(order_ts)) AS d1 FROM d1113_seller_orders WHERE status = 'completed' GROUP BY seller_id
+), spine(seller_id, d, d1) AS (
+  SELECT seller_id, d0, d1 FROM bounds
+  UNION ALL
+  SELECT seller_id, date(d, '+1 day'), d1 FROM spine WHERE d < d1
+), daily AS (
+  SELECT s.d AS order_date, s.seller_id, COALESCE(SUM(o.amount), 0) AS daily_revenue
+  FROM spine s LEFT JOIN d1113_seller_orders o ON o.seller_id = s.seller_id AND date(o.order_ts) = s.d AND o.status = 'completed'
+  GROUP BY s.d, s.seller_id
+)
+SELECT order_date, seller_id, daily_revenue,
+       SUM(daily_revenue) OVER (PARTITION BY seller_id ORDER BY order_date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS rolling_7d_revenue
+FROM daily
+ORDER BY seller_id, order_date;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261113_a2', level: 'advanced', added: '2026-11-13', source: "Dataford", company: "Sony PlayStation",
+    ref: "PlayStation cohort metrics: active users, PS5 sessions, purchasers and revenue per cohort-month", url: "https://dataford.io/questions/sql-cohort-metrics-query",
+    title: "מדדי קוהורט: משתמשים, סשנים ורכישות", tables: ["d1113_ps_users", "d1113_ps_sessions", "d1113_ps_purchases"],
+    prompt: "בטבלה d1113_ps_users יש משתמשי קונסולה עם תאריך הרשמה, בטבלה d1113_ps_sessions יש סשנים (platform הוא PS4 או PS5), ובטבלה d1113_ps_purchases יש רכישות (רק status = 'completed' נחשבת). קוהורט הוא חודש ההרשמה (YYYY-MM). לכל צירוף של קוהורט וחודש פעילות (YYYY-MM, חודש שבו היה למשתמשי הקוהורט לפחות סשן אחד או רכישה שהושלמה) החזירו: cohort_month, activity_month, active_users (משתמשים שונים עם סשן באותו חודש), ps5_sessions (מספר סשני PS5), purchasers (משתמשים שונים עם רכישה שהושלמה באותו חודש) ו-revenue (סכום הרכישות שהושלמו באותו חודש).",
+    solution: `WITH ev AS (
+  SELECT u.user_id, strftime('%Y-%m', u.signup_date) AS cohort_month, strftime('%Y-%m', s.session_date) AS activity_month,
+         1 AS is_session, CASE WHEN s.platform = 'PS5' THEN 1 ELSE 0 END AS is_ps5, 0 AS is_purchase, 0.0 AS amount
+  FROM d1113_ps_users u JOIN d1113_ps_sessions s ON s.user_id = u.user_id
+  UNION ALL
+  SELECT u.user_id, strftime('%Y-%m', u.signup_date), strftime('%Y-%m', p.purchase_date), 0, 0, 1, p.amount
+  FROM d1113_ps_users u JOIN d1113_ps_purchases p ON p.user_id = u.user_id
+  WHERE p.status = 'completed'
+)
+SELECT cohort_month, activity_month,
+       COUNT(DISTINCT CASE WHEN is_session = 1 THEN user_id END) AS active_users,
+       SUM(is_ps5) AS ps5_sessions,
+       COUNT(DISTINCT CASE WHEN is_purchase = 1 THEN user_id END) AS purchasers,
+       SUM(amount) AS revenue
+FROM ev
+GROUP BY cohort_month, activity_month;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261113_a3', level: 'advanced', added: '2026-11-13', source: "PracHub", company: "",
+    ref: "Build 30-day retention cohort table", url: "https://prachub.com/interview-questions/build-30-day-retention-cohort-table",
+    title: "שימור ביום 30 לפי חודש הרשמה", tables: ["d1113_companies"],
+    prompt: "בטבלה d1113_companies יש חברות שנרשמו לשירות (signup_date) ואולי ביטלו (termination_date, ריק אם לא ביטלו). חברה נחשבת ששמרה על מנוי ביום 30 אם לא ביטלה כלל, או שתאריך הביטול שלה הוא לפחות 30 ימים אחרי תאריך ההרשמה. לכל חודש הרשמה (YYYY-MM, העמודה signup_month) החזירו: מספר החברות שנרשמו (companies), כמה מהן שמרו על מנוי ביום 30 (retained) ואחוז השימור מעוגן לשתי ספרות אחרי הנקודה (retention_pct, ערך בין 0 ל-100).",
+    solution: `SELECT strftime('%Y-%m', signup_date) AS signup_month, COUNT(*) AS companies,
+       SUM(CASE WHEN termination_date IS NULL OR termination_date >= date(signup_date, '+30 days') THEN 1 ELSE 0 END) AS retained,
+       ROUND(100.0 * SUM(CASE WHEN termination_date IS NULL OR termination_date >= date(signup_date, '+30 days') THEN 1 ELSE 0 END) / COUNT(*), 2) AS retention_pct
+FROM d1113_companies
+GROUP BY signup_month;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261113_a4', level: 'advanced', added: '2026-11-13', source: "Dataford", company: "",
+    ref: "Write a SQL query to find the monthly recurring revenue (MRR) for a given cohort of customers over a 12 month period", url: "https://dataford.io/questions/write-a-sql-query-to-find-the-monthly-recurring-revenue-mrr-for-a-given-cohort-of-customers-over-a-12-month-period",
+    title: "הכנסה חוזרת לפי קוהורט וחודש מההצטרפות", tables: ["d1113_mrr"],
+    prompt: "בטבלה d1113_mrr יש לכל לקוח את ההכנסה החודשית החוזרת שלו (mrr) בחודשים שבהם יש לו שורה (month בפורמט YYYY-MM). חודש ההצטרפות של לקוח הוא החודש הראשון שבו ה-mrr שלו גדול מ-0, והקוהורט שלו הוא חודש ההצטרפות. התייחסו רק לשורות מחודש ההצטרפות ואילך. לכל קוהורט ולכל מרחק בחודשים מחודש ההצטרפות (month_offset, 0 הוא חודש ההצטרפות) שבו יש שורות, החזירו: cohort_month, month_offset, total_mrr (סכום ה-mrr של לקוחות הקוהורט) ו-pct_of_initial, סכום זה באחוזים מסכום הקוהורט בחודש 0, מעוגן לשתי ספרות אחרי הנקודה.",
+    solution: `WITH j AS (
+  SELECT customer_id, MIN(month) AS cohort_month FROM d1113_mrr WHERE mrr > 0 GROUP BY customer_id
+), m AS (
+  SELECT j.cohort_month,
+         (CAST(substr(r.month, 1, 4) AS INTEGER) * 12 + CAST(substr(r.month, 6, 2) AS INTEGER))
+         - (CAST(substr(j.cohort_month, 1, 4) AS INTEGER) * 12 + CAST(substr(j.cohort_month, 6, 2) AS INTEGER)) AS month_offset,
+         r.mrr
+  FROM d1113_mrr r JOIN j ON j.customer_id = r.customer_id
+  WHERE r.month >= j.cohort_month
+), t AS (
+  SELECT cohort_month, month_offset, SUM(mrr) AS total_mrr FROM m GROUP BY cohort_month, month_offset
+)
+SELECT cohort_month, month_offset, total_mrr,
+       ROUND(100.0 * total_mrr / (SELECT total_mrr FROM t t0 WHERE t0.cohort_month = t.cohort_month AND t0.month_offset = 0), 2) AS pct_of_initial
+FROM t;`,
+    ordered: false,
+  },
+  {
+    id: 'd20261113_a5', level: 'advanced', added: '2026-11-13', source: "מקורי", company: "",
+    ref: "", url: "",
+    title: "רצפי ימי עבודה של נהגים", tables: ["d1113_online_days"],
+    prompt: "בטבלה d1113_online_days יש ימים שבהם נהג בשירות הסעות היה מחובר (ייתכנו שורות כפולות לאותו יום). רצף הוא קבוצת ימים קלנדריים עוקבים ללא הפסקה. החזירו כל רצף של 3 ימים או יותר: driver_id, start_day (היום הראשון), end_day (היום האחרון) ו-days (מספר הימים השונים ברצף).",
+    solution: `SELECT driver_id, MIN(day) AS start_day, MAX(day) AS end_day, COUNT(*) AS days FROM (
+  SELECT driver_id, day, julianday(day) - ROW_NUMBER() OVER (PARTITION BY driver_id ORDER BY day) AS grp
+  FROM (SELECT DISTINCT driver_id, day FROM d1113_online_days)
+)
+GROUP BY driver_id, grp
+HAVING COUNT(*) >= 3;`,
+    ordered: false,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
