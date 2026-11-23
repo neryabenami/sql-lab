@@ -1891,4 +1891,45 @@ CREATE TABLE d1122_purchases (purchase_id INTEGER, customer_id INTEGER, purchase
 INSERT INTO d1122_purchases VALUES (1,1,'2026-06-01'),(2,1,'2026-06-20'),(3,1,'2026-08-10'),(4,1,'2026-09-15'),(5,1,'2026-10-10'),(6,2,'2026-05-01'),(7,2,'2026-05-15'),(8,2,'2026-06-01'),(9,3,'2026-03-01'),(10,3,'2026-05-15'),(11,3,'2026-08-01'),(12,4,'2026-07-01'),(13,4,'2026-08-01'),(14,4,'2026-08-31'),(15,5,'2026-10-01'),(16,6,'2026-01-10'),(17,6,'2026-02-20'),(18,6,'2026-02-20'),(19,6,'2026-10-25');
 CREATE TABLE d1122_hires (emp_id INTEGER, dept TEXT, hire_date TEXT, salary INTEGER);
 INSERT INTO d1122_hires VALUES (1,'Eng','2024-01-10',100),(2,'Eng','2024-03-01',120),(3,'Eng','2024-03-01',90),(4,'Eng','2025-02-01',140),(5,'Sales','2023-05-05',70),(6,'Sales','2024-06-06',80),(7,'Sales','2025-07-07',65),(8,'Ops','2022-02-02',60),(9,'Ops','2023-03-03',60),(10,'Ops','2023-03-03',75),(11,'Ops','2024-04-04',55);
+-- 2026-11-23
+CREATE TABLE d1123_followers (user_id INTEGER, follower_id INTEGER);
+INSERT INTO d1123_followers VALUES (1,5),(1,6),(1,7),(1,8),(2,5),(2,6),(3,7),(4,5),(4,6),(4,7),(9,1),(10,1),(10,2);
+CREATE TABLE d1123_contacts (contact_id INTEGER, full_name TEXT, email TEXT);
+INSERT INTO d1123_contacts VALUES (1,'Dana','dana@x.com'),(2,'Dan','DANA@x.com'),(3,'Ron','ron@x.com'),(4,'Lee',NULL),(5,'Noa',NULL),(6,'Dana L','dana@x.com'),(7,'Yael','yael@y.org'),(8,'Yael B','yael@y.org'),(9,'Omer','omer@z.net');
+CREATE TABLE d1123_claims (claim_id INTEGER, patient_id INTEGER, amount INTEGER, paid_date TEXT);
+INSERT INTO d1123_claims VALUES (1,101,50,'2026-03-02'),(2,101,400,NULL),(3,102,1200,'2026-03-10'),(4,102,99,'2026-03-11'),(5,103,100,NULL),(6,103,2500,'2026-04-01'),(7,104,NULL,NULL),(8,104,999,'2026-04-03'),(9,105,1000,NULL),(10,105,75,NULL),(11,106,300,'2026-04-05'),(12,101,20,NULL);
+CREATE TABLE d1123_matches (match_id INTEGER, player TEXT, game TEXT, score INTEGER, played_on TEXT);
+INSERT INTO d1123_matches VALUES (1,'ann','chess',1200,'2026-10-01'),(2,'bob','chess',1350,'2026-10-02'),(3,'ann','chess',1300,'2026-10-05'),(4,'cat','chess',1100,'2026-10-06'),(5,'dan','chess',NULL,'2026-10-07'),(6,'dan','go',50,'2026-10-01'),(7,'eli','go',70,'2026-10-03'),(8,'ann','racing',300,'2026-10-02'),(9,'bob','racing',280,'2026-10-03'),(10,'bob','racing',310,'2026-10-04'),(11,'cat','racing',305,'2026-10-05'),(12,'dan','racing',290,'2026-10-06'),(13,'cat','puzzle',10,'2026-10-01'),(14,'cat','puzzle',12,'2026-10-02'),(15,'cat','puzzle',12,'2026-10-03');
+CREATE TABLE d1123_drivers (driver_id INTEGER, driver_name TEXT);
+INSERT INTO d1123_drivers VALUES (1,'Avi'),(2,'Bella'),(3,'Gil'),(4,'Dor'),(5,'Hila'),(6,'Noam'),(7,'Tal');
+CREATE TABLE d1123_trips (trip_id INTEGER, driver_id INTEGER, trip_date TEXT, distance_km INTEGER, fuel_l INTEGER);
+INSERT INTO d1123_trips VALUES (1,1,'2026-02-01',100,10),(2,1,'2026-05-01',90,10),(3,1,'2026-08-01',120,10),(4,1,'2026-11-01',110,10),(5,1,'2025-09-09',10,10),(6,2,'2026-03-01',80,8),(7,2,'2026-09-01',60,8),(8,3,'2026-01-10',100,10),(9,3,'2026-03-10',90,10),(10,4,'2026-01-15',50,10),(11,4,'2026-07-15',50,10),(12,5,'2026-06-30',200,20),(13,5,'2026-07-01',150,10),(14,5,'2026-12-31',120,10),(15,6,'2026-04-10',30,10),(16,6,'2026-10-10',40,10),(17,7,'2026-08-08',70,10);
+CREATE TABLE d1123_orders (order_id INTEGER, customer_id INTEGER, ordered_at TEXT, rating INTEGER);
+INSERT INTO d1123_orders VALUES (1,1,'2026-09-01 12:00:00',5),(2,1,'2026-09-02 19:30:00',4),(3,1,'2026-09-03 13:59:00',NULL),(4,1,'2026-09-04 20:59:00',5),(5,1,'2026-09-05 15:00:00',NULL),
+(6,2,'2026-09-01 14:00:00',5),(7,2,'2026-09-02 21:00:00',5),(8,2,'2026-09-03 18:00:00',5),(9,2,'2026-09-04 11:00:00',5),
+(10,3,'2026-09-01 12:15:00',4),(11,3,'2026-09-02 18:45:00',4),(12,3,'2026-09-03 13:00:00',NULL),
+(13,4,'2026-09-01 12:00:00',5),(14,4,'2026-09-02 19:00:00',NULL),(15,4,'2026-09-03 20:00:00',NULL),
+(16,5,'2026-09-01 12:00:00',5),(17,5,'2026-09-02 19:00:00',5),
+(18,6,'2026-09-01 12:00:00',4),(19,6,'2026-09-02 12:30:00',3),(20,6,'2026-09-03 19:00:00',4),(21,6,'2026-09-04 10:59:00',4),
+(22,7,'2026-09-01 11:30:00',4),(23,7,'2026-09-02 12:30:00',NULL),(24,7,'2026-09-03 18:30:00',5),(25,7,'2026-09-04 19:30:00',4),(26,7,'2026-09-05 09:00:00',NULL),(27,7,'2026-09-06 22:00:00',NULL);
+CREATE TABLE d1123_emp_pay (emp_id INTEGER, dept TEXT, salary INTEGER);
+INSERT INTO d1123_emp_pay VALUES (1,'Eng',100),(2,'Eng',120),(3,'Eng',120),(4,'Eng',90),(15,'Eng',NULL),(5,'Sales',70),(6,'Sales',70),(7,'Ops',60),(8,'Ops',80),(9,'Ops',80),(10,'Ops',60),(11,'HR',55),(12,'Data',150),(13,'Data',140),(14,'Data',140);
+CREATE TABLE d1123_subs (user_id INTEGER, signup_date TEXT, upgraded_date TEXT);
+INSERT INTO d1123_subs VALUES (1,'2026-08-03','2026-08-10'),(2,'2026-08-15','2026-08-23'),(3,'2026-08-20',NULL),(4,'2026-08-31','2026-09-02'),(5,'2026-09-01','2026-09-01'),(6,'2026-09-10','2026-10-01'),(7,'2026-09-12',NULL),(8,'2026-09-30','2026-10-05'),(9,'2026-09-30',NULL),(10,'2026-10-02','2026-10-03');
+CREATE TABLE d1123_clients (client_id INTEGER, name TEXT);
+INSERT INTO d1123_clients VALUES (1,'Acme'),(2,'Beta'),(3,'Cora'),(4,'Dyno'),(5,'Ezra');
+CREATE TABLE d1123_invoices (invoice_id INTEGER, client_id INTEGER, amount INTEGER, paid_on TEXT);
+INSERT INTO d1123_invoices VALUES (1,1,500,'2026-05-01'),(2,1,300,NULL),(3,2,700,NULL),(4,2,200,NULL),(5,3,100,'2026-06-01'),(6,4,50,NULL),(7,3,400,'2026-07-01');
+CREATE TABLE d1123_logins (user_id INTEGER, login_date TEXT);
+INSERT INTO d1123_logins VALUES (1,'2026-10-01'),(1,'2026-10-02'),(1,'2026-10-03'),(1,'2026-10-03'),(1,'2026-10-05'),(1,'2026-10-06'),(2,'2026-10-01'),(2,'2026-10-03'),(2,'2026-10-05'),(3,'2026-10-10'),(3,'2026-10-11'),(3,'2026-10-12'),(3,'2026-10-13'),(3,'2026-10-14'),(3,'2026-10-16'),(3,'2026-10-17'),(4,'2026-10-01'),(4,'2026-10-02'),(4,'2026-10-04'),(4,'2026-10-05'),(5,'2026-10-30'),(5,'2026-10-31'),(5,'2026-11-01'),(5,'2026-11-02'),(6,'2026-10-20');
+CREATE TABLE d1123_rest_sales (restaurant TEXT, month TEXT, sales INTEGER);
+INSERT INTO d1123_rest_sales VALUES ('Falafel House','2026-05',1000),('Falafel House','2026-06',1200),('Falafel House','2026-07',900),('Falafel House','2026-09',1500),('Falafel House','2026-10',1500),('Sushi Bar','2026-06',0),('Sushi Bar','2026-07',500),('Sushi Bar','2026-08',600),('Pasta Co','2026-08',800);
+CREATE TABLE d1123_monthly_sales (sale_id INTEGER, sale_date TEXT, amount INTEGER);
+INSERT INTO d1123_monthly_sales VALUES (1,'2025-11-05',100),(2,'2025-11-20',50),(3,'2025-12-15',200),(4,'2026-01-10',300),(5,'2026-02-02',80),(6,'2026-02-27',20),(7,'2026-04-18',400),(8,'2026-05-09',150);
+CREATE TABLE d1123_product_sales (sale_id INTEGER, product TEXT, sale_date TEXT, revenue INTEGER);
+INSERT INTO d1123_product_sales VALUES (1,'Widget','2026-10-01',100),(2,'Widget','2026-10-01',50),(3,'Widget','2026-10-03',200),(4,'Widget','2026-10-07',50),(5,'Gadget','2026-10-02',300),(6,'Gadget','2026-10-02',100),(7,'Gadget','2026-10-05',100),(8,'Gizmo','2026-10-04',70);
+CREATE TABLE d1123_td_drivers (driver_id INTEGER, driver_name TEXT, fuel_type TEXT, accidents INTEGER);
+INSERT INTO d1123_td_drivers VALUES (1,'d1','Diesel',0),(2,'d2','Diesel',1),(3,'d3','Diesel',0),(4,'d4','Electric',2),(5,'d5','Electric',1),(6,'d6','Electric',1),(7,'d7','Petrol',0);
+CREATE TABLE d1123_td_trips (trip_id INTEGER, driver_id INTEGER, distance_km INTEGER, rating INTEGER);
+INSERT INTO d1123_td_trips VALUES (1,1,100,4),(2,1,50,5),(3,2,200,5),(4,2,100,4),(5,3,80,3),(6,4,120,5),(7,4,80,5),(8,5,200,5),(9,7,60,4);
 `;
