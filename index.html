@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css">
-  <link rel="stylesheet" href="styles.css?v=20261011c">
+  <link rel="stylesheet" href="styles.css?v=20261124a">
 </head>
 <body>
   <header class="topbar">
@@ -51,8 +51,10 @@
           <div id="qTables" class="table-chips"></div>
         </div>
         <div class="q-help">
+          <button class="btn small hint-btn" id="hintBtn">💡 רמז</button>
           <button class="btn small" id="solutionBtn">👁 הצג פתרון</button>
         </div>
+        <div class="hint-box" id="hintBox" hidden></div>
         <div class="solution-box" id="solutionBox" hidden>
           <div class="muted small-text ltr-ref" id="solutionRef" hidden></div>
           <pre class="ltr code" id="solutionCode"></pre>
@@ -75,6 +77,7 @@
       </div>
 
       <div class="feedback" id="feedback" hidden></div>
+      <div class="trap-notice" id="trapNotice" hidden></div>
 
       <div class="card results-card">
         <div class="tabs" role="tablist">
@@ -111,12 +114,14 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.10.3/sql-wasm.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/sql/sql.min.js"></script>
-  <script src="data.js?v=20261011c"></script>
-  <script src="data_extra.js?v=20261011c"></script>
-  <script src="data_daily.js?v=20261011c"></script>
-  <script src="questions.js?v=20261011c"></script>
-  <script src="questions_extra.js?v=20261011c"></script>
-  <script src="questions_daily.js?v=20261011c"></script>
-  <script src="app.js?v=20261011c"></script>
+  <script src="data.js?v=20261124a"></script>
+  <script src="data_extra.js?v=20261124a"></script>
+  <script src="data_daily.js?v=20261124a"></script>
+  <script src="questions.js?v=20261124a"></script>
+  <script src="questions_extra.js?v=20261124a"></script>
+  <script src="questions_daily.js?v=20261124a"></script>
+  <script src="hints.js?v=20261124a"></script>
+  <script src="errors.js?v=20261124a"></script>
+  <script src="app.js?v=20261124a"></script>
 </body>
 </html>

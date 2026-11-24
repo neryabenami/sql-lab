@@ -13,7 +13,7 @@
 
 ## קבצים
 1. הקובץ `data.js` מכיל את הסכמה ואת נתוני הדוגמה.
-2. הקבצים `questions.js` ו-`questions_extra.js` מכילים את השאלות (המקוריות, ואלה שמבוססות על DataLemur, LeetCode ו-StrataScratch). הנתונים שלהן נמצאים ב-`data.js` וב-`data_extra.js`. כדי להוסיף שאלה, מוסיפים אובייקט עם `id`, `level`, `topic`, `title`, `tables`, `prompt`, `solution` ו-`ordered`.
+2. הקבצים `questions.js` ו-`questions_extra.js` מכילים את השאלות (המקוריות, ואלה שמבוססות על DataLemur, LeetCode ו-StrataScratch). הנתונים שלהן נמצאים ב-`data.js` וב-`data_extra.js`. כדי להוסיף שאלה, מוסיפים אובייקט עם `id`, `level`, `topic`, `title`, `tables`, `prompt`, `solution`, `ordered` ו-`hint` (רמז קצר, חובה בשאלות חדשות). רמזים לשאלות ישנות נמצאים ב-`hints.js`, ותרגום השגיאות לעברית ב-`errors.js`.
 3. הקובץ `app.js` מכיל את הלוגיקה. בקונסול אפשר להריץ `selfTest()` כדי לבדוק שכל הפתרונות רצים.
 
 ## גרסה מפורסמת

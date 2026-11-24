@@ -7,7 +7,7 @@ const vm = require('vm');
 const root = __dirname;
 const ctx = { console };
 vm.createContext(ctx);
-for (const f of ['data.js', 'data_extra.js', 'data_daily.js', 'questions.js', 'questions_extra.js', 'questions_daily.js']) {
+for (const f of ['data.js', 'data_extra.js', 'data_daily.js', 'questions.js', 'questions_extra.js', 'questions_daily.js', 'hints.js']) {
   // const ברמה העליונה לא נחשף להקשר, לכן ממירים ל-var
   const src = fs.readFileSync(path.join(root, f), 'utf8').replace(/^const /gm, 'var ');
   vm.runInContext(src, ctx, { filename: f });
@@ -26,11 +26,17 @@ initSqlJs({ locateFile: (f) => path.join(root, 'vendor', f) }).then((SQL) => {
   const errors = [];
   const ids = new Set();
   const counts = {};
+  let missingHints = 0;
   for (const q of ctx.QUESTIONS) {
     counts[q.level] = (counts[q.level] || 0) + 1;
     if (ids.has(q.id)) errors.push(`${q.id}: מזהה כפול`);
     ids.add(q.id);
     for (const t of q.tables) if (!tables.has(t)) errors.push(`${q.id}: הטבלה ${t} לא קיימת`);
+    if (!q.hint && !ctx.HINTS[q.id]) {
+      missingHints++;
+      // שאלות שנוספו לפני שהרמז הפך לחובה משלימות רמז בהדרגה
+      if (q.added > '2026-11-24') errors.push(`${q.id}: חסר רמז (hint)`);
+    }
     const db = new SQL.Database(bytes);
     db.create_function('regexp', (p, v) => (v != null && new RegExp(p).test(String(v)) ? 1 : 0));
     try {
@@ -43,6 +49,7 @@ initSqlJs({ locateFile: (f) => path.join(root, 'vendor', f) }).then((SQL) => {
     db.close();
   }
   console.log(`סה"כ שאלות: ${ctx.QUESTIONS.length}`, counts);
+  if (missingHints) console.log(`שאלות בלי רמז: ${missingHints}`);
   if (errors.length) {
     console.log('נמצאו בעיות:\n' + errors.join('\n'));
     process.exit(1);

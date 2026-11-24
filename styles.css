@@ -216,3 +216,6 @@ table.result .null { color: var(--muted); font-style: italic; }
 .q-section { list-style: none; font-size: 12px; font-weight: 700; color: var(--muted); padding: 4px 10px; }
 .q-date { font-size: 12px; color: var(--muted); white-space: nowrap; font-variant-numeric: tabular-nums; }
 .feedback.info { background: var(--surface-2); color: var(--muted); border: 1px solid var(--border); }
+.cm-error-line { background: var(--danger-soft) !important; }
+.trap-notice { border-radius: var(--radius); padding: 10px 16px; background: var(--warn-soft); color: var(--warn); font-size: 14px; display: flex; flex-direction: column; gap: 4px; }
+.hint-btn { border-color: var(--warn); color: var(--warn); }

@@ -60,6 +60,12 @@ function runSql(sql) {
   }
 }
 
+// מקמפל שאילתה בלי להריץ אותה ומחזיר את הודעת השגיאה (או null). משמש לאיתור השורה של שגיאת תחביר.
+function compileError(sql) {
+  const db = new SQL.Database(baseDbBytes);
+  try { db.prepare(sql).free(); return null; } catch (e) { return e.message; } finally { db.close(); }
+}
+
 function getExpected(q) {
   if (!expectedCache[q.id]) expectedCache[q.id] = runSql(q.solution);
   return expectedCache[q.id];
@@ -243,6 +249,11 @@ function openQuestion(id) {
     el.addEventListener('click', () => showPreview(el.dataset.table));
   });
   $('solutionBox').hidden = true;
+  $('hintBox').hidden = true;
+  const hint = q.hint || HINTS[q.id];
+  $('hintBtn').hidden = !hint;
+  $('hintBox').textContent = hint ? '💡 ' + hint : '';
+  showTraps([]);
   $('solutionCode').textContent = q.solution;
   $('feedback').hidden = true;
 
@@ -274,17 +285,22 @@ function run(check = false) {
     showFeedback('bad', `העורך ריק. כתבו שאילתה ואז לחצו על "${check ? 'בדוק' : 'הרץ'}".`);
     return;
   }
+  clearErrorLine();
+  showTraps([]);
   const t0 = performance.now();
   let res;
   try {
     res = runSql(sql);
   } catch (e) {
     lastUserResult = null;
-    showFeedback('bad', 'שגיאת SQL:', e.message);
+    const err = explainError(sql, e.message, compileError);
+    showFeedback('bad', err.msg);
+    markErrorLine(err.line);
     setTab('user');
     $('runStatus').textContent = '';
     return;
   }
+  showTraps(findTraps(sql));
   $('runStatus').textContent = `רץ ב-${Math.round(performance.now() - t0)}ms`;
   lastUserResult = res;
   setTab('user');
@@ -305,6 +321,27 @@ function run(check = false) {
   } else {
     showFeedback('bad', cmp.msg);
   }
+}
+
+// סימון השורה הבעייתית בעורך
+let errorLine = null;
+function markErrorLine(line) {
+  clearErrorLine();
+  if (!line || line > editor.lineCount()) return;
+  errorLine = line - 1;
+  editor.addLineClass(errorLine, 'background', 'cm-error-line');
+  editor.scrollIntoView({ line: errorLine, ch: 0 }, 40);
+}
+function clearErrorLine() {
+  if (errorLine !== null && errorLine < editor.lineCount()) editor.removeLineClass(errorLine, 'background', 'cm-error-line');
+  errorLine = null;
+}
+
+// הערות על קוד שרץ אבל מתנהג אחרת ב-SQLite
+function showTraps(list) {
+  const box = $('trapNotice');
+  box.innerHTML = list.map((t) => `<div>⚠ ${esc(t)}</div>`).join('');
+  box.hidden = list.length === 0;
 }
 
 function showFeedback(kind, msg, detail) {
@@ -393,6 +430,7 @@ function init() {
   });
   let saveTimer = null;
   editor.on('change', () => {
+    clearErrorLine();
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
       if (!state.currentId) return;
@@ -404,6 +442,7 @@ function init() {
   $('runBtn').addEventListener('click', () => run(false));
   $('checkBtn').addEventListener('click', () => run(true));
   $('clearBtn').addEventListener('click', () => { editor.setValue(''); editor.focus(); });
+  $('hintBtn').addEventListener('click', () => { $('hintBox').hidden = !$('hintBox').hidden; });
   $('solutionBtn').addEventListener('click', () => { $('solutionBox').hidden = !$('solutionBox').hidden; });
   $('useSolutionBtn').addEventListener('click', () => { editor.setValue(currentQuestion().solution); editor.focus(); });
   $('changeLevelBtn').addEventListener('click', showLevelScreen);
