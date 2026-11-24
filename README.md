@@ -20,4 +20,4 @@
 הפקודה `python build_artifact.py` בונה את `dist/sql-lab.html`, וזה הקובץ שמתפרסם כעמוד ב-claude.ai.
 
 ## שאלות יומיות
-משימה מתוזמנת מוסיפה כל יום 5 שאלות לכל רמה לקבצים `questions_daily.js` ו-`data_daily.js`, בודקת אותן עם `node verify.js`, ומפרסמת מחדש.
+משימה מתוזמנת מוסיפה כל יום שאלה אחת לכל רמה לקבצים `questions_daily.js` ו-`data_daily.js`, בודקת אותן עם `node verify.js`, ומפרסמת מחדש.
