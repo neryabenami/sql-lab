@@ -7247,6 +7247,33 @@ HAVING COUNT(*) >= 3;`,
     solution: `WITH c AS (SELECT user_id, click_ts, CASE WHEN LAG(click_ts) OVER (PARTITION BY user_id ORDER BY click_ts) IS NULL OR CAST(strftime('%s', click_ts) AS INTEGER) - CAST(strftime('%s', LAG(click_ts) OVER (PARTITION BY user_id ORDER BY click_ts)) AS INTEGER) > 1800 THEN 1 ELSE 0 END AS is_new FROM d1124_clicks), s AS (SELECT user_id, SUM(is_new) OVER (PARTITION BY user_id ORDER BY click_ts) AS sid FROM c), g AS (SELECT user_id, sid, COUNT(*) AS n FROM s GROUP BY user_id, sid) SELECT user_id, COUNT(*) AS sessions, ROUND(AVG(n), 2) AS avg_clicks FROM g GROUP BY user_id ORDER BY user_id;`,
     ordered: true,
   },
+  {
+    id: 'd20261125_b1', level: 'basic', added: '2026-11-25', source: 'LeetCode', company: '',
+    ref: 'Find Products with Valid Serial Numbers', url: 'https://leetcode.com/problems/find-products-with-valid-serial-numbers/',
+    title: 'מוצרים עם מספר סידורי תקין בתיאור', tables: ['d1125_products'],
+    prompt: `בטבלה d1125_products יש תיאור חופשי לכל מוצר, והוא בנוי ממילים המופרדות ברווח בודד. מספר סידורי תקין הוא מילה שלמה בדיוק בפורמט הבא: האותיות SN באותיות גדולות, אחריהן ארבע ספרות, מקף, ועוד ארבע ספרות (למשל SN0000-0000). החזירו את product_id ו-name של המוצרים שהתיאור שלהם כולל לפחות מספר סידורי תקין אחד. מיינו לפי product_id עולה.`,
+    hint: `שימו לב שהמספר הסידורי צריך להיות מילה שלמה, ולכן חשוב מה נמצא מימינו ומשמאלו. חשבו איך לוודא שגם מילה בתחילת התיאור או בסופו נבדקת נכון, ושאותיות קטנות לא נחשבות.`,
+    solution: `SELECT product_id, name FROM d1125_products WHERE ' ' || description || ' ' GLOB '* SN[0-9][0-9][0-9][0-9]-[0-9][0-9][0-9][0-9] *' ORDER BY product_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261125_i1', level: 'intermediate', added: '2026-11-25', source: 'LeetCode', company: '',
+    ref: 'Find Overbooked Employees', url: 'https://leetcode.com/problems/find-overbooked-employees/',
+    title: 'עובדים עם עומס פגישות חוזר', tables: ['d1125_staff', 'd1125_meetings'],
+    prompt: `בטבלה d1125_meetings נרשמות פגישות של עובדים עם תאריך ומשך בשעות (hours), ובטבלה d1125_staff שמות העובדים. שבוע נמדד מיום שני עד יום ראשון. שבוע נחשב עמוס לעובד אם סך שעות הפגישות שלו באותו שבוע גדול ממש מ-20 (בדיוק 20 לא נחשב עמוס). החזירו את העובדים שהיו עמוסים בלפחות שני שבועות שונים: employee_id, name, heavy_weeks (מספר השבועות העמוסים). מיינו לפי heavy_weeks יורד ובשוויון לפי employee_id עולה.`,
+    hint: `חשבו קודם איזה שבוע שייך כל תאריך (ושבוע יכול להתפרש על פני שני חודשים), וסכמו את השעות לכל עובד בכל שבוע. אחר כך ספרו לכל עובד בכמה שבועות הסכום חרג מהסף.`,
+    solution: `WITH w AS (SELECT employee_id, date(meeting_date, '-6 days', 'weekday 1') AS wk, SUM(hours) AS h FROM d1125_meetings GROUP BY employee_id, wk) SELECT s.employee_id, s.name, COUNT(*) AS heavy_weeks FROM w JOIN d1125_staff s ON s.employee_id = w.employee_id WHERE w.h > 20 GROUP BY s.employee_id, s.name HAVING COUNT(*) >= 2 ORDER BY heavy_weeks DESC, s.employee_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261125_a1', level: 'advanced', added: '2026-11-25', source: 'LeetCode', company: '',
+    ref: 'Find Overlapping Shifts II', url: 'https://leetcode.com/problems/find-overlapping-shifts-ii/',
+    title: 'משמרות חופפות: מקסימום חפיפה וסך דקות', tables: ['d1125_shifts'],
+    prompt: `בטבלה d1125_shifts יש משמרות של עובדים, כל אחת עם תאריך ושעות התחלה וסיום בפורמט HH:MM (כל משמרת מתחילה ומסתיימת באותו תאריך). משמרות של אותו עובד באותו תאריך חופפות אם יש רגע שבו הן פעילות ביחד; משמרת שמסתיימת בדיוק כשהאחרת מתחילה אינה חופפת. לכל עובד שיש לו לפחות רגע אחד של חפיפה החזירו: employee_id, max_overlapping_shifts (המספר המרבי של משמרות שהיו פעילות בו זמנית), total_overlap_minutes (סך הדקות, בכל התאריכים, שבהן היו פעילות לפחות שתי משמרות; דקה שבה פעילות שלוש משמרות נספרת פעם אחת). מיינו לפי employee_id עולה.`,
+    hint: `חשבו על ציר הזמן של כל עובד בכל יום כעל קטעים קצרים שבין נקודות שינוי (התחלה או סיום של משמרת כלשהי). לכל קטע בדקו כמה משמרות מכסות אותו, ומשם קל לקבל גם את המקסימום וגם את סך הדקות.`,
+    solution: `WITH s AS (SELECT employee_id, shift_date AS d, CAST(substr(start_time,1,2) AS INTEGER)*60 + CAST(substr(start_time,4,2) AS INTEGER) AS st, CAST(substr(end_time,1,2) AS INTEGER)*60 + CAST(substr(end_time,4,2) AS INTEGER) AS en FROM d1125_shifts), pts AS (SELECT employee_id, d, st AS p FROM s UNION SELECT employee_id, d, en FROM s), seg AS (SELECT employee_id, d, p AS a, LEAD(p) OVER (PARTITION BY employee_id, d ORDER BY p) AS b FROM pts), cov AS (SELECT seg.employee_id, seg.a, seg.b, COUNT(s.st) AS c FROM seg LEFT JOIN s ON s.employee_id = seg.employee_id AND s.d = seg.d AND s.st <= seg.a AND s.en >= seg.b WHERE seg.b IS NOT NULL GROUP BY seg.employee_id, seg.d, seg.a, seg.b) SELECT employee_id, MAX(c) AS max_overlapping_shifts, SUM(CASE WHEN c >= 2 THEN b - a ELSE 0 END) AS total_overlap_minutes FROM cov GROUP BY employee_id HAVING MAX(c) >= 2 ORDER BY employee_id;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
