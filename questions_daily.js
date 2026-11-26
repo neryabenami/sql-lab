@@ -7274,6 +7274,33 @@ HAVING COUNT(*) >= 3;`,
     solution: `WITH s AS (SELECT employee_id, shift_date AS d, CAST(substr(start_time,1,2) AS INTEGER)*60 + CAST(substr(start_time,4,2) AS INTEGER) AS st, CAST(substr(end_time,1,2) AS INTEGER)*60 + CAST(substr(end_time,4,2) AS INTEGER) AS en FROM d1125_shifts), pts AS (SELECT employee_id, d, st AS p FROM s UNION SELECT employee_id, d, en FROM s), seg AS (SELECT employee_id, d, p AS a, LEAD(p) OVER (PARTITION BY employee_id, d ORDER BY p) AS b FROM pts), cov AS (SELECT seg.employee_id, seg.a, seg.b, COUNT(s.st) AS c FROM seg LEFT JOIN s ON s.employee_id = seg.employee_id AND s.d = seg.d AND s.st <= seg.a AND s.en >= seg.b WHERE seg.b IS NOT NULL GROUP BY seg.employee_id, seg.d, seg.a, seg.b) SELECT employee_id, MAX(c) AS max_overlapping_shifts, SUM(CASE WHEN c >= 2 THEN b - a ELSE 0 END) AS total_overlap_minutes FROM cov GROUP BY employee_id HAVING MAX(c) >= 2 ORDER BY employee_id;`,
     ordered: true,
   },
+  {
+    id: 'd20261126_b1', level: 'basic', added: '2026-11-26', source: 'DataLemur', company: 'The Hartford',
+    ref: 'The Hartford SQL Interview Questions (average claim amount per policy type)', url: 'https://datalemur.com/blog/the-hartford-sql-interview-questions',
+    title: 'ממוצע תביעות לפי סוג פוליסה ב-2025', tables: ['d1126_claims'],
+    prompt: `בטבלה d1126_claims יש תביעות ביטוח עם סוג פוליסה (policy_type), תאריך תביעה, סכום (amount, יכול להיות NULL כשהסכום עוד לא נקבע) וסטטוס. התחשבו רק בתביעות שהוגשו בשנת 2025, שהסטטוס שלהן אינו 'rejected' ושסכומן ידוע. לכל סוג פוליסה שנותרו לו לפחות שתי תביעות כאלה החזירו: policy_type, claims (מספר התביעות), avg_amount (הסכום הממוצע, מעוגל ל-2 ספרות אחרי הנקודה). מיינו לפי avg_amount יורד ובשוויון לפי policy_type עולה.`,
+    hint: `סננו קודם את השורות הרלוונטיות (שנה, סטטוס וסכום ידוע) ורק אחר כך חשבו את הסיכומים לכל סוג פוליסה. שימו לב שהתנאי על מספר התביעות מתייחס לתוצאה של הקבוצה, לא לשורה בודדת.`,
+    solution: `SELECT policy_type, COUNT(*) AS claims, ROUND(AVG(amount), 2) AS avg_amount FROM d1126_claims WHERE claim_date >= '2025-01-01' AND claim_date < '2026-01-01' AND status <> 'rejected' AND amount IS NOT NULL GROUP BY policy_type HAVING COUNT(*) >= 2 ORDER BY avg_amount DESC, policy_type;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261126_i1', level: 'intermediate', added: '2026-11-26', source: 'StrataScratch', company: 'Meta',
+    ref: "Friday's Likes Count", url: 'https://www.stratascratch.com/blog/facebook-meta-sql-interview-questions',
+    title: 'לייקים בין חברים בימי שישי', tables: ['d1126_friendships', 'd1126_likes'],
+    prompt: `בטבלה d1126_likes כל שורה היא לייק ש-liker_id נתן לפוסט של owner_id בתאריך מסוים. בטבלה d1126_friendships כל זוג חברים מופיע פעם אחת בלבד, בסדר כלשהו (user_a, user_b), והחברות הדדית. החזירו לכל תאריך שחל ביום שישי ובו היה לפחות לייק אחד בין שני חברים: like_date, friend_likes (מספר הלייקים באותו תאריך שבהם נותן הלייק ובעל הפוסט חברים). מיינו לפי like_date עולה.`,
+    hint: `חשבו איך לזהות אם שני משתמשים חברים כשהזוג נשמר רק בכיוון אחד. בנוסף, צריך להחליט מראש איך מזהים יום שישי מתוך תאריך.`,
+    solution: `SELECT l.like_date, COUNT(*) AS friend_likes FROM d1126_likes l WHERE strftime('%w', l.like_date) = '5' AND EXISTS (SELECT 1 FROM d1126_friendships f WHERE (f.user_a = l.liker_id AND f.user_b = l.owner_id) OR (f.user_a = l.owner_id AND f.user_b = l.liker_id)) GROUP BY l.like_date ORDER BY l.like_date;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261126_a1', level: 'advanced', added: '2026-11-26', source: 'DataLemur', company: 'Apple',
+    ref: 'Follow-Up Airpod Percentage', url: 'https://datalemur.com/blog/sql-window-functions-interview-questions',
+    title: 'אחוז הלקוחות שקנו נרתיק מיד אחרי טלפון', tables: ['d1126_purchases'],
+    prompt: `בטבלה d1126_purchases יש רכישות של לקוחות (product הוא למשל 'phone', 'case', 'charger', 'watch'). סדרו את הרכישות של כל לקוח לפי purchase_date ובשוויון לפי purchase_id. לקוח נחשב "מושלם" אם יש לו רכישה של 'case' שהיא הרכישה הבאה בדיוק (בלי רכישה כלשהי באמצע) אחרי רכישה של 'phone'. החזירו עמודה אחת, pct: אחוז הלקוחות ה"מושלמים" מתוך כל הלקוחות שביצעו לפחות רכישה אחת, מעוגל ל-2 ספרות אחרי הנקודה.`,
+    hint: `לכל רכישה בדקו מה הייתה הרכישה שבאה מיד לפניה אצל אותו לקוח. ספרו כל לקוח פעם אחת בלבד גם אם הדפוס חוזר אצלו, ומחלקים במספר כל הלקוחות ולא רק באלה שקנו טלפון.`,
+    solution: `WITH p AS (SELECT customer_id, product, LAG(product) OVER (PARTITION BY customer_id ORDER BY purchase_date, purchase_id) AS prev FROM d1126_purchases) SELECT ROUND(100.0 * COUNT(DISTINCT CASE WHEN product = 'case' AND prev = 'phone' THEN customer_id END) / COUNT(DISTINCT customer_id), 2) AS pct FROM p;`,
+    ordered: false,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
