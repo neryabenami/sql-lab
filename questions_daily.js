@@ -7301,6 +7301,33 @@ HAVING COUNT(*) >= 3;`,
     solution: `WITH p AS (SELECT customer_id, product, LAG(product) OVER (PARTITION BY customer_id ORDER BY purchase_date, purchase_id) AS prev FROM d1126_purchases) SELECT ROUND(100.0 * COUNT(DISTINCT CASE WHEN product = 'case' AND prev = 'phone' THEN customer_id END) / COUNT(DISTINCT customer_id), 2) AS pct FROM p;`,
     ordered: false,
   },
+  {
+    id: 'd20261127_b1', level: 'basic', added: '2026-11-27', source: 'StrataScratch', company: 'Redfin',
+    ref: 'Rush Hour Calls', url: 'https://www.stratascratch.com/blog/business-analyst-interview-questions',
+    title: 'פניות עם הרבה שיחות בשעות אחר הצהריים', tables: ['d1127_rush_calls'],
+    prompt: `בטבלה d1127_rush_calls נרשמת כל שיחה של לקוח למוקד שירות: request_id הוא מזהה הפנייה, call_type הוא סוג השיחה ('initial' או 'update'), ו-created_on הוא תאריך ושעה בפורמט 'YYYY-MM-DD HH:MM:SS'. שיחה נחשבת "שיחת שיא" אם היא נעשתה בכל יום שהוא החל מ-15:00:00 ועד 17:59:59 כולל (18:00:00 ואילך כבר לא נספרת). החזירו את כל הפניות שיש להן לפחות 3 שיחות שיא (מכל סוג), בעמודות request_id, peak_calls (מספר שיחות השיא של הפנייה). מיינו לפי peak_calls מהגדול לקטן ובשוויון לפי request_id עולה.`,
+    hint: `קודם החליטו אילו שורות בכלל נחשבות לשיחת שיא לפי שעת היום, ורק אחר כך ספרו כמה כאלה יש לכל פנייה. שימו לב ששיחה ב-18:00:00 בדיוק וב-14:59:59 אינן נכללות.`,
+    solution: `SELECT request_id, COUNT(*) AS peak_calls FROM d1127_rush_calls WHERE time(created_on) >= '15:00:00' AND time(created_on) < '18:00:00' GROUP BY request_id HAVING COUNT(*) >= 3 ORDER BY peak_calls DESC, request_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261127_i1', level: 'intermediate', added: '2026-11-27', source: 'StrataScratch', company: '',
+    ref: 'Employees With the Same Salary', url: 'https://www.stratascratch.com/blog/illustrated-guide-about-self-join-in-sql',
+    title: 'עובדים שחולקים שכר עם עובד אחר', tables: ['d1127_staff'],
+    prompt: `בטבלה d1127_staff יש עובדים עם worker_id, first_name, dept ו-salary (לעובדים מסוימים השכר חסר, NULL). החזירו את העובדים שיש לפחות עובד אחד אחר בחברה (מכל מחלקה) עם בדיוק אותו שכר. עובד ללא שכר אינו נחשב כמי ששכרו זהה לשל אחר. עמודות: worker_id, first_name, salary. מיינו לפי salary מהגבוה לנמוך ובשוויון לפי worker_id עולה.`,
+    hint: `חשבו איך משווים כל עובד לשאר העובדים בטבלה, ואילו תנאים מבטיחים שעובד לא "יתאים" לעצמו. מה קורה כשהשכר חסר?`,
+    solution: `SELECT a.worker_id, a.first_name, a.salary FROM d1127_staff a WHERE EXISTS (SELECT 1 FROM d1127_staff b WHERE b.salary = a.salary AND b.worker_id <> a.worker_id) ORDER BY a.salary DESC, a.worker_id;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261127_a1', level: 'advanced', added: '2026-11-27', source: 'LeetCode', company: '',
+    ref: 'Merge Overlapping Events in the Same Hall', url: 'https://walkccc.me/LeetCode/problems/2494/',
+    title: 'איחוד אירועים חופפים באותו אולם', tables: ['d1127_hall_events'],
+    prompt: `בטבלה d1127_hall_events כל שורה היא אירוע באולם hall_id שנמשך מ-start_day עד end_day (תאריכים בפורמט 'YYYY-MM-DD', שני הקצוות כלולים). שני אירועים באותו אולם נחשבים חופפים אם יש יום אחד לפחות ששניהם מתקיימים בו (כולל מצב שבו אירוע אחד מסתיים ביום שבו השני מתחיל), וחפיפה עוברת הלאה בשרשרת: אם A חופף ל-B ו-B חופף ל-C, שלושתם נחשבים לאירוע אחד. אירועים באולמות שונים לעולם לא מתאחדים. החזירו את האירועים לאחר האיחוד המלא, בעמודות hall_id, start_day, end_day (תחילת הטווח המאוחד וסופו). מיינו לפי hall_id ולאחר מכן start_day.`,
+    hint: `בתוך כל אולם, עברו על האירועים לפי סדר תחילתם ובדקו האם כל אירוע מתחיל לפני שהסתיים כל מה שנראה עד כה. אירוע שלא חופף לשום דבר קודם פותח טווח חדש, ואת שאר השורות אפשר לשייך לטווח שלהן.`,
+    solution: `WITH x AS (SELECT hall_id, start_day, end_day, MAX(end_day) OVER (PARTITION BY hall_id ORDER BY start_day, end_day ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS prev_end FROM d1127_hall_events), y AS (SELECT hall_id, start_day, end_day, SUM(CASE WHEN prev_end IS NULL OR start_day > prev_end THEN 1 ELSE 0 END) OVER (PARTITION BY hall_id ORDER BY start_day, end_day) AS grp FROM x) SELECT hall_id, MIN(start_day) AS start_day, MAX(end_day) AS end_day FROM y GROUP BY hall_id, grp ORDER BY hall_id, start_day;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
