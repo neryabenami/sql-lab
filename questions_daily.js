@@ -7328,6 +7328,33 @@ HAVING COUNT(*) >= 3;`,
     solution: `WITH x AS (SELECT hall_id, start_day, end_day, MAX(end_day) OVER (PARTITION BY hall_id ORDER BY start_day, end_day ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING) AS prev_end FROM d1127_hall_events), y AS (SELECT hall_id, start_day, end_day, SUM(CASE WHEN prev_end IS NULL OR start_day > prev_end THEN 1 ELSE 0 END) OVER (PARTITION BY hall_id ORDER BY start_day, end_day) AS grp FROM x) SELECT hall_id, MIN(start_day) AS start_day, MAX(end_day) AS end_day FROM y GROUP BY hall_id, grp ORDER BY hall_id, start_day;`,
     ordered: true,
   },
+  {
+    id: 'd20261128_b1', level: 'basic', added: '2026-11-28', source: 'מקורי', company: '',
+    ref: '', url: '',
+    title: 'סניפי ספרייה עם אחוז איחורים גבוה', tables: ['d1128_loans'],
+    prompt: `בטבלה d1128_loans יש השאלות ספרים: branch הוא הסניף, due_on הוא תאריך ההחזרה המצופה ו-returned_on הוא תאריך ההחזרה בפועל (NULL אם הספר עדיין לא הוחזר). נניח שהיום הוא '2026-11-20'. השאלה נחשבת "באיחור" אם הספר הוחזר אחרי due_on, או שהוא עדיין לא הוחזר ו-due_on קטן מהיום (due_on שווה ליום הנוכחי עדיין לא נחשב איחור). החזירו את הסניפים שיש בהם לפחות 2 השאלות באיחור, בעמודות branch, overdue_loans (מספר ההשאלות באיחור), overdue_pct (אחוז ההשאלות באיחור מכלל ההשאלות של הסניף, מעוגל ל-2 ספרות אחרי הנקודה). מיינו לפי overdue_pct מהגבוה לנמוך ובשוויון לפי branch בסדר עולה.`,
+    hint: `קודם הגדירו לכל שורה אם היא באיחור, תוך התייחסות נפרדת לספר שהוחזר ולספר שטרם הוחזר. אחר כך חשבו לכל סניף גם את הכמות וגם את החלק היחסי מכל ההשאלות שלו, ולא רק מתוך המאחרות.`,
+    solution: `SELECT branch, SUM(CASE WHEN (returned_on IS NOT NULL AND returned_on > due_on) OR (returned_on IS NULL AND due_on < '2026-11-20') THEN 1 ELSE 0 END) AS overdue_loans, ROUND(100.0 * SUM(CASE WHEN (returned_on IS NOT NULL AND returned_on > due_on) OR (returned_on IS NULL AND due_on < '2026-11-20') THEN 1 ELSE 0 END) / COUNT(*), 2) AS overdue_pct FROM d1128_loans GROUP BY branch HAVING overdue_loans >= 2 ORDER BY overdue_pct DESC, branch;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261128_i1', level: 'intermediate', added: '2026-11-28', source: 'PracHub', company: 'Rippling',
+    ref: 'Find Payroll Bookings in the Latest Active Month by Country', url: 'https://prachub.com/interview-questions/find-payroll-bookings-in-the-latest-active-month-by-country',
+    title: 'סיכום החודש הפעיל האחרון בכל מדינה', tables: ['d1128_payroll_bookings', 'd1128_countries'],
+    prompt: `בטבלה d1128_payroll_bookings יש רישומי שכר לפי מדינה (country הוא קוד מדינה): booked_on הוא תאריך, status הוא 'posted' או 'void' ו-amount הוא הסכום. הטבלה d1128_countries מתרגמת קוד מדינה (code) לשם (country_name). "חודש פעיל" של מדינה הוא חודש קלנדרי שבו יש למדינה לפחות רישום אחד בסטטוס 'posted'. לכל מדינה שיש לה חודש פעיל, מצאו את החודש הפעיל האחרון שלה והחזירו את country_name, month (בפורמט 'YYYY-MM'), posted_count (מספר רישומי ה-'posted' באותו חודש) ו-total_amount (סכומם). רישומי 'void' אינם נספרים בשום מקום. מדינות ללא חודש פעיל לא יופיעו. מיינו לפי country_name.`,
+    hint: `קודם צמצמו לרישומים שנספרים, ואז לכל מדינה מצאו מהו החודש המאוחר ביותר שיש בו כאלה. רק אחרי שיודעים את החודש הזה חוזרים לרישומים ומסכמים אותם. שימו לב שחודש של רישומים מבוטלים בלבד לא קובע את התוצאה.`,
+    solution: `WITH p AS (SELECT country, strftime('%Y-%m', booked_on) AS m, amount FROM d1128_payroll_bookings WHERE status = 'posted'), l AS (SELECT country, MAX(m) AS m FROM p GROUP BY country) SELECT c.country_name, l.m AS month, COUNT(*) AS posted_count, SUM(p.amount) AS total_amount FROM l JOIN p ON p.country = l.country AND p.m = l.m JOIN d1128_countries c ON c.code = l.country GROUP BY c.country_name, l.m ORDER BY c.country_name;`,
+    ordered: true,
+  },
+  {
+    id: 'd20261128_a1', level: 'advanced', added: '2026-11-28', source: 'PracHub', company: 'Agoda',
+    ref: 'Find the Longest Calendar-Day Streak With All Employees Present', url: 'https://prachub.com/interview-questions/find-the-longest-calendar-day-streak-with-all-employees-present',
+    title: 'הרצף הארוך ביותר של ימים שבהם כל הצוות הגיע', tables: ['d1128_team', 'd1128_attendance'],
+    prompt: `בטבלה d1128_team רשומים כל עובדי הצוות, ובטבלה d1128_attendance יש רישומי נוכחות: emp_id, work_date (תאריך) ו-status ('present' או 'absent'). ייתכנו רישומים כפולים לאותו עובד באותו יום, וייתכן שלעובד אין רישום כלל ביום מסוים. יום נחשב "יום מלא" אם כל עובדי הצוות רשומים בו בסטטוס 'present'. ימים רצופים הם ימים קלנדריים עוקבים, כולל סופי שבוע וימים שאין בהם שום רישום (יום ללא רישומים אינו יום מלא ושובר את הרצף). החזירו שורה אחת: הרצף הארוך ביותר של ימים מלאים רצופים, בעמודות start_day, end_day, days (מספר הימים ברצף). אם יש שוויון באורך, החזירו את הרצף שמתחיל מוקדם יותר.`,
+    hint: `קודם זהו אילו תאריכים בכלל עומדים בתנאי של "כולם הגיעו", בלי להתייחס לעובד בודד. רק אחר כך חפשו בתוך רשימת התאריכים הללו קבוצות של ימים צמודים בלוח השנה.`,
+    solution: `WITH full_days AS (SELECT work_date FROM d1128_attendance WHERE status = 'present' GROUP BY work_date HAVING COUNT(DISTINCT emp_id) = (SELECT COUNT(*) FROM d1128_team)), g AS (SELECT work_date, julianday(work_date) - ROW_NUMBER() OVER (ORDER BY work_date) AS k FROM full_days) SELECT MIN(work_date) AS start_day, MAX(work_date) AS end_day, COUNT(*) AS days FROM g GROUP BY k ORDER BY days DESC, start_day LIMIT 1;`,
+    ordered: true,
+  },
 ];
 
 QUESTIONS.push(...QUESTIONS_DAILY);
